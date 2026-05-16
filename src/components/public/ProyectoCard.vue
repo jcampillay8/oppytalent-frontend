@@ -17,9 +17,9 @@
         <span v-if="proyecto.stack_tecnologico?.length > 5" class="tag">+{{ proyecto.stack_tecnologico.length - 5 }}</span>
       </div>
       <div v-if="proyecto.kpis && Object.keys(proyecto.kpis).length" class="card-kpis">
-        <div v-for="(val, key) in proyecto.kpis" :key="key" class="kpi-item">
-          <span class="kpi-value">{{ val }}</span>
-          <span class="kpi-label">{{ key }}</span>
+        <span class="kpis-label">KPIs</span>
+        <div class="kpis-chips">
+          <span v-for="(val, key) in proyecto.kpis" :key="key" class="kpi-chip">{{ key }}</span>
         </div>
       </div>
     </div>
@@ -105,29 +105,34 @@ function formatDate(d) {
 }
 
 .card-kpis {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--color-gray-100);
 }
 
-.kpi-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.kpi-value {
-  font-size: 1rem;
+.kpis-label {
+  font-size: 0.625rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 0.375rem;
 }
 
-.kpi-label {
+.kpis-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.kpi-chip {
   font-size: 0.6875rem;
-  color: var(--color-gray-500);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 500;
+  color: var(--color-accent);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
 }
 </style>

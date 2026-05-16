@@ -65,7 +65,7 @@
         <div v-if="estudiosStore.loading" class="loading"><div class="spinner"></div></div>
         <div v-else-if="!estudiosStore.items.length" class="empty-state">Sin estudios registrados.</div>
         <div v-else class="estudios-list">
-          <div v-for="e in estudiosStore.items" :key="e.id" class="card estudio-item">
+          <div v-for="e in sortedEstudios" :key="e.id" class="card estudio-item">
             <img v-if="e.image_url" :src="e.image_url" :alt="e.institucion" class="estudio-img" />
             <div class="estudio-year">{{ e.anio_obtencion }}</div>
             <div class="estudio-info">
@@ -127,6 +127,10 @@ const filteredExperiencias = computed(() => {
     (e.tags_industria || []).some((t) => selectedTags.value.includes(t))
   )
 })
+
+const sortedEstudios = computed(() =>
+  [...estudiosStore.items].sort((a, b) => b.anio_obtencion - a.anio_obtencion)
+)
 
 function handleToggleTag(tag) {
   const idx = selectedTags.value.indexOf(tag)

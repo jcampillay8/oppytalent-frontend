@@ -27,11 +27,23 @@
 
       <div v-if="store.current.kpis && Object.keys(store.current.kpis).length" class="detail-kpis">
         <h3 class="section-title">KPIs</h3>
-        <div class="kpis-grid">
-          <div v-for="(val, key) in store.current.kpis" :key="key" class="kpi-card">
-            <span class="kpi-value">{{ val }}</span>
-            <span class="kpi-label">{{ key }}</span>
-          </div>
+        <div v-for="(val, key) in store.current.kpis" :key="key" class="kpi-group">
+          <template v-if="isSimple(val)">
+            <div class="kpi-row"><span class="kpi-row-key">{{ key }}</span><span class="kpi-row-val">{{ val }}</span></div>
+          </template>
+          <template v-else>
+            <div class="kpi-group-header" @click="toggleKpi(key)">
+              <span class="kpi-group-chevron">{{ expandedKpis[key] ? '▾' : '▸' }}</span>
+              <span class="kpi-group-title">{{ key }}</span>
+              <span class="kpi-group-count">{{ Object.keys(val).length }}</span>
+            </div>
+            <div v-if="expandedKpis[key]" class="kpi-sub-list">
+              <div v-for="(subVal, subKey) in val" :key="subKey" class="kpi-row">
+                <span class="kpi-row-key">{{ subKey }}:</span>
+                <span class="kpi-row-val">{{ subVal }}</span>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -49,12 +61,18 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProyectosStore } from '../../stores/proyectos'
 
 const route = useRoute()
 const store = useProyectosStore()
+
+const expandedKpis = reactive({})
+
+function toggleKpi(key) {
+  expandedKpis[key] = !expandedKpis[key]
+}
 
 function formatDate(d) {
   return new Date(d).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -73,6 +91,10 @@ function renderMarkdown(text) {
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br/>')
   return '<p>' + html + '</p>'
+}
+
+function isSimple(val) {
+  return typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean'
 }
 
 onMounted(() => store.fetchOne(route.params.id))
@@ -131,34 +153,86 @@ onMounted(() => store.fetchOne(route.params.id))
   margin-bottom: 2rem;
 }
 
-.kpis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-}
-
-.kpi-card {
-  background: var(--color-gray-50);
+.kpi-group {
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-md);
-  padding: 1rem;
-  text-align: center;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
 }
 
-.kpi-value {
-  display: block;
-  font-size: 1.25rem;
+.kpi-group:last-child {
+  margin-bottom: 0;
+}
+
+.kpi-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--color-gray-50);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.kpi-group-header:hover {
+  background: var(--color-gray-100);
+}
+
+.kpi-group-chevron {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.kpi-group-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  flex: 1;
+}
+
+.kpi-group-count {
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--color-primary);
+  background: var(--color-gray-100);
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  flex-shrink: 0;
 }
 
-.kpi-label {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--color-gray-500);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 0.25rem;
+.kpi-sub-list {
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.kpi-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.kpi-row:last-child {
+  border-bottom: none;
+}
+
+.kpi-sub-list .kpi-row {
+  padding-left: 3rem;
+}
+
+.kpi-row-key {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  white-space: nowrap;
+}
+
+.kpi-row-val {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
 }
 
 .detail-content {

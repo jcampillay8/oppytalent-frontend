@@ -97,18 +97,17 @@ watch(messages, async () => {
 }
 
 .chat-panel {
-  position: absolute;
-  bottom: 56px;
-  right: 0;
-  width: 360px;
-  height: 460px;
-  background: #fff;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--color-gray-200);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+position: absolute;
+bottom: 56px;
+right: 0;
+width: 500px;
+height: 600px;
+border: 1px solid #aaa;
+background-color: white;
+border-radius: 3%;
+display: flex;
+flex-direction: column;
+overflow: hidden;
 }
 
 .chat-header {

@@ -5,12 +5,17 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    # 1. AGREGA ESTA LÍNEA: Permite a Nginx resolver el dominio público de Railway
+    resolver 8.8.8.8 1.1.1.1 valid=30s;
+
     location / {
         try_files $uri $uri/ /index.html;
     }
 
     location /api/ {
-        proxy_pass ${BACKEND_URL};
+        # 2. MODIFICA ESTA LÍNEA: Agrega una barra '/' al final de la variable
+        proxy_pass ${BACKEND_URL}/;
+        
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

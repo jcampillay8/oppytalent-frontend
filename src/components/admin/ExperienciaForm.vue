@@ -39,6 +39,10 @@
         <input v-model="form.link" type="url" class="form-input" placeholder="https://..." />
       </div>
       <div class="form-group">
+        <label>Enlace Demo (Opcional)</label>
+        <input v-model="form.link_demo" type="url" class="form-input" placeholder="https://..." />
+      </div>
+      <div class="form-group">
         <label>Tags de Industria (separado por comas)</label>
         <input v-model="tagsInput" type="text" class="form-input" placeholder="Minería, Banca, IA" @blur="parseTags" />
       </div>
@@ -66,6 +70,7 @@ const form = ref({
   periodo_fin: '',
   descripcion_logros: '',
   link: '',
+  link_demo: '',
   image_url: '',
   tags_industria: [],
 })

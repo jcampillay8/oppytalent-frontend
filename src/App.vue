@@ -6,16 +6,21 @@
           <span class="logo-icon">&lt;/&gt;</span>
           <span class="logo-text">Jaime Campillay</span>
         </router-link>
-        <nav class="nav">
-          <router-link to="/" class="nav-link">Chat IA</router-link>
-          <router-link to="/portafolio" class="nav-link">Portafolio</router-link>
-          <router-link to="/contactame" class="nav-link">Contáctame</router-link>
-          <router-link to="/sobre-mi" class="nav-link nav-link-avatar">
+        
+        <button class="mobile-menu-btn" @click="isMenuOpen = !isMenuOpen">
+          <span class="hamburger" :class="{ 'is-active': isMenuOpen }"></span>
+        </button>
+
+        <nav class="nav" :class="{ 'nav-open': isMenuOpen }">
+          <router-link to="/" class="nav-link" @click="closeMenu">Chat IA</router-link>
+          <router-link to="/portafolio" class="nav-link" @click="closeMenu">Portafolio</router-link>
+          <router-link to="/contactame" class="nav-link" @click="closeMenu">Contáctame</router-link>
+          <router-link to="/sobre-mi" class="nav-link nav-link-avatar" @click="closeMenu">
             <img v-if="avatarUrl" :src="avatarUrl" alt="" class="nav-avatar" />
             <span v-else class="nav-avatar-placeholder">JA</span>
             Sobre Mí
           </router-link>
-          <router-link to="/admin" class="nav-link nav-link-admin">Admin</router-link>
+          <router-link to="/admin" class="nav-link nav-link-admin" @click="closeMenu">Admin</router-link>
         </nav>
       </div>
     </header>
@@ -32,7 +37,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePerfilStore } from './stores/perfil'
 import ChatWidget from './components/public/ChatWidget.vue'
@@ -40,6 +45,11 @@ import ChatWidget from './components/public/ChatWidget.vue'
 const route = useRoute()
 const perfilStore = usePerfilStore()
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
+const isMenuOpen = ref(false)
+
+function closeMenu() {
+  isMenuOpen.value = false
+}
 
 onMounted(() => {
   perfilStore.fetchAll()
@@ -152,5 +162,86 @@ onMounted(() => {
   padding: 1.5rem 0;
   text-align: center;
   font-size: 0.875rem;
+}
+
+/* Mobile Menu Styles */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 101;
+}
+
+.hamburger {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  left: 0;
+  transition: all 0.3s;
+}
+
+.hamburger::before {
+  top: -8px;
+}
+
+.hamburger::after {
+  bottom: -8px;
+}
+
+.hamburger.is-active {
+  background: transparent;
+}
+
+.hamburger.is-active::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.hamburger.is-active::after {
+  transform: rotate(-45deg);
+  bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-primary-dark);
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    transition: clip-path 0.3s ease-in-out;
+    border-bottom: 1px solid var(--color-gray-800);
+  }
+
+  .nav.nav-open {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .nav-link {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+  }
 }
 </style>

@@ -115,17 +115,30 @@ const availableTags = computed(() => {
 })
 
 const filteredProyectos = computed(() => {
-  if (!selectedTags.value.length) return proyectosStore.items
-  return proyectosStore.items.filter((p) =>
-    (p.tags || []).some((t) => selectedTags.value.includes(t))
-  )
+  const list = selectedTags.value.length
+    ? proyectosStore.items.filter((p) =>
+        (p.tags || []).some((t) => selectedTags.value.includes(t))
+      )
+    : proyectosStore.items
+
+  return [...list].sort((a, b) => new Date(b.fecha_proyecto || 0) - new Date(a.fecha_proyecto || 0))
 })
 
 const filteredExperiencias = computed(() => {
-  if (!selectedTags.value.length) return experienciasStore.items
-  return experienciasStore.items.filter((e) =>
-    (e.tags_industria || []).some((t) => selectedTags.value.includes(t))
-  )
+  const list = selectedTags.value.length
+    ? experienciasStore.items.filter((e) =>
+        (e.tags_industria || []).some((t) => selectedTags.value.includes(t))
+      )
+    : experienciasStore.items
+
+  return [...list].sort((a, b) => {
+    const endA = a.periodo_fin ? new Date(a.periodo_fin).getTime() : Infinity
+    const endB = b.periodo_fin ? new Date(b.periodo_fin).getTime() : Infinity
+    if (endA !== endB) return endB - endA
+    const startA = a.periodo_inicio ? new Date(a.periodo_inicio).getTime() : 0
+    const startB = b.periodo_inicio ? new Date(b.periodo_inicio).getTime() : 0
+    return startB - startA
+  })
 })
 
 const sortedEstudios = computed(() =>

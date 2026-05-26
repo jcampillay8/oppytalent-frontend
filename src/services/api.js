@@ -113,4 +113,21 @@ export const api = {
       body: JSON.stringify({ messages }),
     })
   },
+
+  // Frases
+  getFrases() {
+    return request('/frases/')
+  },
+  getFrase(id) {
+    return request(`/frases/${id}`)
+  },
+  createFrase(data) {
+    return request('/frases/', { method: 'POST', body: JSON.stringify(data) })
+  },
+  updateFrase(id, data) {
+    return request(`/frases/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  },
+  deleteFrase(id) {
+    return request(`/frases/${id}`, { method: 'DELETE' })
+  },
 }

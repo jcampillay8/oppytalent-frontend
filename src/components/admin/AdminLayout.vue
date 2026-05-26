@@ -8,6 +8,7 @@
         <router-link to="/admin/experiencias" class="sidebar-link">Experiencias</router-link>
         <router-link to="/admin/estudios" class="sidebar-link">Estudios</router-link>
         <router-link to="/admin/secciones" class="sidebar-link">Secciones</router-link>
+        <router-link to="/admin/frases" class="sidebar-link">Frases</router-link>
       </nav>
       <router-link to="/" class="sidebar-back">&larr; Sitio Público</router-link>
     </aside>

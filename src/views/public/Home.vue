@@ -11,7 +11,7 @@
         <p class="profile-title">Ingeniero Civil Industrial &bull; Senior Software & Data Engineer</p>
         <div class="profile-badges">
           <span class="badge">FastAPI</span>
-          <span class="badge">Vue 3</span>
+          <span class="badge">Python</span>
           <span class="badge">PostgreSQL</span>
           <span class="badge">Cloud Architect</span>
         </div>
@@ -42,29 +42,19 @@
 
       <!-- Cuerpo del Chat -->
       <div class="chat-body" ref="chatBody" @click="handleChatClick">
-        <!-- Pantalla de Bienvenida / Sugerencias si no hay mensajes del usuario -->
-        <div v-if="messages.length === 1" class="welcome-screen">
-          <div class="welcome-icon">💬</div>
-          <h3 class="welcome-title">¡Te doy la bienvenida a mi Portafolio Inteligente!</h3>
+        <!-- Pantalla de Bienvenida con temática Profesional y Elegante -->
+        <div v-if="messages.length === 1" class="welcome-screen elegant-theme">
+          <blockquote v-if="randomFrase" class="elegant-quote">
+            "{{ randomFrase.texto }}"
+            <footer>{{ randomFrase.autor }}</footer>
+          </blockquote>
+          <blockquote v-else class="elegant-quote">
+            "El verdadero liderazgo en tecnología no se trata solo de dominar herramientas, sino de construir sistemas que empoderen a las personas y transformen problemas complejos en soluciones simples, escalables y sostenibles."
+            <footer>Jaime Campillay</footer>
+          </blockquote>
           <p class="welcome-subtitle">
-            Puedes chatear libremente con este asistente de Inteligencia Artificial entrenado con toda mi trayectoria profesional.
-            Aquí tienes algunas preguntas frecuentes para empezar con un solo clic:
+            Te invito a dialogar con mi asistente de inteligencia artificial para conocer más sobre mi trayectoria, proyectos y visión profesional.
           </p>
-
-          <div class="suggestions-grid">
-            <button 
-              v-for="(sug, idx) in suggestions" 
-              :key="idx" 
-              class="suggestion-card" 
-              @click="useSuggestion(sug.prompt)"
-            >
-              <span class="suggestion-emoji">{{ sug.emoji }}</span>
-              <div class="suggestion-text">
-                <h4>{{ sug.title }}</h4>
-                <p>{{ sug.desc }}</p>
-              </div>
-            </button>
-          </div>
         </div>
 
         <!-- Lista de Mensajes -->
@@ -122,11 +112,15 @@ import { api } from '../../services/api'
 import { marked } from 'marked'
 import { usePerfilStore } from '../../stores/perfil'
 import { useChatStore } from '../../stores/chat'
+import { useFrasesStore } from '../../stores/frases'
 import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const perfilStore = usePerfilStore()
 const chatStore = useChatStore()
+const frasesStore = useFrasesStore()
+
+const randomFrase = ref(null)
 
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 
@@ -136,32 +130,7 @@ const chatBody = ref(null)
 
 const { messages } = storeToRefs(chatStore)
 
-const suggestions = [
-  {
-    emoji: '🚀',
-    title: 'Proyectos Destacados',
-    desc: '¿Cuáles son los proyectos más importantes y su impacto?',
-    prompt: '¿Cuáles son tus proyectos más importantes y qué impacto o KPIs lograste en ellos?'
-  },
-  {
-    emoji: '🏢',
-    title: 'Experiencia Profesional',
-    desc: 'Cuéntame sobre tu trayectoria laboral y roles senior.',
-    prompt: 'Cuéntame un resumen de tu trayectoria laboral y qué roles senior has desempeñado.'
-  },
-  {
-    emoji: '🧠',
-    title: 'Habilidades & Stack',
-    desc: '¿Qué lenguajes y arquitecturas cloud dominas?',
-    prompt: '¿Cuál es tu stack tecnológico principal y qué experiencia tienes en arquitecturas Cloud-Native?'
-  },
-  {
-    emoji: '📞',
-    title: 'Contacto y CV',
-    desc: '¿Cómo puedo contactarte o descargar tu CV?',
-    prompt: '¿Cómo puedo ponerme en contacto contigo o descargar tu CV de manera directa?'
-  }
-]
+
 
 function renderMarkdown(text) {
   if (!text) return ''
@@ -181,10 +150,7 @@ function handleChatClick(event) {
   }
 }
 
-async function useSuggestion(promptText) {
-  input.value = promptText
-  await send()
-}
+
 
 async function send() {
   const text = input.value.trim()
@@ -215,8 +181,15 @@ watch(messages, async () => {
   }
 }, { deep: true })
 
-onMounted(() => {
+onMounted(async () => {
   perfilStore.fetchAll()
+  await frasesStore.fetchAll()
+  
+  if (frasesStore.items.length > 0) {
+    const randomIndex = Math.floor(Math.random() * frasesStore.items.length)
+    randomFrase.value = frasesStore.items[randomIndex]
+  }
+
   nextTick(() => {
     if (chatBody.value) {
       chatBody.value.scrollTop = chatBody.value.scrollHeight
@@ -391,77 +364,55 @@ onMounted(() => {
   gap: 1.5rem;
 }
 
-/* --- WELCOME SCREEN --- */
-.welcome-screen {
-  max-width: 760px;
+/* --- WELCOME SCREEN ELEGANT THEME --- */
+.elegant-theme {
+  max-width: 800px;
   margin: auto;
   text-align: center;
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
-.welcome-icon {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-  animation: wave-effect 2.5s ease infinite;
+.elegant-quote {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: var(--color-gray-800, #1e293b);
+  position: relative;
+  padding: 2.5rem 3.5rem;
+  background: #ffffff;
+  border-radius: var(--radius-sm, 6px);
+  border-left: 4px solid var(--color-primary, #1e3a8a);
+  border-right: 1px solid var(--color-gray-200, #e2e8f0);
+  border-top: 1px solid var(--color-gray-200, #e2e8f0);
+  border-bottom: 1px solid var(--color-gray-200, #e2e8f0);
+  margin: 0 auto 2.5rem auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  text-align: left;
+  letter-spacing: -0.015em;
+  font-weight: 400;
 }
 
-.welcome-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-gray-900, #0f172a);
-  margin-bottom: 0.75rem;
+.elegant-quote footer {
+  margin-top: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-gray-500, #64748b);
+  font-style: normal;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.elegant-quote footer::before {
+  content: '— ';
+  color: var(--color-primary, #1e3a8a);
 }
 
 .welcome-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   line-height: 1.6;
   color: var(--color-gray-500, #64748b);
-  margin-bottom: 2.25rem;
-}
-
-.suggestions-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  text-align: left;
-}
-
-.suggestion-card {
-  display: flex;
-  gap: 1rem;
-  padding: 1.125rem;
-  background: var(--color-gray-50, #f8fafc);
-  border: 1px solid var(--color-gray-200, #e2e8f0);
-  border-radius: var(--radius-md, 12px);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 100%;
-}
-
-.suggestion-card:hover {
-  background: #fff;
-  border-color: var(--color-accent, #2563eb);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-}
-
-.suggestion-emoji {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.suggestion-text h4 {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--color-gray-900, #0f172a);
-  margin: 0 0 0.25rem 0;
-}
-
-.suggestion-text p {
-  font-size: 0.75rem;
-  color: var(--color-gray-500, #64748b);
-  margin: 0;
-  line-height: 1.4;
+  margin-bottom: 1rem;
 }
 
 /* --- MESSAGE BUBBLES --- */
@@ -741,14 +692,7 @@ onMounted(() => {
     padding: 1rem 0;
   }
 
-  .suggestions-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
 
-  .suggestion-card {
-    padding: 0.875rem;
-  }
 
   .chat-message-wrapper {
     max-width: 92%;

@@ -208,6 +208,23 @@ onMounted(async () => {
   flex-direction: column;
   gap: 2rem;
   border-right: 1px solid rgba(255, 255, 255, 0.05);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.chat-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.chat-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.chat-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .profile-card {

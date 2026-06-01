@@ -34,6 +34,18 @@
         <label>Ciudad</label>
         <input v-model="form.ciudad" type="text" class="form-input" placeholder="Santiago, Chile" />
       </div>
+      <div class="form-group">
+        <label>Video Pitch (URL de YouTube)</label>
+        <input v-model="form.youtube_url" type="url" class="form-input" placeholder="https://www.youtube.com/watch?v=..." />
+      </div>
+      <div class="form-group">
+        <label>Certificaciones (JSON array de objetos)</label>
+        <textarea v-model="certificacionesText" class="form-textarea" rows="4" placeholder='[{"titulo": "Licencia A4", "entidad": "Dirección de Tránsito"}]' @blur="parseCertificaciones"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Idiomas (JSON array de objetos)</label>
+        <textarea v-model="idiomasText" class="form-textarea" rows="4" placeholder='[{"idioma": "Inglés", "nivel": "Avanzado"}]' @blur="parseIdiomas"></textarea>
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Guardar</button>
         <button type="button" class="btn btn-outline" @click="$emit('cancel')">Cancelar</button>
@@ -60,7 +72,29 @@ const form = ref({
   linkedin: '',
   github: '',
   ciudad: '',
+  youtube_url: '',
+  certificaciones: [],
+  idiomas: [],
 })
+
+const certificacionesText = ref('')
+const idiomasText = ref('')
+
+function parseCertificaciones() {
+  try {
+    form.value.certificaciones = certificacionesText.value ? JSON.parse(certificacionesText.value) : []
+  } catch {
+    form.value.certificaciones = []
+  }
+}
+
+function parseIdiomas() {
+  try {
+    form.value.idiomas = idiomasText.value ? JSON.parse(idiomasText.value) : []
+  } catch {
+    form.value.idiomas = []
+  }
+}
 
 function handleParseImageUrl() {
   form.value.image_url = parseImageUrl(form.value.image_url)
@@ -71,12 +105,16 @@ function handleParseAvatarUrl() {
 }
 
 function handleSubmit() {
+  parseCertificaciones()
+  parseIdiomas()
   emit('save', { ...form.value })
 }
 
 onMounted(() => {
   if (props.perfil) {
     form.value = { ...props.perfil }
+    certificacionesText.value = JSON.stringify(props.perfil.certificaciones || [], null, 2)
+    idiomasText.value = JSON.stringify(props.perfil.idiomas || [], null, 2)
   }
 })
 </script>

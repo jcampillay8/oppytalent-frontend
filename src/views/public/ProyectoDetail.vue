@@ -12,6 +12,18 @@
 
       <img v-if="store.current.image_url" :src="store.current.image_url" :alt="store.current.titulo" class="detail-img" />
 
+      <div v-if="getYoutubeEmbed(store.current.youtube_url)" class="detail-video">
+        <h3 class="section-title">Video Demostrativo</h3>
+        <div class="video-responsive">
+          <iframe 
+            :src="getYoutubeEmbed(store.current.youtube_url)" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
       <div class="detail-tags">
         <span v-for="tag in store.current.tags" :key="tag" class="tag tag-industry">{{ tag }}</span>
       </div>
@@ -97,6 +109,13 @@ function isSimple(val) {
   return typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean'
 }
 
+function getYoutubeEmbed(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
+}
+
 watch(() => route.params.id, (newId) => {
   if (newId) {
     store.fetchOne(newId)
@@ -124,6 +143,35 @@ onMounted(() => store.fetchOne(route.params.id))
   object-fit: cover;
   border-radius: var(--radius-lg);
   margin-bottom: 1.5rem;
+}
+
+.detail-video {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-gray-200);
+  padding-bottom: 0.5rem;
+}
+
+.video-responsive {
+  overflow: hidden;
+  padding-bottom: 56.25%;
+  position: relative;
+  height: 0;
+  border-radius: var(--radius-md);
+}
+
+.video-responsive iframe {
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
 }
 
 .detail-title {

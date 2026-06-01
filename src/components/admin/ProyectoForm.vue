@@ -43,6 +43,10 @@
         <input v-model="form.image_url" type="text" class="form-input" placeholder="ID de Drive o URL completa" @blur="handleParseImageUrl" />
       </div>
       <div class="form-group">
+        <label>Video Demostrativo (URL de YouTube)</label>
+        <input v-model="form.youtube_url" type="url" class="form-input" placeholder="https://www.youtube.com/watch?v=..." />
+      </div>
+      <div class="form-group">
         <label>KPIs (JSON)</label>
         <textarea v-model="kpisText" class="form-textarea" rows="3" placeholder='{"Precisión": "98%", "Latencia": "50ms"}' @blur="parseKpis"></textarea>
       </div>
@@ -72,6 +76,7 @@ const form = ref({
   link_github: '',
   link_demo: '',
   image_url: '',
+  youtube_url: '',
   kpis: {},
   tags: [],
 })

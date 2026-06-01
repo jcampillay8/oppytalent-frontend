@@ -7,6 +7,7 @@
         <router-link to="/admin/proyectos" class="sidebar-link">Proyectos</router-link>
         <router-link to="/admin/experiencias" class="sidebar-link">Experiencias</router-link>
         <router-link to="/admin/estudios" class="sidebar-link">Estudios</router-link>
+        <router-link to="/admin/perfil" class="sidebar-link">Sobre Mí</router-link>
         <router-link to="/admin/secciones" class="sidebar-link">Secciones</router-link>
         <router-link to="/admin/frases" class="sidebar-link">Frases</router-link>
       </nav>

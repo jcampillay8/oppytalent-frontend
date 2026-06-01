@@ -18,13 +18,15 @@
       </div>
 
       <div class="sidebar-help">
-        <h3>¿Qué puedes preguntar?</h3>
-        <ul>
-          <li>Habilidades técnicas y stack.</li>
-          <li>Experiencia laboral detallada.</li>
-          <li>Proyectos clave y KPIs logrados.</li>
-          <li>Metodología de trabajo y educación.</li>
-        </ul>
+        <h3>Frase Célebre</h3>
+        <blockquote class="sidebar-quote" v-if="randomFrase">
+          "{{ randomFrase.texto }}"
+          <footer>{{ randomFrase.autor }}</footer>
+        </blockquote>
+        <blockquote class="sidebar-quote" v-else>
+          "El verdadero liderazgo en tecnología no se trata solo de dominar herramientas, sino de construir sistemas que empoderen a las personas y transformen problemas complejos en soluciones simples, escalables y sostenibles."
+          <footer>Jaime Campillay</footer>
+        </blockquote>
       </div>
     </aside>
 
@@ -42,21 +44,6 @@
 
       <!-- Cuerpo del Chat -->
       <div class="chat-body" ref="chatBody" @click="handleChatClick">
-        <!-- Pantalla de Bienvenida con temática Profesional y Elegante -->
-        <div v-if="messages.length === 1" class="welcome-screen elegant-theme">
-          <blockquote v-if="randomFrase" class="elegant-quote">
-            "{{ randomFrase.texto }}"
-            <footer>{{ randomFrase.autor }}</footer>
-          </blockquote>
-          <blockquote v-else class="elegant-quote">
-            "El verdadero liderazgo en tecnología no se trata solo de dominar herramientas, sino de construir sistemas que empoderen a las personas y transformen problemas complejos en soluciones simples, escalables y sostenibles."
-            <footer>Jaime Campillay</footer>
-          </blockquote>
-          <p class="welcome-subtitle">
-            Te invito a dialogar con mi asistente de inteligencia artificial para conocer más sobre mi trayectoria, proyectos y visión profesional.
-          </p>
-        </div>
-
         <!-- Lista de Mensajes -->
         <div 
           v-for="(msg, i) in messages" 
@@ -364,55 +351,24 @@ onMounted(async () => {
   gap: 1.5rem;
 }
 
-/* --- WELCOME SCREEN ELEGANT THEME --- */
-.elegant-theme {
-  max-width: 800px;
-  margin: auto;
-  text-align: center;
-  padding: 1.5rem 0;
+/* --- SIDEBAR QUOTE --- */
+.sidebar-quote {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--color-gray-300, #cbd5e1);
+  line-height: 1.5;
+  margin: 0;
 }
-
-.elegant-quote {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 1.25rem;
-  line-height: 1.7;
-  color: var(--color-gray-800, #1e293b);
-  position: relative;
-  padding: 2.5rem 3.5rem;
-  background: #ffffff;
-  border-radius: var(--radius-sm, 6px);
-  border-left: 4px solid var(--color-primary, #1e3a8a);
-  border-right: 1px solid var(--color-gray-200, #e2e8f0);
-  border-top: 1px solid var(--color-gray-200, #e2e8f0);
-  border-bottom: 1px solid var(--color-gray-200, #e2e8f0);
-  margin: 0 auto 2.5rem auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  text-align: left;
-  letter-spacing: -0.015em;
-  font-weight: 400;
-}
-
-.elegant-quote footer {
-  margin-top: 2rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--color-gray-500, #64748b);
-  font-style: normal;
+.sidebar-quote footer {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent, #60a5fa);
   text-align: right;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-style: normal;
 }
-
-.elegant-quote footer::before {
+.sidebar-quote footer::before {
   content: '— ';
-  color: var(--color-primary, #1e3a8a);
-}
-
-.welcome-subtitle {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--color-gray-500, #64748b);
-  margin-bottom: 1rem;
 }
 
 /* --- MESSAGE BUBBLES --- */
@@ -687,12 +643,6 @@ onMounted(async () => {
   .chat-body {
     padding: 1rem;
   }
-
-  .welcome-screen {
-    padding: 1rem 0;
-  }
-
-
 
   .chat-message-wrapper {
     max-width: 92%;

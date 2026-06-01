@@ -93,14 +93,9 @@ const proyectosStore = useProyectosStore()
 const experienciasStore = useExperienciasStore()
 const estudiosStore = useEstudiosStore()
 
-const { defaults } = useSectionConfig()
+const { defaults, fetchConfigs } = useSectionConfig()
 
-const expanded = reactive({
-  tags: defaults.tags,
-  proyectos: defaults.proyectos,
-  experiencia: defaults.experiencia,
-  estudios: defaults.estudios,
-})
+const expanded = defaults
 
 function toggle(key) {
   expanded[key] = !expanded[key]
@@ -153,6 +148,7 @@ function handleToggleTag(tag) {
 
 onMounted(async () => {
   await Promise.all([
+    fetchConfigs(),
     proyectosStore.fetchAll(),
     experienciasStore.fetchAll(),
     estudiosStore.fetchAll(),

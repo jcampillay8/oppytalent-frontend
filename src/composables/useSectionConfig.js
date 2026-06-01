@@ -1,21 +1,30 @@
-import { reactive, watch } from 'vue'
+import { reactive } from 'vue'
+import api from '../api/axios'
 
-const STORAGE_KEY = 'section-defaults'
+const defaults = reactive({
+  tags: false,
+  proyectos: true,
+  experiencia: true,
+  estudios: true
+})
 
-function loadDefaults() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) return JSON.parse(saved)
-  } catch {}
-  return { tags: true, proyectos: true, experiencia: true, estudios: true }
-}
-
-const defaults = reactive(loadDefaults())
-
-watch(defaults, (val) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...val }))
-}, { deep: true })
+let loaded = false
 
 export function useSectionConfig() {
-  return { defaults }
+  const fetchConfigs = async () => {
+    if (loaded) return
+    try {
+      const response = await api.get('/seccion_config/')
+      response.data.forEach(config => {
+        if (defaults.hasOwnProperty(config.seccion)) {
+          defaults[config.seccion] = config.is_expanded
+        }
+      })
+      loaded = true
+    } catch (error) {
+      console.error('Error fetching section configs:', error)
+    }
+  }
+
+  return { defaults, fetchConfigs }
 }

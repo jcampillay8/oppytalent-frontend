@@ -11,7 +11,7 @@
             <span class="seccion-desc">{{ s.desc }}</span>
           </div>
           <label class="toggle-label">
-            <input type="checkbox" v-model="defaults[s.key]" />
+            <input type="checkbox" :checked="defaults[s.key]" @change="e => updateToggle(s.key, e.target.checked)" />
             <span class="toggle-text">{{ defaults[s.key] ? 'Visible' : 'Oculta' }}</span>
           </label>
         </div>
@@ -23,8 +23,27 @@
 <script setup>
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import { useSectionConfig } from '../../composables/useSectionConfig'
+import api from '../../api/axios'
+import { onMounted } from 'vue'
 
-const { defaults } = useSectionConfig()
+const { defaults, fetchConfigs } = useSectionConfig()
+
+onMounted(() => {
+  fetchConfigs()
+})
+
+const updateToggle = async (key, value) => {
+  try {
+    await api.put(`/seccion_config/${key}`, {
+      seccion: key,
+      is_expanded: value
+    })
+    defaults[key] = value
+  } catch (error) {
+    console.error('Error updating config:', error)
+    alert('Error al guardar la configuración')
+  }
+}
 
 const secciones = [
   { key: 'tags', label: 'Tags / Filtros', desc: 'Barra de filtros por etiquetas' },

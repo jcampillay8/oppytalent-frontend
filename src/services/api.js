@@ -130,4 +130,12 @@ export const api = {
   deleteFrase(id) {
     return request(`/frases/${id}`, { method: 'DELETE' })
   },
+
+  // Seccion Configs
+  getSeccionConfigs() {
+    return request('/seccion_config/')
+  },
+  updateSeccionConfig(seccion, data) {
+    return request(`/seccion_config/${seccion}`, { method: 'PUT', body: JSON.stringify(data) })
+  },
 }

@@ -23,7 +23,7 @@
 <script setup>
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import { useSectionConfig } from '../../composables/useSectionConfig'
-import api from '../../api/axios'
+import { api } from '../../services/api'
 import { onMounted } from 'vue'
 
 const { defaults, fetchConfigs } = useSectionConfig()
@@ -34,7 +34,7 @@ onMounted(() => {
 
 const updateToggle = async (key, value) => {
   try {
-    await api.put(`/seccion_config/${key}`, {
+    await api.updateSeccionConfig(key, {
       seccion: key,
       is_expanded: value
     })

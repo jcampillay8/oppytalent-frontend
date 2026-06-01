@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import api from '../api/axios'
+import { api } from '../services/api'
 
 const defaults = reactive({
   tags: false,
@@ -14,8 +14,8 @@ export function useSectionConfig() {
   const fetchConfigs = async () => {
     if (loaded) return
     try {
-      const response = await api.get('/seccion_config/')
-      response.data.forEach(config => {
+      const response = await api.getSeccionConfigs()
+      response.forEach(config => {
         if (defaults.hasOwnProperty(config.seccion)) {
           defaults[config.seccion] = config.is_expanded
         }

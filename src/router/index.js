@@ -88,6 +88,12 @@ const routes = [
     component: () => import('../views/admin/FrasesAdmin.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/admin/chat-logs',
+    name: 'ChatLogsAdmin',
+    component: () => import('../views/admin/ChatLogsAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
 ]
 
 const router = createRouter({

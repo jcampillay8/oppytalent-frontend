@@ -113,6 +113,12 @@ export const api = {
       body: JSON.stringify({ messages }),
     })
   },
+  getChatLogs() {
+    return request('/chat/logs')
+  },
+  getChatStats() {
+    return request('/chat/stats')
+  },
 
   // Frases
   getFrases() {

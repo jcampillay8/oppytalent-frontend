@@ -10,6 +10,7 @@
         <router-link to="/admin/perfil" class="sidebar-link">Sobre Mí</router-link>
         <router-link to="/admin/secciones" class="sidebar-link">Secciones</router-link>
         <router-link to="/admin/frases" class="sidebar-link">Frases</router-link>
+        <router-link to="/admin/chat-logs" class="sidebar-link">Chat Logs</router-link>
       </nav>
       <router-link to="/" class="sidebar-back">&larr; Sitio Público</router-link>
     </aside>

@@ -50,6 +50,7 @@
           :key="i" 
           class="chat-message-wrapper"
           :class="msg.role"
+          :data-log-id="msg.log_id"
         >
           <div class="message-avatar">
             <span v-if="msg.role === 'bot'">🤖</span>
@@ -129,6 +130,15 @@ function handleChatClick(event) {
   if (!link) return
 
   const href = link.getAttribute('href')
+
+  // Register click tracking
+  const wrapper = link.closest('.chat-message-wrapper.bot')
+  if (wrapper && wrapper.dataset.logId) {
+    const logId = wrapper.dataset.logId
+    const clickedLinkText = `${link.textContent.trim()} -> ${href}`
+    api.registerChatClick(logId, clickedLinkText).catch(e => console.error("Error tracking click:", e))
+  }
+
   if (href && href.startsWith('/')) {
     event.preventDefault()
     router.push(href)
@@ -153,7 +163,7 @@ async function send() {
       content: m.content,
     }))
     const res = await api.chat(msgs)
-    messages.value.push({ role: 'bot', content: res.content })
+    messages.value.push({ role: 'bot', content: res.content, log_id: res.log_id })
   } catch {
     messages.value.push({ role: 'bot', content: 'Lo siento, he tenido un inconveniente temporal para conectarme con mi cerebro de IA. Por favor, intenta enviar tu pregunta nuevamente.' })
   } finally {

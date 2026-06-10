@@ -65,6 +65,10 @@
               <td v-if="isColVisible('ai_response')" class="message-cell">
                 <div class="truncate-text text-muted">{{ log.ai_response }}</div>
               </td>
+              <td v-if="isColVisible('clicked_link')">
+                <span v-if="log.clicked_link" class="badge badge-action truncate-text" style="max-width: 150px;">{{ log.clicked_link }}</span>
+                <span v-else>-</span>
+              </td>
             </tr>
             <tr v-if="chatLogsStore.items.length === 0 && !chatLogsStore.loading">
               <td :colspan="visibleColumns.length" class="empty-state">
@@ -103,6 +107,10 @@
                 <span class="meta-value">
                   {{ [selectedLog.city, selectedLog.region, selectedLog.country].filter(Boolean).join(', ') }}
                 </span>
+              </div>
+              <div class="meta-item" v-if="selectedLog.clicked_link">
+                <span class="meta-label">Acción (Link Clickeado)</span>
+                <span class="meta-value badge badge-action">{{ selectedLog.clicked_link }}</span>
               </div>
             </div>
 
@@ -143,6 +151,7 @@ const columns = ref([
   { key: 'country', label: 'País', visible: true },
   { key: 'user_message', label: 'Mensaje del Usuario', visible: true },
   { key: 'ai_response', label: 'Respuesta IA', visible: true },
+  { key: 'clicked_link', label: 'Link Clickeado', visible: false },
 ])
 const showColumnMenu = ref(false)
 
@@ -384,6 +393,14 @@ function formatDate(dateString) {
   background-color: #f3f4f6;
   color: #4b5563;
   border: 1px solid #e5e7eb;
+}
+
+.badge-action {
+  background-color: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  display: inline-flex;
+  max-width: 100%;
 }
 
 /* Empty State */

@@ -113,6 +113,12 @@ export const api = {
       body: JSON.stringify({ messages }),
     })
   },
+  registerChatClick(logId, clickedLink) {
+    return request(`/chat/${logId}/click`, {
+      method: 'PATCH',
+      body: JSON.stringify({ clicked_link: clickedLink }),
+    })
+  },
   getChatLogs() {
     return request('/chat/logs')
   },

@@ -42,7 +42,7 @@
           </thead>
           <tbody>
             <tr 
-              v-for="log in chatLogsStore.items" 
+              v-for="log in paginatedItems" 
               :key="log.id"
               class="interactive-row"
               @click="openModal(log)"
@@ -80,6 +80,25 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls" v-if="chatLogsStore.items.length > 0">
+        <div class="per-page-selector">
+          <label>Mostrar:</label>
+          <select v-model="itemsPerPage" @change="currentPage = 1" class="per-page-select">
+            <option :value="10">10</option>
+            <option :value="20">20</option>
+            <option :value="50">50</option>
+          </select>
+          <span class="total-items">Total: {{ chatLogsStore.items.length }} registros</span>
+        </div>
+        
+        <div class="page-navigation">
+          <button class="btn btn-secondary btn-sm" @click="prevPage" :disabled="currentPage === 1">&laquo; Anterior</button>
+          <span class="page-info">Página {{ currentPage }} de {{ totalPages || 1 }}</span>
+          <button class="btn btn-secondary btn-sm" @click="nextPage" :disabled="currentPage === totalPages || totalPages === 0">Siguiente &raquo;</button>
+        </div>
       </div>
     </AdminLayout>
 
@@ -142,6 +161,26 @@ const chatLogsStore = useChatLogsStore()
 // State for Modal
 const selectedLog = ref(null)
 
+// Pagination State
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+const totalPages = computed(() => Math.ceil(chatLogsStore.items.length / itemsPerPage.value))
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return chatLogsStore.items.slice(start, end)
+})
+
+function prevPage() {
+  if (currentPage.value > 1) currentPage.value--
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++
+}
+
 // State for Columns
 const columns = ref([
   { key: 'created_at', label: 'Fecha/Hora', visible: true },
@@ -179,6 +218,7 @@ onUnmounted(() => {
 
 function refreshData() {
   chatLogsStore.fetchAll()
+  currentPage.value = 1
 }
 
 function openModal(log) {
@@ -420,6 +460,62 @@ function formatDate(dateString) {
 .empty-icon {
   font-size: 2.5rem;
   opacity: 0.5;
+}
+
+/* Pagination */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-gray-100);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.per-page-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+}
+
+.per-page-select {
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-gray-300);
+  background-color: white;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.total-items {
+  margin-left: 1rem;
+  color: var(--color-gray-500);
+  font-size: 0.85rem;
+}
+
+.page-navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-info {
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+  font-weight: 500;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
 }
 
 /* Modal */

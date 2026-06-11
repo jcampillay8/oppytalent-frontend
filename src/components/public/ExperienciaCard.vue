@@ -1,32 +1,43 @@
 <template>
   <router-link :to="`/experiencia/${experiencia.id}`" class="card experiencia-card">
-    <div v-if="experiencia.image_url" class="card-img">
-      <img :src="experiencia.image_url" :alt="experiencia.empresa" />
+    <div v-if="tData.image_url" class="card-img">
+      <img :src="tData.image_url" :alt="tData.empresa" />
     </div>
     <div class="card-body">
       <div class="card-header">
         <div>
-          <h3 class="card-title">{{ experiencia.rol }}</h3>
-          <span class="card-company">{{ experiencia.empresa }}</span>
+          <h3 class="card-title">{{ tData.rol }}</h3>
+          <span class="card-company">{{ tData.empresa }}</span>
         </div>
-        <span class="card-date">{{ formatPeriod(experiencia.periodo_inicio, experiencia.periodo_fin) }}</span>
+        <span class="card-date">{{ formatPeriod(tData.periodo_inicio, tData.periodo_fin) }}</span>
       </div>
-      <p class="card-desc">{{ truncate(experiencia.descripcion_logros, 200) }}</p>
+      <p class="card-desc">{{ truncate(tData.descripcion_logros, 200) }}</p>
       <div class="card-tags">
-        <span v-for="tag in experiencia.tags_industria" :key="tag" class="tag tag-industry">{{ tag }}</span>
+        <span v-for="tag in tData.tags_industria" :key="tag" class="tag tag-industry">{{ tag }}</span>
       </div>
     </div>
   </router-link>
 </template>
 
 <script setup>
-defineProps({
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const props = defineProps({
   experiencia: { type: Object, required: true },
 })
 
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
+const tData = computed(() => getTranslated(props.experiencia, locale.value))
+
 function formatPeriod(start, end) {
-  const fmt = (d) => new Date(d).toLocaleDateString('es-CL', { year: 'numeric', month: 'short' })
-  return `${fmt(start)} - ${end ? fmt(end) : 'Presente'}`
+  const isEn = locale.value === 'en'
+  const loc = isEn ? 'en-US' : 'es-CL'
+  const fmt = (d) => new Date(d).toLocaleDateString(loc, { year: 'numeric', month: 'short' })
+  const presentTxt = isEn ? 'Present' : 'Presente'
+  return `${fmt(start)} - ${end ? fmt(end) : presentTxt}`
 }
 
 function truncate(text, max) {

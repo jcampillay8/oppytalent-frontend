@@ -19,9 +19,9 @@
 
       <div class="sidebar-help">
         <h3>{{ $t('portfolio.frases') }}</h3>
-        <blockquote class="sidebar-quote" v-if="randomFrase">
-          "{{ randomFrase.texto }}"
-          <footer>{{ randomFrase.autor }}</footer>
+        <blockquote class="sidebar-quote" v-if="tFrase">
+          "{{ tFrase.texto }}"
+          <footer>{{ tFrase.autor }}</footer>
         </blockquote>
         <blockquote class="sidebar-quote" v-else>
           "El verdadero liderazgo en tecnología no se trata solo de dominar herramientas, sino de construir sistemas que empoderen a las personas y transformen problemas complejos en soluciones simples, escalables y sostenibles."
@@ -101,14 +101,19 @@ import { marked } from 'marked'
 import { usePerfilStore } from '../../stores/perfil'
 import { useChatStore } from '../../stores/chat'
 import { useFrasesStore } from '../../stores/frases'
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const perfilStore = usePerfilStore()
 const chatStore = useChatStore()
 const frasesStore = useFrasesStore()
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
 
 const randomFrase = ref(null)
+const tFrase = computed(() => randomFrase.value ? getTranslated(randomFrase.value, locale.value) : null)
 
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 

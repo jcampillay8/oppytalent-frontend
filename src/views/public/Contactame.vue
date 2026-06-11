@@ -6,43 +6,43 @@
       <div v-else-if="!perfil" class="empty-state">Información de contacto no disponible.</div>
       <div v-else class="contact-card card">
         <div class="contact-header">
-          <img v-if="perfil.avatar_url" :src="perfil.avatar_url" alt="Avatar" class="contact-avatar" />
+          <img v-if="tData.avatar_url" :src="tData.avatar_url" alt="Avatar" class="contact-avatar" />
           <div class="contact-info">
             <h3>Jaime Campillay</h3>
-            <p v-if="perfil.ciudad" class="contact-city">📍 {{ perfil.ciudad }}</p>
+            <p v-if="tData.ciudad" class="contact-city">📍 {{ tData.ciudad }}</p>
           </div>
         </div>
         
         <div class="contact-details">
-          <div class="contact-item" v-if="perfil.email">
+          <div class="contact-item" v-if="tData.email">
             <span class="icon">✉️</span>
             <div class="contact-text">
               <span class="label">Email</span>
-              <a :href="`mailto:${perfil.email}`">{{ perfil.email }}</a>
+              <a :href="`mailto:${tData.email}`">{{ tData.email }}</a>
             </div>
           </div>
           
-          <div class="contact-item" v-if="perfil.telefono">
+          <div class="contact-item" v-if="tData.telefono">
             <span class="icon">📱</span>
             <div class="contact-text">
               <span class="label">{{ $t('contact.phone') }}</span>
-              <a :href="`tel:${perfil.telefono.replace(/\s+/g, '')}`">{{ perfil.telefono }}</a>
+              <a :href="`tel:${tData.telefono.replace(/\s+/g, '')}`">{{ tData.telefono }}</a>
             </div>
           </div>
           
-          <div class="contact-item" v-if="perfil.linkedin">
+          <div class="contact-item" v-if="tData.linkedin">
             <span class="icon">💼</span>
             <div class="contact-text">
               <span class="label">LinkedIn</span>
-              <a :href="perfil.linkedin" target="_blank" rel="noopener noreferrer">{{ $t('contact.linkedin_profile') }}</a>
+              <a :href="tData.linkedin" target="_blank" rel="noopener noreferrer">{{ $t('contact.linkedin_profile') }}</a>
             </div>
           </div>
           
-          <div class="contact-item" v-if="perfil.github">
+          <div class="contact-item" v-if="tData.github">
             <span class="icon">💻</span>
             <div class="contact-text">
               <span class="label">GitHub</span>
-              <a :href="perfil.github" target="_blank" rel="noopener noreferrer">{{ $t('contact.github_profile') }}</a>
+              <a :href="tData.github" target="_blank" rel="noopener noreferrer">{{ $t('contact.github_profile') }}</a>
             </div>
           </div>
         </div>
@@ -54,9 +54,15 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { usePerfilStore } from '../../stores/perfil'
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
 
 const perfilStore = usePerfilStore()
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
+
 const perfil = computed(() => perfilStore.items[0])
+const tData = computed(() => perfil.value ? getTranslated(perfil.value, locale.value) : {})
 
 onMounted(() => {
   perfilStore.fetchAll()

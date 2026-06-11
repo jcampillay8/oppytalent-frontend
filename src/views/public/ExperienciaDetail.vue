@@ -3,42 +3,54 @@
     <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
     <div v-else-if="!store.current" class="empty-state">Experiencia no encontrada.</div>
     <article v-else class="detail">
-      <router-link to="/portafolio" class="back-link">&larr; Volver al Portafolio</router-link>
-      <h1 class="detail-title">{{ store.current.rol }}</h1>
-      <p class="detail-company">{{ store.current.empresa }}</p>
+      <router-link to="/portafolio" class="back-link">&larr; {{ locale === 'en' ? 'Back to Portfolio' : 'Volver al Portafolio' }}</router-link>
+      <h1 class="detail-title">{{ tData.rol }}</h1>
+      <p class="detail-company">{{ tData.empresa }}</p>
       <div class="detail-meta">
-        <time>{{ formatPeriod(store.current.periodo_inicio, store.current.periodo_fin) }}</time>
+        <time>{{ formatPeriod(tData.periodo_inicio, tData.periodo_fin) }}</time>
       </div>
-      <img v-if="store.current.image_url" :src="store.current.image_url" :alt="store.current.empresa" class="detail-img" />
+      <img v-if="tData.image_url" :src="tData.image_url" :alt="tData.empresa" class="detail-img" />
 
       <div class="detail-tags">
-        <span v-for="tag in store.current.tags_industria" :key="tag" class="tag tag-industry">{{ tag }}</span>
+        <span v-for="tag in tData.tags_industria" :key="tag" class="tag tag-industry">{{ tag }}</span>
       </div>
 
-      <div class="detail-actions" v-if="store.current.link || store.current.link_demo">
-        <a v-if="store.current.link" :href="store.current.link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Ver Enlace / Más Info</a>
-        <a v-if="store.current.link_demo" :href="store.current.link_demo" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver Demo</a>
+      <div class="detail-actions" v-if="tData.link || tData.link_demo">
+        <a v-if="tData.link" :href="tData.link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">{{ locale === 'en' ? 'View Link' : 'Ver Enlace / Más Info' }}</a>
+        <a v-if="tData.link_demo" :href="tData.link_demo" target="_blank" rel="noopener noreferrer" class="btn btn-outline">{{ locale === 'en' ? 'View Demo' : 'Ver Demo' }}</a>
       </div>
 
       <div class="detail-content">
-        <h3 class="section-title">Logros</h3>
-        <div class="markdown" v-html="renderMarkdown(store.current.descripcion_logros)"></div>
+        <h3 class="section-title">{{ locale === 'en' ? 'Achievements' : 'Logros' }}</h3>
+        <div class="markdown" v-html="renderMarkdown(tData.descripcion_logros)"></div>
       </div>
     </article>
   </div>
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useExperienciasStore } from '../../stores/experiencias'
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const store = useExperienciasStore()
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
+
+const tData = computed(() => {
+  if (!store.current) return {}
+  return getTranslated(store.current, locale.value)
+})
 
 function formatPeriod(start, end) {
-  const fmt = (d) => new Date(d).toLocaleDateString('es-CL', { year: 'numeric', month: 'long' })
-  return `${fmt(start)} - ${end ? fmt(end) : 'Presente'}`
+  const isEn = locale.value === 'en'
+  const loc = isEn ? 'en-US' : 'es-CL'
+  const fmt = (d) => new Date(d).toLocaleDateString(loc, { year: 'numeric', month: 'long' })
+  const presentTxt = isEn ? 'Present' : 'Presente'
+  return `${fmt(start)} - ${end ? fmt(end) : presentTxt}`
 }
 
 function renderMarkdown(text) {

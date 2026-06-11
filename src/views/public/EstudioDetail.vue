@@ -3,37 +3,46 @@
     <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
     <div v-else-if="!store.current" class="empty-state">Estudio / Certificación no encontrado.</div>
     <article v-else class="detail">
-      <router-link to="/portafolio" class="back-link">&larr; Volver al Portafolio</router-link>
-      <h1 class="detail-title">{{ store.current.titulo }}</h1>
-      <p class="detail-institution">{{ store.current.institucion }}</p>
+      <router-link to="/portafolio" class="back-link">&larr; {{ locale === 'en' ? 'Back to Portfolio' : 'Volver al Portafolio' }}</router-link>
+      <h1 class="detail-title">{{ tData.titulo }}</h1>
+      <p class="detail-institution">{{ tData.institucion }}</p>
       
       <div class="detail-meta">
-        <span class="detail-year">Año de Obtención: <strong>{{ store.current.anio_obtencion }}</strong></span>
+        <span class="detail-year">{{ locale === 'en' ? 'Year obtained:' : 'Año de Obtención:' }} <strong>{{ tData.anio_obtencion }}</strong></span>
       </div>
 
-      <div class="detail-actions" v-if="store.current.link">
-        <a :href="store.current.link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Ver Credencial / Más Info</a>
+      <div class="detail-actions" v-if="tData.link">
+        <a :href="tData.link" target="_blank" rel="noopener noreferrer" class="btn btn-primary">{{ locale === 'en' ? 'View Credential / More Info' : 'Ver Credencial / Más Info' }}</a>
       </div>
 
-      <div class="detail-img-container" v-if="store.current.image_url">
-        <img :src="store.current.image_url" :alt="store.current.institucion" class="detail-img" />
+      <div class="detail-img-container" v-if="tData.image_url">
+        <img :src="tData.image_url" :alt="tData.institucion" class="detail-img" />
       </div>
 
       <div class="detail-content">
-        <h3 class="section-title">Sobre esta Credencial / Estudio</h3>
-        <div class="markdown" v-html="renderMarkdown(store.current.descripcion_detallada)"></div>
+        <h3 class="section-title">{{ locale === 'en' ? 'About this Credential / Education' : 'Sobre esta Credencial / Estudio' }}</h3>
+        <div class="markdown" v-html="renderMarkdown(tData.descripcion_detallada)"></div>
       </div>
     </article>
   </div>
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEstudiosStore } from '../../stores/estudios'
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const store = useEstudiosStore()
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
+
+const tData = computed(() => {
+  if (!store.current) return {}
+  return getTranslated(store.current, locale.value)
+})
 
 function renderMarkdown(text) {
   if (!text) return ''

@@ -2,24 +2,24 @@
   <div class="container">
     <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
     <div v-else-if="!store.items.length" class="empty-state">
-      <p>No hay información disponible.</p>
-      <router-link to="/" class="btn btn-outline" style="margin-top:1rem">Volver al inicio</router-link>
+      <p>{{ locale === 'en' ? 'No information available.' : 'No hay información disponible.' }}</p>
+      <router-link to="/" class="btn btn-outline" style="margin-top:1rem">{{ locale === 'en' ? 'Back to home' : 'Volver al inicio' }}</router-link>
     </div>
     <article v-else class="about">
-      <router-link to="/" class="back-link">&larr; Volver</router-link>
+      <router-link to="/" class="back-link">&larr; {{ locale === 'en' ? 'Back' : 'Volver' }}</router-link>
       <div class="about-hero">
-        <h1 class="about-title">Sobre Mí</h1>
+        <h1 class="about-title">{{ locale === 'en' ? 'About Me' : 'Sobre Mí' }}</h1>
         <p class="about-subtitle">Jaime Gabriel Campillay Rojas</p>
       </div>
       <div class="about-body">
         <div class="about-content">
-          <div class="markdown" v-html="renderMarkdown(profile.descripcion)"></div>
+          <div class="markdown" v-html="renderMarkdown(tData.descripcion)"></div>
 
-          <div v-if="getYoutubeEmbed(profile.youtube_url)" class="about-video">
-            <h3 class="section-title">Video Presentación</h3>
+          <div v-if="getYoutubeEmbed(tData.youtube_url)" class="about-video">
+            <h3 class="section-title">{{ locale === 'en' ? 'Video Presentation' : 'Video Presentación' }}</h3>
             <div class="video-responsive">
               <iframe 
-                :src="getYoutubeEmbed(profile.youtube_url)" 
+                :src="getYoutubeEmbed(tData.youtube_url)" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowfullscreen>
@@ -27,20 +27,20 @@
             </div>
           </div>
           
-          <div v-if="profile.certificaciones?.length" class="about-extras">
-            <h3 class="section-title">Certificaciones y Licencias</h3>
+          <div v-if="tData.certificaciones?.length" class="about-extras">
+            <h3 class="section-title">{{ locale === 'en' ? 'Certifications & Licenses' : 'Certificaciones y Licencias' }}</h3>
             <ul class="extra-list">
-              <li v-for="(cert, i) in profile.certificaciones" :key="i">
-                <strong>{{ cert.titulo || cert.nombre || 'Certificación' }}</strong>
+              <li v-for="(cert, i) in tData.certificaciones" :key="i">
+                <strong>{{ cert.titulo || cert.nombre || (locale === 'en' ? 'Certification' : 'Certificación') }}</strong>
                 <span v-if="cert.entidad"> &middot; {{ cert.entidad }}</span>
               </li>
             </ul>
           </div>
           
-          <div v-if="profile.idiomas?.length" class="about-extras">
-            <h3 class="section-title">Idiomas</h3>
+          <div v-if="tData.idiomas?.length" class="about-extras">
+            <h3 class="section-title">{{ locale === 'en' ? 'Languages' : 'Idiomas' }}</h3>
             <ul class="extra-list">
-              <li v-for="(idioma, i) in profile.idiomas" :key="i">
+              <li v-for="(idioma, i) in tData.idiomas" :key="i">
                 <strong>{{ idioma.idioma }}</strong>
                 <span v-if="idioma.nivel"> &middot; {{ idioma.nivel }}</span>
               </li>
@@ -48,8 +48,8 @@
           </div>
         </div>
         <img
-          v-if="profile.image_url"
-          :src="profile.image_url"
+          v-if="tData.image_url"
+          :src="tData.image_url"
           :alt="'Jaime Campillay'"
           class="about-img"
         />
@@ -61,9 +61,15 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { usePerfilStore } from '../../stores/perfil'
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
 
 const store = usePerfilStore()
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
+
 const profile = computed(() => store.items[0] || {})
+const tData = computed(() => getTranslated(profile.value, locale.value))
 
 function renderMarkdown(text) {
   if (!text) return ''

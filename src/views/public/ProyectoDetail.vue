@@ -1,22 +1,22 @@
 <template>
   <div class="container">
     <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
-    <div v-else-if="!store.current" class="empty-state">Proyecto no encontrado.</div>
+    <div v-else-if="!translatedProyecto" class="empty-state">Proyecto no encontrado.</div>
     <article v-else class="detail">
       <router-link to="/portafolio" class="back-link">&larr; Volver al Portafolio</router-link>
-      <h1 class="detail-title">{{ store.current.titulo }}</h1>
+      <h1 class="detail-title">{{ translatedProyecto.titulo }}</h1>
       <div class="detail-meta">
-        <time>{{ formatDate(store.current.fecha_proyecto) }}</time>
-        <span class="detail-date">Actualizado: {{ formatDate(store.current.updated_at) }}</span>
+        <time>{{ formatDate(translatedProyecto.fecha_proyecto) }}</time>
+        <span class="detail-date">Actualizado: {{ formatDate(translatedProyecto.updated_at) }}</span>
       </div>
 
-      <img v-if="store.current.image_url" :src="store.current.image_url" :alt="store.current.titulo" class="detail-img" />
+      <img v-if="translatedProyecto.image_url" :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" class="detail-img" />
 
-      <div v-if="getYoutubeEmbed(store.current.youtube_url)" class="detail-video">
+      <div v-if="getYoutubeEmbed(translatedProyecto.youtube_url)" class="detail-video">
         <h3 class="section-title">Video Demostrativo</h3>
         <div class="video-responsive">
           <iframe 
-            :src="getYoutubeEmbed(store.current.youtube_url)" 
+            :src="getYoutubeEmbed(translatedProyecto.youtube_url)" 
             frameborder="0" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen>
@@ -25,21 +25,21 @@
       </div>
 
       <div class="detail-tags">
-        <span v-for="tag in store.current.tags" :key="tag" class="tag tag-industry">{{ tag }}</span>
+        <span v-for="tag in translatedProyecto.tags" :key="tag" class="tag tag-industry">{{ tag }}</span>
       </div>
 
       <div class="detail-stack">
-        <span v-for="tech in store.current.stack_tecnologico" :key="tech" class="tag tag-tech">{{ tech }}</span>
+        <span v-for="tech in translatedProyecto.stack_tecnologico" :key="tech" class="tag tag-tech">{{ tech }}</span>
       </div>
 
       <div class="detail-links">
-        <a v-if="store.current.link_github" :href="store.current.link_github" target="_blank" class="btn btn-outline">GitHub</a>
-        <a v-if="store.current.link_demo" :href="store.current.link_demo" target="_blank" class="btn btn-outline">Demo</a>
+        <a v-if="translatedProyecto.link_github" :href="translatedProyecto.link_github" target="_blank" class="btn btn-outline">GitHub</a>
+        <a v-if="translatedProyecto.link_demo" :href="translatedProyecto.link_demo" target="_blank" class="btn btn-outline">Demo</a>
       </div>
 
-      <div v-if="store.current.kpis && Object.keys(store.current.kpis).length" class="detail-kpis">
+      <div v-if="translatedProyecto.kpis && Object.keys(translatedProyecto.kpis).length" class="detail-kpis">
         <h3 class="section-title">KPIs</h3>
-        <div v-for="(val, key) in store.current.kpis" :key="key" class="kpi-group">
+        <div v-for="(val, key) in translatedProyecto.kpis" :key="key" class="kpi-group">
           <template v-if="isSimple(val)">
             <div class="kpi-row"><span class="kpi-row-key">{{ key }}</span><span class="kpi-row-val">{{ val }}</span></div>
           </template>
@@ -61,24 +61,27 @@
 
       <div class="detail-content">
         <h3 class="section-title">Descripción</h3>
-        <div class="markdown" v-html="renderMarkdown(store.current.descripcion_detallada)"></div>
+        <div class="markdown" v-html="renderMarkdown(translatedProyecto.descripcion_detallada)"></div>
       </div>
 
       <div class="detail-pq">
         <h3 class="section-title">Contexto</h3>
-        <p>{{ store.current.descripcion_corta }}</p>
+        <p>{{ translatedProyecto.descripcion_corta }}</p>
       </div>
     </article>
   </div>
 </template>
 
 <script setup>
-import { reactive, onMounted, watch } from 'vue'
+import { reactive, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProyectosStore } from '../../stores/proyectos'
+import { useTranslatedData } from '../../composables/useTranslatedData'
 
 const route = useRoute()
 const store = useProyectosStore()
+
+const translatedProyecto = useTranslatedData(computed(() => store.current))
 
 const expandedKpis = reactive({})
 

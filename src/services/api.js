@@ -150,4 +150,12 @@ export const api = {
   updateSeccionConfig(seccion, data) {
     return request(`/seccion_config/${seccion}`, { method: 'PUT', body: JSON.stringify(data) })
   },
+
+  // AI Translation
+  translateWithAI(content, targetLanguage = 'en') {
+    return request('/ai/translate', {
+      method: 'POST',
+      body: JSON.stringify({ content, target_language: targetLanguage })
+    })
+  }
 }

@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <section class="section">
-      <h2 class="section-title">Estudios & Certificaciones</h2>
+      <h2 class="section-title">{{ locale === 'en' ? 'Education & Certifications' : 'Estudios & Certificaciones' }}</h2>
       <div v-if="estudiosStore.loading" class="loading"><div class="spinner"></div></div>
-      <div v-else-if="!estudiosStore.items.length" class="empty-state">Sin estudios registrados.</div>
+      <div v-else-if="!estudiosStore.items.length" class="empty-state">{{ locale === 'en' ? 'No education records found.' : 'Sin estudios registrados.' }}</div>
       <div v-else class="estudios-list">
-        <router-link v-for="e in sortedEstudios" :key="e.id" :to="`/estudios/${e.id}`" class="card estudio-item">
-          <img v-if="e.image_url" :src="e.image_url" :alt="e.institucion" class="estudio-img" />
-          <div class="estudio-year">{{ e.anio_obtencion }}</div>
+        <router-link v-for="e in sortedEstudios" :key="e.item.id" :to="`/estudios/${e.item.id}`" class="card estudio-item">
+          <img v-if="e.tData.image_url" :src="e.tData.image_url" :alt="e.tData.institucion" class="estudio-img" />
+          <div class="estudio-year">{{ e.tData.anio_obtencion }}</div>
           <div class="estudio-info">
-            <h3>{{ e.titulo }}</h3>
-            <span class="estudio-institucion">{{ e.institucion }}</span>
+            <h3>{{ e.tData.titulo }}</h3>
+            <span class="estudio-institucion">{{ e.tData.institucion }}</span>
           </div>
         </router-link>
       </div>
@@ -21,12 +21,20 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useEstudiosStore } from '../../stores/estudios'
+import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
 
 const estudiosStore = useEstudiosStore()
+const { locale } = useI18n()
+const { getTranslated } = useTranslatedData()
 
-const sortedEstudios = computed(() =>
-  [...estudiosStore.items].sort((a, b) => b.anio_obtencion - a.anio_obtencion)
-)
+const sortedEstudios = computed(() => {
+  const items = [...estudiosStore.items].sort((a, b) => b.anio_obtencion - a.anio_obtencion)
+  return items.map(item => ({
+    item,
+    tData: getTranslated(item, locale.value)
+  }))
+})
 
 onMounted(() => {
   estudiosStore.fetchAll()

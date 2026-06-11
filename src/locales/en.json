@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "chat": "AI Chat",
+    "portafolio": "Portfolio",
+    "contact": "Contact Me",
+    "admin": "Admin"
+  },
+  "language": {
+    "es": "Español",
+    "en": "English"
+  },
+  "home": {
+    "title": "Professional AI Assistant",
+    "view_portfolio": "View Visual Portfolio →",
+    "online": "🟢 Online · Powered by Gemini",
+    "placeholder": "Ask a question about my experience, projects, or tech stack...",
+    "disclaimer_1": "AI Assistant trained on Jaime Campillay's CV. You can review the ",
+    "disclaimer_link": "Visual Portfolio",
+    "disclaimer_2": " anytime."
+  },
+  "portfolio": {
+    "proyectos": "Projects",
+    "experiencia": "Work Experience",
+    "estudios": "Studies & Certifications",
+    "frases": "Quotes"
+  },
+  "contact": {
+    "enviar": "Send",
+    "phone": "Phone",
+    "linkedin_profile": "LinkedIn Profile",
+    "github_profile": "GitHub Profile"
+  }
+}

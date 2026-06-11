@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <section class="section">
-      <h2 class="section-title">Contáctame</h2>
+      <h2 class="section-title">{{ $t('nav.contact') }}</h2>
       <div v-if="perfilStore.loading" class="loading"><div class="spinner"></div></div>
       <div v-else-if="!perfil" class="empty-state">Información de contacto no disponible.</div>
       <div v-else class="contact-card card">
@@ -25,7 +25,7 @@
           <div class="contact-item" v-if="perfil.telefono">
             <span class="icon">📱</span>
             <div class="contact-text">
-              <span class="label">Teléfono</span>
+              <span class="label">{{ $t('contact.phone') }}</span>
               <a :href="`tel:${perfil.telefono.replace(/\s+/g, '')}`">{{ perfil.telefono }}</a>
             </div>
           </div>
@@ -34,7 +34,7 @@
             <span class="icon">💼</span>
             <div class="contact-text">
               <span class="label">LinkedIn</span>
-              <a :href="perfil.linkedin" target="_blank" rel="noopener noreferrer">Perfil en LinkedIn</a>
+              <a :href="perfil.linkedin" target="_blank" rel="noopener noreferrer">{{ $t('contact.linkedin_profile') }}</a>
             </div>
           </div>
           
@@ -42,7 +42,7 @@
             <span class="icon">💻</span>
             <div class="contact-text">
               <span class="label">GitHub</span>
-              <a :href="perfil.github" target="_blank" rel="noopener noreferrer">Perfil en GitHub</a>
+              <a :href="perfil.github" target="_blank" rel="noopener noreferrer">{{ $t('contact.github_profile') }}</a>
             </div>
           </div>
         </div>

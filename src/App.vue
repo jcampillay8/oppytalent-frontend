@@ -12,15 +12,18 @@
         </button>
 
         <nav class="nav" :class="{ 'nav-open': isMenuOpen }">
-          <router-link to="/" class="nav-link" @click="closeMenu">Chat IA</router-link>
-          <router-link to="/portafolio" class="nav-link" @click="closeMenu">Portafolio</router-link>
-          <router-link to="/contactame" class="nav-link" @click="closeMenu">Contáctame</router-link>
+          <router-link to="/" class="nav-link" @click="closeMenu">{{ $t('nav.chat') }}</router-link>
+          <router-link to="/portafolio" class="nav-link" @click="closeMenu">{{ $t('nav.portafolio') }}</router-link>
+          <router-link to="/contactame" class="nav-link" @click="closeMenu">{{ $t('nav.contact') }}</router-link>
           <router-link to="/sobre-mi" class="nav-link nav-link-avatar" @click="closeMenu">
             <img v-if="avatarUrl" :src="avatarUrl" alt="" class="nav-avatar" />
             <span v-else class="nav-avatar-placeholder">JA</span>
             Sobre Mí
           </router-link>
-          <router-link to="/admin" class="nav-link nav-link-admin" @click="closeMenu">Admin</router-link>
+          <router-link to="/admin" class="nav-link nav-link-admin" @click="closeMenu">{{ $t('nav.admin') }}</router-link>
+          <button class="lang-btn" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
+            {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
+          </button>
         </nav>
       </div>
     </header>
@@ -39,8 +42,11 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { usePerfilStore } from './stores/perfil'
 import ChatWidget from './components/public/ChatWidget.vue'
+
+const { locale } = useI18n()
 
 const route = useRoute()
 const perfilStore = usePerfilStore()
@@ -50,6 +56,13 @@ const isMenuOpen = ref(false)
 function closeMenu() {
   isMenuOpen.value = false
 }
+
+function toggleLanguage() {
+  locale.value = locale.value === 'es' ? 'en' : 'es'
+  localStorage.setItem('user-language', locale.value)
+}
+
+const currentLang = computed(() => locale.value)
 
 onMounted(() => {
   perfilStore.fetchAll()
@@ -149,6 +162,24 @@ onMounted(() => {
   padding: 0.375rem 0.75rem;
   border: 1px solid var(--color-gray-600);
   border-radius: var(--radius-sm);
+}
+
+.lang-btn {
+  background: none;
+  border: 1px solid var(--color-gray-600);
+  border-radius: var(--radius-sm);
+  color: var(--color-gray-300);
+  cursor: pointer;
+  padding: 0.375rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.lang-btn:hover {
+  border-color: #fff;
+  color: #fff;
 }
 
 .main {

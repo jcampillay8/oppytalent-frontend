@@ -18,7 +18,7 @@
       </div>
 
       <div class="sidebar-help">
-        <h3>Frase Célebre</h3>
+        <h3>{{ $t('portfolio.frases') }}</h3>
         <blockquote class="sidebar-quote" v-if="randomFrase">
           "{{ randomFrase.texto }}"
           <footer>{{ randomFrase.autor }}</footer>
@@ -34,11 +34,11 @@
     <main class="chat-main">
       <div class="chat-header">
         <div class="chat-header-info">
-          <h2>Asistente Profesional de IA</h2>
-          <p class="online-indicator">🟢 Conectado &middot; Basado en Gemini</p>
+          <h2>{{ $t('home.title') }}</h2>
+          <p class="online-indicator">{{ $t('home.online') }}</p>
         </div>
         <router-link to="/portafolio" class="btn btn-outline btn-sm header-portfolio-btn">
-          Ver Portafolio Visual &rarr;
+          {{ $t('home.view_portfolio') }}
         </router-link>
       </div>
 
@@ -77,16 +77,16 @@
             v-model="input"
             type="text"
             class="chat-input"
-            placeholder="Escribe una pregunta sobre mi experiencia, proyectos o tecnologías..."
+            :placeholder="$t('home.placeholder')"
             :disabled="loading"
           />
           <button type="submit" class="chat-send-btn" :disabled="loading || !input.trim()">
-            <span>Enviar</span>
+            <span>{{ $t('contact.enviar') }}</span>
             <span class="send-icon">&rarr;</span>
           </button>
         </form>
         <p class="chat-footer-disclaimer">
-          Asistente IA entrenado con el CV de Jaime Campillay. Puedes revisar el <router-link to="/portafolio">Portafolio Visual</router-link> en cualquier momento.
+          {{ $t('home.disclaimer_1') }}<router-link to="/portafolio">{{ $t('home.disclaimer_link') }}</router-link>{{ $t('home.disclaimer_2') }}
         </p>
       </footer>
     </main>

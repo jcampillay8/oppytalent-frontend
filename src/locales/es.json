@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "chat": "Chat IA",
+    "portafolio": "Portafolio",
+    "contact": "Contáctame",
+    "admin": "Admin"
+  },
+  "language": {
+    "es": "Español",
+    "en": "English"
+  },
+  "home": {
+    "title": "Asistente Profesional de IA",
+    "view_portfolio": "Ver Portafolio Visual →",
+    "online": "🟢 Conectado · Basado en Gemini",
+    "placeholder": "Escribe una pregunta sobre mi experiencia, proyectos o tecnologías...",
+    "disclaimer_1": "Asistente IA entrenado con el CV de Jaime Campillay. Puedes revisar el ",
+    "disclaimer_link": "Portafolio Visual",
+    "disclaimer_2": " en cualquier momento."
+  },
+  "portfolio": {
+    "proyectos": "Proyectos",
+    "experiencia": "Experiencia Laboral",
+    "estudios": "Estudios & Certificaciones",
+    "frases": "Frases Célebres"
+  },
+  "contact": {
+    "enviar": "Enviar",
+    "phone": "Teléfono",
+    "linkedin_profile": "Perfil en LinkedIn",
+    "github_profile": "Perfil en GitHub"
+  }
+}

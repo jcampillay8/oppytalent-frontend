@@ -26,7 +26,7 @@
 
     <section class="section" :class="{ collapsed: !expanded.proyectos }">
       <h2 class="section-title" @click="toggle('proyectos')">
-        <span>Proyectos <span class="count">{{ filteredProyectos.length }}</span></span>
+        <span>{{ $t('portfolio.proyectos') }} <span class="count">{{ filteredProyectos.length }}</span></span>
         <span class="chevron">{{ expanded.proyectos ? '▾' : '▸' }}</span>
       </h2>
       <div v-if="expanded.proyectos">
@@ -42,7 +42,7 @@
 
     <section class="section" :class="{ collapsed: !expanded.experiencia }">
       <h2 class="section-title" @click="toggle('experiencia')">
-        <span>Experiencia <span class="count">{{ filteredExperiencias.length }}</span></span>
+        <span>{{ $t('portfolio.experiencia') }} <span class="count">{{ filteredExperiencias.length }}</span></span>
         <span class="chevron">{{ expanded.experiencia ? '▾' : '▸' }}</span>
       </h2>
       <div v-if="expanded.experiencia">
@@ -58,7 +58,7 @@
 
     <section class="section" :class="{ collapsed: !expanded.estudios }">
       <h2 class="section-title" @click="toggle('estudios')">
-        <span>Estudios & Certificaciones <span class="count">{{ estudiosStore.items.length }}</span></span>
+        <span>{{ $t('portfolio.estudios') }} <span class="count">{{ estudiosStore.items.length }}</span></span>
         <span class="chevron">{{ expanded.estudios ? '▾' : '▸' }}</span>
       </h2>
       <div v-if="expanded.estudios">

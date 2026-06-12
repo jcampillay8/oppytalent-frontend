@@ -3,9 +3,12 @@ const BASE_URL = '/api/v1'
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token')
   const headers = {
-    'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
+  }
+
+  if (options.body && !(options.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
   }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -164,6 +167,14 @@ export const api = {
     return request('/ai/translate', {
       method: 'POST',
       body: JSON.stringify({ content, target_language: targetLanguage })
+    })
+  },
+
+  // CV Extraction
+  extractCV(formData) {
+    return request('/ai/cv-extract', {
+      method: 'POST',
+      body: formData
     })
   }
 }

@@ -83,6 +83,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/admin/cv-wizard',
+    name: 'CVWizard',
+    component: () => import('../views/admin/CVWizard.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/admin/proyectos',
     name: 'ProyectosAdmin',
     component: () => import('../views/admin/ProyectosAdmin.vue'),

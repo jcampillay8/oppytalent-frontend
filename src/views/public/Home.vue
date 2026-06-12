@@ -13,6 +13,11 @@
           <div class="profile-badges">
             <span class="badge">OppyTalent</span>
           </div>
+          <div v-if="isOwner" style="margin-top: 1rem;">
+            <router-link to="/admin" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: white;">
+              ⚙️ Administrar Perfil
+            </router-link>
+          </div>
         </div>
 
       <div class="sidebar-help">
@@ -35,9 +40,14 @@
           <h2>{{ $t('home.title') }}</h2>
           <p class="online-indicator">{{ $t('home.online') }}</p>
         </div>
-        <router-link to="/portafolio" class="btn btn-outline btn-sm header-portfolio-btn">
-          {{ $t('home.view_portfolio') }}
-        </router-link>
+        <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+          <router-link v-if="isOwner" to="/admin" class="btn btn-primary btn-sm" style="background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #fff;">
+            Panel Admin
+          </router-link>
+          <router-link to="/portafolio" class="btn btn-outline btn-sm header-portfolio-btn">
+            {{ $t('home.view_portfolio') }}
+          </router-link>
+        </div>
       </div>
 
       <!-- Cuerpo del Chat -->
@@ -112,7 +122,14 @@ const frasesStore = useFrasesStore()
 const { locale } = useI18n()
 const { getTranslated } = useTranslatedData()
 
+const currentUser = ref(null)
 const portfolioUser = ref(null)
+
+const isOwner = computed(() => {
+  console.log("Checking isOwner:", currentUser.value?.username, portfolioUser.value?.username)
+  if (!currentUser.value || !portfolioUser.value) return false
+  return currentUser.value.username?.toLowerCase() === portfolioUser.value.username?.toLowerCase()
+})
 
 const randomFrase = ref(null)
 const tFrase = computed(() => randomFrase.value ? getTranslated(randomFrase.value, locale.value) : null)
@@ -184,10 +201,18 @@ watch(messages, async () => {
 }, { deep: true })
 
 onMounted(async () => {
+  try {
+    currentUser.value = await api.me()
+    console.log("currentUser fetched:", currentUser.value)
+  } catch (error) {
+    console.warn("Failed to fetch currentUser:", error)
+  }
+
   const username = route.params.username
   if (username) {
     try {
       portfolioUser.value = await api.getUserByUsername(username)
+      console.log("portfolioUser fetched:", portfolioUser.value)
       localStorage.setItem('currentPortfolioUser', username)
     } catch (error) {
       console.error('Error fetching user for portfolio:', error)

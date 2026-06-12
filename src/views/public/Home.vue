@@ -6,9 +6,9 @@
         <div class="profile-card">
           <div class="avatar-container">
             <img v-if="portfolioUser?.userImage" :src="portfolioUser.userImage" :alt="portfolioUser.firstName" class="profile-avatar" />
-            <div v-else class="avatar-placeholder">{{ portfolioUser ? portfolioUser.firstName.charAt(0) + portfolioUser.lastName.charAt(0) : '...' }}</div>
+            <div v-else class="avatar-placeholder">{{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username || 'U').charAt(0) + (portfolioUser.lastName || '').charAt(0) : '...' }}</div>
           </div>
-          <h2 class="profile-name">{{ portfolioUser ? `${portfolioUser.firstName} ${portfolioUser.lastName}` : 'Cargando...' }}</h2>
+          <h2 class="profile-name">{{ portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...' }}</h2>
           <p class="profile-title">{{ portfolioUser?.occupation || 'Talento OppyTalent' }}</p>
           <div class="profile-badges">
             <span class="badge">OppyTalent</span>

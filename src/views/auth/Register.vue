@@ -39,7 +39,7 @@
         </div>
 
         <div class="form-checkbox">
-          <input type="checkbox" id="terms" v-model="form.has_accepted_terms" required />
+          <input type="checkbox" id="terms" v-model="form.terms_accepted" required />
           <label for="terms">Acepto los términos y condiciones</label>
         </div>
 
@@ -83,7 +83,7 @@ const form = ref({
   username: '',
   email: '',
   password: '',
-  has_accepted_terms: false
+  terms_accepted: false
 })
 
 function handleGoogleAuth() {
@@ -99,7 +99,7 @@ async function handleRegister() {
     formData.append('username', form.value.username)
     formData.append('email', form.value.email)
     formData.append('password', form.value.password)
-    formData.append('has_accepted_terms', form.value.has_accepted_terms)
+    formData.append('terms_accepted', form.value.terms_accepted)
 
     const response = await fetch('/api/v1/auth/register', {
       method: 'POST',

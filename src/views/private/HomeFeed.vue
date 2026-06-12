@@ -27,10 +27,10 @@
               >
                 <div class="search-avatar">
                   <img v-if="user.userImage" :src="user.userImage" alt="Avatar" />
-                  <span v-else>{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</span>
+                  <span v-else>{{ (user.firstName || user.username || 'U').charAt(0) }}{{ (user.lastName || '').charAt(0) }}</span>
                 </div>
                 <div class="search-info">
-                  <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                  <strong>{{ user.firstName || user.username }} {{ user.lastName || '' }}</strong>
                   <span>{{ user.occupation || 'Talento OppyTalent' }}</span>
                 </div>
               </router-link>
@@ -66,9 +66,9 @@
           >
             <div class="profile-avatar">
               <img v-if="currentUser.userImage" :src="currentUser.userImage" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
-              <span v-else>{{ currentUser.firstName.charAt(0) + currentUser.lastName.charAt(0) }}</span>
+              <span v-else>{{ (currentUser.firstName || currentUser.username || 'U').charAt(0) }}{{ (currentUser.lastName || '').charAt(0) }}</span>
             </div>
-            <h3 class="profile-name-hover">{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
+            <h3 class="profile-name-hover">{{ currentUser.firstName || currentUser.username }} {{ currentUser.lastName || '' }}</h3>
             <p>{{ currentUser.occupation || 'Talento en crecimiento' }}</p>
           </router-link>
           <div v-else class="profile-info">

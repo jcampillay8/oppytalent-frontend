@@ -26,10 +26,10 @@
               >
                 <div class="search-avatar">
                   <img v-if="user.userImage" :src="user.userImage" alt="Avatar" />
-                  <span v-else>{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</span>
+                  <span v-else>{{ (user.firstName || user.username || 'U').charAt(0) }}{{ (user.lastName || '').charAt(0) }}</span>
                 </div>
                 <div class="search-info">
-                  <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                  <strong>{{ user.firstName || user.username }} {{ user.lastName || '' }}</strong>
                   <span>{{ user.occupation || 'Talento OppyTalent' }}</span>
                 </div>
               </router-link>

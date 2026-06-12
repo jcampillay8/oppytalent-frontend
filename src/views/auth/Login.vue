@@ -102,7 +102,7 @@ async function handleLogin() {
     if (!response.ok) throw new Error('Credenciales inválidas')
     
     const data = await response.json()
-    localStorage.setItem('token', data.access_token)
+    localStorage.setItem('token', data.accessToken || data.access_token)
     
     // Redirect to Home feed
     router.push('/home')

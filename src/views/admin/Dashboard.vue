@@ -91,7 +91,7 @@
 
 <script setup>
 import { onMounted, computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { api } from '../../services/api'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import { useAuthStore } from '../../stores/auth'
@@ -103,6 +103,7 @@ import { usePerfilStore } from '../../stores/perfil'
 import { useChatLogsStore } from '../../stores/chatLogs'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const cvWizardStore = useCVWizardStore()
 const proyectosStore = useProyectosStore()
@@ -126,7 +127,7 @@ function formatDateShort(dateString) {
 
 function handleLogout() {
   authStore.logout()
-  router.push('/admin/login')
+  router.push('/login')
 }
 
 // Lógica de CV
@@ -166,7 +167,7 @@ async function handleCVUpload() {
     closeCVModal()
     
     // Redirigir al Asistente de CV
-    router.push('/admin/cv-wizard')
+    router.push(`/${route.params.username}/cv-wizard`)
     
   } catch (error) {
     alert("Ocurrió un error al subir el CV: " + error.message)

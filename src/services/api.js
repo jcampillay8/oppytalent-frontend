@@ -51,7 +51,9 @@ export const api = {
 
   // Proyectos
   getProyectos(params = '') {
-    return request(`/proyectos/${params}`)
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/proyectos/${query}`)
   },
   getProyecto(id) {
     return request(`/proyectos/${id}`)
@@ -68,7 +70,9 @@ export const api = {
 
   // Experiencias
   getExperiencias(params = '') {
-    return request(`/experiencias/${params}`)
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/experiencias/${query}`)
   },
   getExperiencia(id) {
     return request(`/experiencias/${id}`)
@@ -84,8 +88,10 @@ export const api = {
   },
 
   // Estudios
-  getEstudios() {
-    return request('/estudios/')
+  getEstudios(params = '') {
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/estudios/${query}`)
   },
   getEstudio(id) {
     return request(`/estudios/${id}`)
@@ -102,7 +108,9 @@ export const api = {
 
   // Perfil
   getPerfil(params = '') {
-    return request(`/perfil/${params}`)
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/perfil/${query}`)
   },
   getPerfilById(id) {
     return request(`/perfil/${id}`)
@@ -138,8 +146,10 @@ export const api = {
   },
 
   // Frases
-  getFrases() {
-    return request('/frases/')
+  getFrases(params = '') {
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/frases/${query}`)
   },
   getFrase(id) {
     return request(`/frases/${id}`)
@@ -155,8 +165,10 @@ export const api = {
   },
 
   // Seccion Configs
-  getSeccionConfigs() {
-    return request('/seccion_config/')
+  getSeccionConfigs(params = '') {
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/secciones/${query}`)
   },
   updateSeccionConfig(seccion, data) {
     return request(`/seccion_config/${seccion}`, { method: 'PUT', body: JSON.stringify(data) })
@@ -176,5 +188,17 @@ export const api = {
       method: 'POST',
       body: formData
     })
+  },
+
+  // Chat
+  getChatLogs() {
+    return request('/chat/logs')
+  },
+  getChatStats() {
+    return request('/chat/stats')
+  },
+  chat(messages) {
+    const user = localStorage.getItem('currentPortfolioUser');
+    return request('/chat/', { method: 'POST', body: JSON.stringify({ username: user, messages }) })
   }
 }

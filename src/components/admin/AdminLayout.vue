@@ -3,22 +3,27 @@
     <aside class="admin-sidebar">
       <h3 class="sidebar-title">Admin</h3>
       <nav class="sidebar-nav">
-        <router-link to="/admin" class="sidebar-link" exact>Dashboard</router-link>
-        <router-link to="/admin/proyectos" class="sidebar-link">Proyectos</router-link>
-        <router-link to="/admin/experiencias" class="sidebar-link">Experiencias</router-link>
-        <router-link to="/admin/estudios" class="sidebar-link">Estudios</router-link>
-        <router-link to="/admin/perfil" class="sidebar-link">Sobre Mí</router-link>
-        <router-link to="/admin/secciones" class="sidebar-link">Secciones</router-link>
-        <router-link to="/admin/frases" class="sidebar-link">Frases</router-link>
-        <router-link to="/admin/chat-logs" class="sidebar-link">Chat Logs</router-link>
+        <router-link :to="`/${route.params.username}/dashboard`" class="sidebar-link" exact>Dashboard</router-link>
+        <router-link :to="`/${route.params.username}/proyectos`" class="sidebar-link">Proyectos</router-link>
+        <router-link :to="`/${route.params.username}/experiencias`" class="sidebar-link">Experiencias</router-link>
+        <router-link :to="`/${route.params.username}/estudios`" class="sidebar-link">Estudios</router-link>
+        <router-link :to="`/${route.params.username}/perfil`" class="sidebar-link">Sobre Mí</router-link>
+        <router-link :to="`/${route.params.username}/secciones`" class="sidebar-link">Secciones</router-link>
+        <router-link :to="`/${route.params.username}/frases`" class="sidebar-link">Frases</router-link>
+        <router-link :to="`/${route.params.username}/chat-logs`" class="sidebar-link">Chat Logs</router-link>
       </nav>
-      <router-link to="/" class="sidebar-back">&larr; Sitio Público</router-link>
+      <router-link :to="`/${route.params.username}`" class="sidebar-back">&larr; Sitio Público</router-link>
     </aside>
     <main class="admin-content">
       <slot />
     </main>
   </div>
 </template>
+
+<script setup>
+import { useRoute } from 'vue-router'
+const route = useRoute()
+</script>
 
 <style scoped>
 .admin-layout {

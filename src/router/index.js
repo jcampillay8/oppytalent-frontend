@@ -70,62 +70,57 @@ const routes = [
     name: 'Contactame',
     component: () => import('../views/public/Contactame.vue'),
   },
+
   {
-    path: '/admin/login',
-    name: 'Login',
-    component: () => import('../views/admin/Login.vue'),
-    meta: { guestOnly: true }
-  },
-  {
-    path: '/admin',
+    path: '/:username/dashboard',
     name: 'Dashboard',
     component: () => import('../views/admin/Dashboard.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/cv-wizard',
+    path: '/:username/cv-wizard',
     name: 'CVWizard',
     component: () => import('../views/admin/CVWizard.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/proyectos',
+    path: '/:username/proyectos',
     name: 'ProyectosAdmin',
     component: () => import('../views/admin/ProyectosAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/experiencias',
+    path: '/:username/experiencias',
     name: 'ExperienciasAdmin',
     component: () => import('../views/admin/ExperienciasAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/estudios',
+    path: '/:username/estudios',
     name: 'EstudiosAdmin',
     component: () => import('../views/admin/EstudiosAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/perfil',
+    path: '/:username/perfil',
     name: 'PerfilAdmin',
     component: () => import('../views/admin/PerfilAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/secciones',
+    path: '/:username/secciones',
     name: 'SeccionesAdmin',
     component: () => import('../views/admin/SeccionesAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/frases',
+    path: '/:username/frases',
     name: 'FrasesAdmin',
     component: () => import('../views/admin/FrasesAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/chat-logs',
+    path: '/:username/chat-logs',
     name: 'ChatLogsAdmin',
     component: () => import('../views/admin/ChatLogsAdmin.vue'),
     meta: { requiresAuth: true },
@@ -135,6 +130,18 @@ const routes = [
     name: 'UserPortfolio',
     component: () => import('../views/public/Home.vue'),
   },
+  {
+    path: '/admin/:pathMatch(.*)*',
+    redirect: to => {
+      const user = localStorage.getItem('currentPortfolioUser');
+      if (user) {
+        // Redirigir /admin/algo a /user/algo
+        const path = to.path.replace('/admin', `/${user}`);
+        return path === `/${user}` ? `/${user}/dashboard` : path;
+      }
+      return '/login';
+    }
+  }
 ]
 
 const router = createRouter({
@@ -145,21 +152,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   
-  // Si requiere autenticación y NO tiene token
   if (to.meta.requiresAuth && !token) {
-    if (to.path.startsWith('/admin')) {
-      next('/admin/login')
-    } else {
-      next('/login')
-    }
-  } 
-  // Si la ruta es solo para invitados y SÍ tiene token
+    next('/login')
+  }
   else if (to.meta.guestOnly && token) {
-    if (to.path.startsWith('/admin')) {
-      next('/admin')
-    } else {
-      next('/home')
-    }
+    const user = localStorage.getItem('currentPortfolioUser');
+    next(user ? `/${user}/dashboard` : '/home')
   } 
   // En cualquier otro caso, continuar
   else {

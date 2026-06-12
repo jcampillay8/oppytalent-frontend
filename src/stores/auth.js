@@ -14,6 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = data.access_token
       localStorage.setItem('token', data.access_token)
       user.value = await api.me()
+      localStorage.setItem('currentPortfolioUser', user.value.username)
     } finally {
       loading.value = false
     }
@@ -23,6 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return
     try {
       user.value = await api.me()
+      localStorage.setItem('currentPortfolioUser', user.value.username)
     } catch {
       logout()
     }

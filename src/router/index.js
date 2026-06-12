@@ -5,6 +5,7 @@ const routes = [
     path: '/',
     name: 'Landing',
     component: () => import('../views/public/Landing.vue'),
+    meta: { guestOnly: true }
   },
   {
     path: '/assistant',
@@ -15,11 +16,13 @@ const routes = [
     path: '/login',
     name: 'LoginUser',
     component: () => import('../views/auth/Login.vue'),
+    meta: { guestOnly: true }
   },
   {
     path: '/register',
     name: 'RegisterUser',
     component: () => import('../views/auth/Register.vue'),
+    meta: { guestOnly: true }
   },
   {
     path: '/auth/callback',
@@ -71,6 +74,7 @@ const routes = [
     path: '/admin/login',
     name: 'Login',
     component: () => import('../views/admin/Login.vue'),
+    meta: { guestOnly: true }
   },
   {
     path: '/admin',
@@ -120,6 +124,11 @@ const routes = [
     component: () => import('../views/admin/ChatLogsAdmin.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/:username',
+    name: 'UserPortfolio',
+    component: () => import('../views/public/Home.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -129,13 +138,25 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
+  
+  // Si requiere autenticación y NO tiene token
   if (to.meta.requiresAuth && !token) {
     if (to.path.startsWith('/admin')) {
       next('/admin/login')
     } else {
       next('/login')
     }
-  } else {
+  } 
+  // Si la ruta es solo para invitados y SÍ tiene token
+  else if (to.meta.guestOnly && token) {
+    if (to.path.startsWith('/admin')) {
+      next('/admin')
+    } else {
+      next('/home')
+    }
+  } 
+  // En cualquier otro caso, continuar
+  else {
     next()
   }
 })

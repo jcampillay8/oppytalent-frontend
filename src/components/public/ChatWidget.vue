@@ -16,7 +16,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 function navigateToChat() {
-  router.push('/')
+  const saved = localStorage.getItem('currentPortfolioUser')
+  router.push(saved ? `/${saved}` : '/')
 }
 </script>
 

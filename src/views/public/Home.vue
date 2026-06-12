@@ -1,21 +1,19 @@
 <template>
-  <div class="chat-container">
-    <!-- Sidebar / Perfil Breve en Escritorio -->
-    <aside class="chat-sidebar">
-      <div class="profile-card">
-        <div class="avatar-container">
-          <img v-if="avatarUrl" :src="avatarUrl" alt="Jaime Campillay" class="profile-avatar" />
-          <div v-else class="avatar-placeholder">JC</div>
+  <div class="portfolio-theme-wrapper">
+    <div class="chat-container">
+      <!-- Sidebar / Perfil Breve en Escritorio -->
+      <aside class="chat-sidebar">
+        <div class="profile-card">
+          <div class="avatar-container">
+            <img v-if="portfolioUser?.userImage" :src="portfolioUser.userImage" :alt="portfolioUser.firstName" class="profile-avatar" />
+            <div v-else class="avatar-placeholder">{{ portfolioUser ? portfolioUser.firstName.charAt(0) + portfolioUser.lastName.charAt(0) : '...' }}</div>
+          </div>
+          <h2 class="profile-name">{{ portfolioUser ? `${portfolioUser.firstName} ${portfolioUser.lastName}` : 'Cargando...' }}</h2>
+          <p class="profile-title">{{ portfolioUser?.occupation || 'Talento OppyTalent' }}</p>
+          <div class="profile-badges">
+            <span class="badge">OppyTalent</span>
+          </div>
         </div>
-        <h2 class="profile-name">Jaime Campillay</h2>
-        <p class="profile-title">Ingeniero Civil Industrial &bull; Senior Software & Data Engineer</p>
-        <div class="profile-badges">
-          <span class="badge">FastAPI</span>
-          <span class="badge">Python</span>
-          <span class="badge">PostgreSQL</span>
-          <span class="badge">Cloud Architect</span>
-        </div>
-      </div>
 
       <div class="sidebar-help">
         <h3>{{ $t('portfolio.frases') }}</h3>
@@ -25,7 +23,7 @@
         </blockquote>
         <blockquote class="sidebar-quote" v-else>
           "El verdadero liderazgo en tecnología no se trata solo de dominar herramientas, sino de construir sistemas que empoderen a las personas y transformen problemas complejos en soluciones simples, escalables y sostenibles."
-          <footer>Jaime Campillay</footer>
+          <footer>{{ portfolioUser ? `${portfolioUser.firstName} ${portfolioUser.lastName}` : 'Jaime Campillay' }}</footer>
         </blockquote>
       </div>
     </aside>
@@ -90,12 +88,13 @@
         </p>
       </footer>
     </main>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, nextTick, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { api } from '../../services/api'
 import { marked } from 'marked'
 import { usePerfilStore } from '../../stores/perfil'
@@ -106,16 +105,17 @@ import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 
 const router = useRouter()
+const route = useRoute()
 const perfilStore = usePerfilStore()
 const chatStore = useChatStore()
 const frasesStore = useFrasesStore()
 const { locale } = useI18n()
 const { getTranslated } = useTranslatedData()
 
+const portfolioUser = ref(null)
+
 const randomFrase = ref(null)
 const tFrase = computed(() => randomFrase.value ? getTranslated(randomFrase.value, locale.value) : null)
-
-const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 
 const input = ref('')
 const loading = ref(false)
@@ -184,6 +184,30 @@ watch(messages, async () => {
 }, { deep: true })
 
 onMounted(async () => {
+  const username = route.params.username
+  if (username) {
+    try {
+      portfolioUser.value = await api.getUserByUsername(username)
+      localStorage.setItem('currentPortfolioUser', username)
+    } catch (error) {
+      console.error('Error fetching user for portfolio:', error)
+      router.push('/home') // Redirigir si no existe
+    }
+  }
+
+  watch(() => route.params.username, async (newUsername) => {
+    if (newUsername) {
+      try {
+        portfolioUser.value = await api.getUserByUsername(newUsername)
+        localStorage.setItem('currentPortfolioUser', newUsername)
+        messages.value = [] // Reset chat messages when changing user
+      } catch (error) {
+        console.error('Error fetching user for portfolio:', error)
+        router.push('/home')
+      }
+    }
+  })
+
   perfilStore.fetchAll()
   await frasesStore.fetchAll()
   
@@ -201,31 +225,40 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.portfolio-theme-wrapper {
+  min-height: calc(100vh - 4.5rem);
+  background-color: #09090b;
+  padding: 1rem 0;
+  color: #fafafa;
+}
+
 .chat-container {
   display: flex;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 100px);
   max-width: 1300px;
   margin: 0 auto;
-  background: var(--color-gray-50, #f9fafb);
+  background: transparent;
   border-radius: var(--radius-lg, 16px);
-  border: 1px solid var(--color-gray-200, #e5e7eb);
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
 }
 
 /* --- SIDEBAR --- */
 .chat-sidebar {
   width: 320px;
-  background: var(--color-primary-dark, #0f172a);
+  background: rgba(24, 24, 27, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   color: #fff;
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  backdrop-filter: blur(12px);
 }
 
 .chat-sidebar::-webkit-scrollbar {
@@ -340,32 +373,45 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(16px);
 }
 
 .chat-header {
   padding: 1rem 2rem;
-  border-bottom: 1px solid var(--color-gray-200, #e5e7eb);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: transparent;
 }
 
 .chat-header h2 {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--color-gray-900, #0f172a);
+  color: #fafafa;
   margin: 0 0 0.125rem 0;
 }
 
 .online-indicator {
   font-size: 0.75rem;
-  color: var(--color-gray-500, #64748b);
+  color: #3b82f6;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 0.375rem;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .header-portfolio-btn {
@@ -420,25 +466,26 @@ onMounted(async () => {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--color-gray-100, #f1f5f9);
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.125rem;
   flex-shrink: 0;
-  border: 1px solid var(--color-gray-200, #e2e8f0);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 5px rgba(0,0,0,0.03);
 }
 
 .chat-message-wrapper.user .message-avatar {
-  background: var(--color-accent, #2563eb);
+  background: #3b82f6;
   color: #fff;
   border-color: transparent;
 }
 
 .chat-message {
-  background: var(--color-gray-100, #f1f5f9);
-  color: var(--color-gray-800, #1e293b);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e4e4e7;
   padding: 0.875rem 1.25rem;
   border-radius: 18px;
   border-top-left-radius: 4px;
@@ -447,8 +494,9 @@ onMounted(async () => {
 }
 
 .chat-message-wrapper.user .chat-message {
-  background: var(--color-primary, #1e3a8a);
+  background: #3b82f6;
   color: #fff;
+  border: none;
   border-radius: 18px;
   border-top-right-radius: 4px;
 }
@@ -560,8 +608,8 @@ onMounted(async () => {
 
 .chat-footer-area {
   padding: 1.5rem 2rem 1.25rem;
-  border-top: 1px solid var(--color-gray-200, #e5e7eb);
-  background: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
 
 .chat-form {
@@ -574,24 +622,25 @@ onMounted(async () => {
 .chat-input {
   flex: 1;
   padding: 0.875rem 1.25rem;
-  border: 1px solid var(--color-gray-300, #cbd5e1);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
   border-radius: var(--radius-md, 12px);
   outline: none;
   font-family: inherit;
   font-size: 0.9375rem;
   transition: all 0.2s ease;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .chat-input:focus {
-  border-color: var(--color-accent, #2563eb);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), inset 0 2px 4px rgba(0,0,0,0.02);
+  border-color: #3b82f6;
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .chat-send-btn {
   padding: 0 1.5rem;
   border: none;
-  background: var(--color-accent, #2563eb);
+  background: #3b82f6;
   color: #fff;
   border-radius: var(--radius-md, 12px);
   font-family: inherit;
@@ -602,7 +651,6 @@ onMounted(async () => {
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .chat-send-btn:hover:not(:disabled) {

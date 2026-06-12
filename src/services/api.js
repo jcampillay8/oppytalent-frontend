@@ -35,7 +35,15 @@ export const api = {
     })
   },
   me() {
-    return request('/auth/me')
+    return request('/user/profile')
+  },
+  
+  // Users
+  searchUsers(query) {
+    return request(`/user/search?q=${encodeURIComponent(query)}`)
+  },
+  getUserByUsername(username) {
+    return request(`/user/${encodeURIComponent(username)}`)
   },
 
   // Proyectos

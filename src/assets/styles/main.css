@@ -1,27 +1,27 @@
 :root {
   --color-primary: #1a3a5c;
   --color-primary-light: #2c5282;
-  --color-primary-dark: #0f2440;
+  --color-primary-dark: #09090b;
   --color-accent: #3b82f6;
-  --color-gray-50: #f8fafc;
-  --color-gray-100: #f1f5f9;
-  --color-gray-200: #e2e8f0;
-  --color-gray-300: #cbd5e1;
-  --color-gray-400: #94a3b8;
-  --color-gray-500: #64748b;
-  --color-gray-600: #475569;
-  --color-gray-700: #334155;
-  --color-gray-800: #1e293b;
-  --color-gray-900: #0f172a;
+  --color-gray-50: #09090b;   /* Background base oscuro */
+  --color-gray-100: #18181b;  /* Background secondary */
+  --color-gray-200: rgba(255, 255, 255, 0.08); /* Borders */
+  --color-gray-300: #3f3f46;
+  --color-gray-400: #71717a;
+  --color-gray-500: #a1a1aa;  /* Subtitles */
+  --color-gray-600: #d4d4d8;
+  --color-gray-700: #e4e4e7;
+  --color-gray-800: #fafafa;  /* Text */
+  --color-gray-900: #ffffff;  /* Headings */
   --color-success: #10b981;
   --color-danger: #ef4444;
   --color-warning: #f59e0b;
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -96,11 +96,12 @@ a:hover {
 }
 
 .card {
-  background: #fff;
+  background: rgba(24, 24, 27, 0.6);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  backdrop-filter: blur(12px);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .card:hover {
@@ -144,20 +145,21 @@ a:hover {
 .form-textarea {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid var(--color-gray-300);
+  border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-sm);
   font-family: inherit;
   font-size: 0.875rem;
   color: var(--color-gray-800);
-  background: #fff;
-  transition: border-color 0.15s ease;
+  background: rgba(0, 0, 0, 0.2);
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .form-textarea {

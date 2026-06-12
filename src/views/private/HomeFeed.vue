@@ -5,13 +5,51 @@
       <div class="navbar-brand">
         <router-link to="/home" class="logo">Oppy<span>Talent</span></router-link>
       </div>
-      <div class="navbar-menu">
-        <button class="nav-item active"><i class="icon-home"></i> Inicio</button>
-        <button class="nav-item"><i class="icon-network"></i> Red</button>
-        <button class="nav-item"><i class="icon-jobs"></i> Empleos</button>
+      
+      <div class="navbar-search-container">
+        <div class="navbar-search">
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            @input="onSearch" 
+            @focus="showResults = true"
+            @blur="hideResultsDelay"
+            placeholder="Buscar talento..." 
+            class="search-input" 
+          />
+          <div class="search-results-wrapper">
+            <div v-if="showResults && searchResults.length > 0" class="search-results glass-panel">
+              <router-link 
+                v-for="user in searchResults" 
+                :key="user.id" 
+                :to="`/${user.username.split('@')[0]}`" 
+                class="search-result-item"
+              >
+                <div class="search-avatar">
+                  <img v-if="user.userImage" :src="user.userImage" alt="Avatar" />
+                  <span v-else>{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</span>
+                </div>
+                <div class="search-info">
+                  <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                  <span>{{ user.occupation || 'Talento OppyTalent' }}</span>
+                </div>
+              </router-link>
+            </div>
+            <div v-else-if="showResults && searchQuery && searchResults.length === 0 && !isSearching" class="search-results glass-panel empty">
+              <p>No se encontraron talentos con "{{ searchQuery }}"</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="navbar-user">
-        <button @click="logout" class="btn-outline-glass">Cerrar Sesión</button>
+      <div class="navbar-right-container">
+        <div class="navbar-menu">
+          <button class="nav-item active"><i class="icon-home"></i> Inicio</button>
+          <button class="nav-item"><i class="icon-network"></i> Red</button>
+          <button class="nav-item"><i class="icon-jobs"></i> Empleos</button>
+        </div>
+        <div class="navbar-user">
+          <button @click="logout" class="btn-outline-glass">Cerrar Sesión</button>
+        </div>
       </div>
     </nav>
 
@@ -21,9 +59,21 @@
       <aside class="sidebar-left">
         <div class="profile-card glass-panel">
           <div class="profile-cover"></div>
-          <div class="profile-info">
-            <div class="profile-avatar">👤</div>
-            <h3>Usuario OppyTalent</h3>
+          <router-link 
+            v-if="currentUser"
+            :to="`/${currentUser.username.split('@')[0]}`" 
+            class="profile-info profile-link"
+          >
+            <div class="profile-avatar">
+              <img v-if="currentUser.userImage" :src="currentUser.userImage" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+              <span v-else>{{ currentUser.firstName.charAt(0) + currentUser.lastName.charAt(0) }}</span>
+            </div>
+            <h3 class="profile-name-hover">{{ currentUser.firstName }} {{ currentUser.lastName }}</h3>
+            <p>{{ currentUser.occupation || 'Talento en crecimiento' }}</p>
+          </router-link>
+          <div v-else class="profile-info">
+            <div class="profile-avatar"><span>👤</span></div>
+            <h3>Cargando...</h3>
             <p>Talento en crecimiento</p>
           </div>
           <div class="profile-stats">
@@ -96,14 +146,68 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '../../services/api' // Asegúrate de que api.js esté configurado
 
 const router = useRouter()
+
+const searchQuery = ref('')
+const searchResults = ref([])
+const showResults = ref(false)
+const isSearching = ref(false)
+const currentUser = ref(null)
+let searchTimeout = null
+let blurTimeout = null
+
+onMounted(async () => {
+  try {
+    currentUser.value = await api.me()
+  } catch (error) {
+    console.error('Error fetching current user:', error)
+  }
+})
+
+function onSearch() {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  
+  if (!searchQuery.value.trim()) {
+    searchResults.value = []
+    isSearching.value = false
+    return
+  }
+
+  isSearching.value = true
+  // Debounce search
+  searchTimeout = setTimeout(async () => {
+    try {
+      const data = await api.searchUsers(searchQuery.value)
+      searchResults.value = data
+    } catch (error) {
+      console.error('Error buscando usuarios:', error)
+      searchResults.value = []
+    } finally {
+      isSearching.value = false
+    }
+  }, 300)
+}
+
+function hideResultsDelay() {
+  if (blurTimeout) clearTimeout(blurTimeout)
+  blurTimeout = setTimeout(() => {
+    showResults.value = false
+  }, 200)
+}
 
 function logout() {
   localStorage.removeItem('token')
   router.push('/login')
 }
+
+onUnmounted(() => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  if (blurTimeout) clearTimeout(blurTimeout)
+})
 </script>
 
 <style scoped>
@@ -129,9 +233,9 @@ function logout() {
   left: 0;
   right: 0;
   height: 4rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr minmax(auto, 400px) 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0 2rem;
   z-index: 50;
   border-radius: 0;
@@ -149,6 +253,112 @@ function logout() {
 
 .navbar-menu {
   display: flex;
+  gap: 2rem;
+}
+
+.navbar-search-container {
+  width: 100%;
+  position: relative;
+}
+
+.navbar-search {
+  width: 100%;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(0, 0, 0, 0.3);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
+  z-index: 100;
+  padding: 0.5rem 0;
+}
+
+.search-results.empty {
+  padding: 1rem;
+  text-align: center;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #fafafa;
+  transition: background 0.2s;
+}
+
+.search-result-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.search-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: white;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.search-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-info strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.search-info span {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+}
+
+.navbar-right-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: 2rem;
 }
 
@@ -221,6 +431,19 @@ function logout() {
 
 .profile-info h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
 .profile-info p { font-size: 0.8rem; color: #a1a1aa; }
+
+.profile-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.profile-link:hover .profile-name-hover {
+  text-decoration: underline;
+  color: #3b82f6;
+}
 
 .profile-stats {
   padding: 1rem;

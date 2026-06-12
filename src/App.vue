@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <header class="header">
+    <header class="header" v-if="!isAppLayout">
       <div class="container header-inner">
         <router-link to="/" class="logo">
           <span class="logo-icon">&lt;/&gt;</span>
@@ -27,15 +27,15 @@
         </nav>
       </div>
     </header>
-    <main class="main">
+    <main :class="['main', { 'no-padding': isAppLayout }]">
       <router-view />
     </main>
-    <footer class="footer">
+    <footer class="footer" v-if="!isAppLayout">
       <div class="container">
         <p>&copy; {{ new Date().getFullYear() }} Jaime Gabriel Campillay Rojas &mdash; Ingeniero Civil Industrial</p>
       </div>
     </footer>
-    <ChatWidget v-if="route.path !== '/'" />
+    <ChatWidget v-if="!isAppLayout && route.path !== '/assistant'" />
   </div>
 </template>
 
@@ -52,6 +52,9 @@ const route = useRoute()
 const perfilStore = usePerfilStore()
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 const isMenuOpen = ref(false)
+
+const appRoutes = ['Landing', 'LoginUser', 'RegisterUser', 'HomeFeed', 'AuthCallback']
+const isAppLayout = computed(() => appRoutes.includes(route.name))
 
 function closeMenu() {
   isMenuOpen.value = false
@@ -185,6 +188,10 @@ onMounted(() => {
 .main {
   flex: 1;
   padding: 2rem 0;
+}
+
+.main.no-padding {
+  padding: 0;
 }
 
 .footer {

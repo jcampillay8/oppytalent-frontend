@@ -3,8 +3,34 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'Landing',
+    component: () => import('../views/public/Landing.vue'),
+  },
+  {
+    path: '/assistant',
+    name: 'AI Assistant',
     component: () => import('../views/public/Home.vue'),
+  },
+  {
+    path: '/login',
+    name: 'LoginUser',
+    component: () => import('../views/auth/Login.vue'),
+  },
+  {
+    path: '/register',
+    name: 'RegisterUser',
+    component: () => import('../views/auth/Register.vue'),
+  },
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('../views/auth/Callback.vue'),
+  },
+  {
+    path: '/home',
+    name: 'HomeFeed',
+    component: () => import('../views/private/HomeFeed.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/portafolio',
@@ -104,7 +130,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   if (to.meta.requiresAuth && !token) {
-    next('/admin/login')
+    if (to.path.startsWith('/admin')) {
+      next('/admin/login')
+    } else {
+      next('/login')
+    }
   } else {
     next()
   }

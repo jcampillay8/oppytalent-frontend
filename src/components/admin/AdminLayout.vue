@@ -11,6 +11,7 @@
         <router-link :to="`/${route.params.username}/secciones`" class="sidebar-link">Secciones</router-link>
         <router-link :to="`/${route.params.username}/frases`" class="sidebar-link">Frases</router-link>
         <router-link :to="`/${route.params.username}/chat-logs`" class="sidebar-link">Chat Logs</router-link>
+        <router-link :to="`/${route.params.username}/chat-config`" class="sidebar-link">Personaliza tu IA</router-link>
       </nav>
       <router-link :to="`/${route.params.username}`" class="sidebar-back">&larr; Sitio Público</router-link>
     </aside>

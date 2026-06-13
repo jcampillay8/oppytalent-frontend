@@ -48,20 +48,22 @@
       <!-- Cuerpo del Chat -->
       <div class="chat-body" ref="chatBody" @click="handleChatClick">
         <!-- Lista de Mensajes -->
-        <div 
-          v-for="(msg, i) in messages" 
-          :key="i" 
-          class="chat-message-wrapper"
-          :class="msg.role"
-          :data-log-id="msg.log_id"
-        >
-          <div class="message-avatar">
-            <span v-if="msg.role === 'bot'">🤖</span>
-            <span v-else>👤</span>
+        <template v-if="!isPortfolioEmpty">
+          <div 
+            v-for="(msg, i) in messages" 
+            :key="i" 
+            class="chat-message-wrapper"
+            :class="msg.role"
+            :data-log-id="msg.log_id"
+          >
+            <div class="message-avatar">
+              <span v-if="msg.role === 'bot'">🤖</span>
+              <span v-else>👤</span>
+            </div>
+            <div class="chat-message" v-html="renderMarkdown(msg.content)"></div>
           </div>
-          <div class="chat-message" v-html="renderMarkdown(msg.content)"></div>
-        </div>
-        
+        </template>
+
         <!-- Indicador de Carga / Escribiendo -->
         <div v-if="loading" class="chat-message-wrapper bot">
           <div class="message-avatar">🤖</div>
@@ -87,6 +89,12 @@
 
       <!-- Pie del Chat / Entrada -->
       <footer class="chat-footer-area">
+        <div class="suggested-chips" v-if="!isPortfolioEmpty && (portfolioUser?.chat_suggested_q1 || portfolioUser?.chat_suggested_q2 || portfolioUser?.chat_suggested_q3)">
+          <button v-if="portfolioUser?.chat_suggested_q1" @click="input = portfolioUser.chat_suggested_q1; send()" class="chip-btn">{{ portfolioUser.chat_suggested_q1 }}</button>
+          <button v-if="portfolioUser?.chat_suggested_q2" @click="input = portfolioUser.chat_suggested_q2; send()" class="chip-btn">{{ portfolioUser.chat_suggested_q2 }}</button>
+          <button v-if="portfolioUser?.chat_suggested_q3" @click="input = portfolioUser.chat_suggested_q3; send()" class="chip-btn">{{ portfolioUser.chat_suggested_q3 }}</button>
+        </div>
+        
         <form class="chat-form" @submit.prevent="send">
           <input
             v-model="input"
@@ -234,6 +242,12 @@ onMounted(async () => {
       portfolioUser.value = await api.getUserByUsername(username)
       console.log("portfolioUser fetched:", portfolioUser.value)
       localStorage.setItem('currentPortfolioUser', username)
+      
+      const defaultWelcome = `¡Hola! Soy el asistente virtual de ${portfolioUser.value.firstName || username}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
+      const welcomeMsg = portfolioUser.value?.chat_welcome_message || defaultWelcome
+      if (messages.value.length === 0 || messages.value.length === 1) {
+         chatStore.resetMessages(welcomeMsg)
+      }
     } catch (error) {
       console.error('Error fetching user for portfolio:', error)
       router.push('/home') // Redirigir si no existe
@@ -245,7 +259,9 @@ onMounted(async () => {
       try {
         portfolioUser.value = await api.getUserByUsername(newUsername)
         localStorage.setItem('currentPortfolioUser', newUsername)
-        messages.value = [] // Reset chat messages when changing user
+        const defaultWelcome = `¡Hola! Soy el asistente virtual de ${newUsername}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
+        const welcomeMsg = portfolioUser.value?.chat_welcome_message || defaultWelcome
+        chatStore.resetMessages(welcomeMsg)
         
         // Re-fetch all data for the new user so reactivity updates the chat properly
         perfilStore.fetchAll()
@@ -739,6 +755,31 @@ onMounted(async () => {
 
 .chat-footer-disclaimer a:hover {
   text-decoration: underline;
+}
+
+.suggested-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  justify-content: center;
+}
+
+.chip-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-gray-300, #cbd5e1);
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chip-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* --- ANIMACIONES ADICIONALES --- */

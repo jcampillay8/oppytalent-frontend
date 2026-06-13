@@ -48,6 +48,12 @@ export const api = {
   getUserByUsername(username) {
     return request(`/user/${encodeURIComponent(username)}`)
   },
+  updateChatConfig(data) {
+    return request('/user/chat-config', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  },
 
   // Proyectos
   getProyectos(params = '') {

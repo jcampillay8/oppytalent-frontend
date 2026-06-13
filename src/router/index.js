@@ -126,6 +126,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/:username/chat-config',
+    name: 'ChatConfigAdmin',
+    component: () => import('../views/admin/ChatConfigAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:username',
     name: 'UserPortfolio',
     component: () => import('../views/public/Home.vue'),

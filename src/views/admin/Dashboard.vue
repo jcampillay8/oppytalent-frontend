@@ -60,14 +60,14 @@
       <div v-if="showCVUpload" class="modal-overlay" @click.self="closeCVModal">
         <div class="modal-content glass-panel">
           <h2>Carga tu Currículum</h2>
-          <p class="modal-desc">Sube tu CV en PDF y nuestra IA extraerá tu experiencia, estudios y habilidades automáticamente para llenar tu portafolio.</p>
+          <p class="modal-desc">Sube tu CV (PDF, Word, TXT, Imagen) y nuestra IA extraerá tu experiencia, estudios y habilidades automáticamente para llenar tu portafolio.</p>
           
           <form @submit.prevent="handleCVUpload" class="cv-form">
             <div class="file-drop-area" :class="{ 'has-file': selectedFile }">
-              <input type="file" ref="cvFileInput" accept="application/pdf" class="file-input" @change="onFileChange" required />
+              <input type="file" ref="fileInput" accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg" class="file-input" @change="onFileChange" required />
               <div class="file-label" v-if="!selectedFile">
                 <span class="upload-icon">📄</span>
-                <span>Haz clic para seleccionar tu PDF</span>
+                <span>Haz clic para seleccionar tu archivo (PDF, Word, TXT, Imagen)</span>
               </div>
               <div class="file-label selected" v-else>
                 <span class="upload-icon">✅</span>
@@ -137,11 +137,18 @@ const uploadingCV = ref(false)
 
 function onFileChange(event) {
   const file = event.target.files[0]
-  if (file && file.type === 'application/pdf') {
-    selectedFile.value = file
-  } else {
-    alert("Por favor, sube un archivo PDF válido.")
-    selectedFile.value = null
+  const allowedExtensions = ['.pdf', '.docx', '.txt', '.md', '.png', '.jpg', '.jpeg']
+  
+  if (file) {
+    const fileName = file.name.toLowerCase()
+    const isValid = allowedExtensions.some(ext => fileName.endsWith(ext))
+    
+    if (isValid) {
+      selectedFile.value = file
+    } else {
+      alert("Por favor, sube un formato válido (PDF, Word, TXT, MD o Imagen).")
+      selectedFile.value = null
+    }
   }
 }
 

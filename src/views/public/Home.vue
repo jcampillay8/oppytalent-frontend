@@ -13,11 +13,6 @@
           <div class="profile-badges">
             <span class="badge">OppyTalent</span>
           </div>
-          <div v-if="isOwner" style="margin-top: 1rem;">
-            <router-link to="/admin" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: white;">
-              ⚙️ Administrar Perfil
-            </router-link>
-          </div>
         </div>
 
       <div class="sidebar-help">
@@ -27,8 +22,8 @@
           <footer>{{ tFrase.autor }}</footer>
         </blockquote>
         <blockquote class="sidebar-quote" v-else>
-          "El verdadero liderazgo en tecnología no se trata solo de dominar herramientas, sino de construir sistemas que empoderen a las personas y transformen problemas complejos en soluciones simples, escalables y sostenibles."
-          <footer>{{ portfolioUser ? `${portfolioUser.firstName} ${portfolioUser.lastName}` : 'Jaime Campillay' }}</footer>
+          "Cada gran proyecto comienza con un primer paso. Pronto compartiré aquí las frases y filosofías que inspiran mi trabajo y mi carrera profesional."
+          <footer>{{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username) : 'Talento OppyTalent' }}</footer>
         </blockquote>
       </div>
     </aside>
@@ -76,6 +71,18 @@
             <span class="dot"></span>
           </div>
         </div>
+        <!-- Indicador de portafolio vacío -->
+        <div v-if="isPortfolioEmpty" class="chat-message-wrapper bot">
+          <div class="message-avatar">🤖</div>
+          <div class="chat-message">
+            <p v-if="isOwner">
+              ¡Hola! Tu portafolio parece estar vacío. Agrega al menos un proyecto, experiencia, estudio o tus datos de "Sobre Mí" en el <router-link to="/admin">Panel de Administración</router-link> para habilitar este chat interactivo.
+            </p>
+            <p v-else>
+              El portafolio de este usuario aún está en construcción. El chat se habilitará cuando agregue información a su perfil.
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Pie del Chat / Entrada -->
@@ -85,10 +92,10 @@
             v-model="input"
             type="text"
             class="chat-input"
-            :placeholder="$t('home.placeholder')"
-            :disabled="loading"
+            :placeholder="isPortfolioEmpty ? 'El chat está deshabilitado temporalmente...' : $t('home.placeholder')"
+            :disabled="loading || isPortfolioEmpty"
           />
-          <button type="submit" class="chat-send-btn" :disabled="loading || !input.trim()">
+          <button type="submit" class="chat-send-btn" :disabled="loading || !input.trim() || isPortfolioEmpty">
             <span>{{ $t('contact.enviar') }}</span>
             <span class="send-icon">&rarr;</span>
           </button>
@@ -108,6 +115,9 @@ import { useRouter, useRoute } from 'vue-router'
 import { api } from '../../services/api'
 import { marked } from 'marked'
 import { usePerfilStore } from '../../stores/perfil'
+import { useProyectosStore } from '../../stores/proyectos'
+import { useExperienciasStore } from '../../stores/experiencias'
+import { useEstudiosStore } from '../../stores/estudios'
 import { useChatStore } from '../../stores/chat'
 import { useFrasesStore } from '../../stores/frases'
 import { useTranslatedData } from '../../composables/useTranslatedData'
@@ -117,6 +127,9 @@ import { storeToRefs } from 'pinia'
 const router = useRouter()
 const route = useRoute()
 const perfilStore = usePerfilStore()
+const proyectosStore = useProyectosStore()
+const experienciasStore = useExperienciasStore()
+const estudiosStore = useEstudiosStore()
 const chatStore = useChatStore()
 const frasesStore = useFrasesStore()
 const { locale } = useI18n()
@@ -129,6 +142,13 @@ const isOwner = computed(() => {
   console.log("Checking isOwner:", currentUser.value?.username, portfolioUser.value?.username)
   if (!currentUser.value || !portfolioUser.value) return false
   return currentUser.value.username?.toLowerCase() === portfolioUser.value.username?.toLowerCase()
+})
+
+const isPortfolioEmpty = computed(() => {
+  return perfilStore.items.length === 0 && 
+         proyectosStore.items.length === 0 && 
+         experienciasStore.items.length === 0 && 
+         estudiosStore.items.length === 0
 })
 
 const randomFrase = ref(null)
@@ -226,6 +246,13 @@ onMounted(async () => {
         portfolioUser.value = await api.getUserByUsername(newUsername)
         localStorage.setItem('currentPortfolioUser', newUsername)
         messages.value = [] // Reset chat messages when changing user
+        
+        // Re-fetch all data for the new user so reactivity updates the chat properly
+        perfilStore.fetchAll()
+        proyectosStore.fetchAll()
+        experienciasStore.fetchAll()
+        estudiosStore.fetchAll()
+        await frasesStore.fetchAll()
       } catch (error) {
         console.error('Error fetching user for portfolio:', error)
         router.push('/home')
@@ -234,6 +261,9 @@ onMounted(async () => {
   })
 
   perfilStore.fetchAll()
+  proyectosStore.fetchAll()
+  experienciasStore.fetchAll()
+  estudiosStore.fetchAll()
   await frasesStore.fetchAll()
   
   if (frasesStore.items.length > 0) {

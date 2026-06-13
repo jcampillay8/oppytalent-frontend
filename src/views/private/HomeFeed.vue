@@ -399,7 +399,7 @@ onUnmounted(() => {
 }
 
 .home-grid {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 280px 1fr 300px;

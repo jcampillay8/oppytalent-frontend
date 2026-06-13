@@ -56,6 +56,10 @@
         </div>
 
         <div class="navbar-user">
+          <button v-if="authStore.token" class="btn-outline-glass" @click="handleLogout" style="margin-right: 0.5rem; border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">
+            Cerrar Sesión
+          </button>
+          
           <button class="lang-btn btn-outline-glass" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
             {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
           </button>
@@ -80,16 +84,19 @@
 
 <script setup>
 import { computed, onMounted, ref, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePerfilStore } from './stores/perfil'
+import { useAuthStore } from './stores/auth'
 import ChatWidget from './components/public/ChatWidget.vue'
 import { api } from './services/api'
 
 const { locale } = useI18n()
 
 const route = useRoute()
+const router = useRouter()
 const perfilStore = usePerfilStore()
+const authStore = useAuthStore()
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 const isMenuOpen = ref(false)
 
@@ -139,6 +146,11 @@ const chatLink = computed(() => {
 
 function closeMenu() {
   isMenuOpen.value = false
+}
+
+function handleLogout() {
+  authStore.logout()
+  router.push('/login')
 }
 
 function toggleLanguage() {
@@ -401,8 +413,10 @@ onUnmounted(() => {
 }
 
 .footer {
-  background: var(--color-gray-900);
-  color: var(--color-gray-500);
+  background: rgba(24, 24, 27, 0.7);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-gray-400);
   padding: 1.5rem 0;
   text-align: center;
   font-size: 0.875rem;

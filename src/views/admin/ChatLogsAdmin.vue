@@ -293,7 +293,7 @@ function formatDate(dateString) {
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: white;
+  background: var(--color-gray-100);
   border-radius: 8px;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   border: 1px solid var(--color-gray-100);
@@ -327,10 +327,10 @@ function formatDate(dateString) {
 
 /* Table Card */
 .card {
-  background: white;
+  background: var(--color-gray-100);
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
-  border: 1px solid var(--color-gray-100);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--color-gray-200);
 }
 
 .table-container {
@@ -363,7 +363,7 @@ function formatDate(dateString) {
 
 .table td {
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-gray-100);
+  border-bottom: 1px solid var(--color-gray-200);
   color: var(--color-gray-800);
   font-size: 0.9rem;
   vertical-align: middle;
@@ -375,9 +375,8 @@ function formatDate(dateString) {
 }
 
 .interactive-row:hover {
-  background-color: var(--color-gray-50);
+  background-color: var(--color-gray-200);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02) inset;
 }
 
 .interactive-row:last-child td {
@@ -425,20 +424,20 @@ function formatDate(dateString) {
 }
 
 .badge-ip {
-  background-color: #e0f2fe;
-  color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.2);
+  color: #38bdf8;
 }
 
 .badge-country {
-  background-color: #f3f4f6;
-  color: #4b5563;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-800);
+  border: 1px solid var(--color-gray-300);
 }
 
 .badge-action {
-  background-color: #fef3c7;
-  color: #b45309;
-  border: 1px solid #fde68a;
+  background-color: rgba(180, 83, 9, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
   display: inline-flex;
   max-width: 100%;
 }
@@ -469,10 +468,10 @@ function formatDate(dateString) {
   align-items: center;
   margin-top: 1.5rem;
   padding: 1rem;
-  background: white;
+  background: var(--color-gray-100);
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-gray-100);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--color-gray-200);
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -489,7 +488,8 @@ function formatDate(dateString) {
   padding: 0.35rem 0.5rem;
   border-radius: 6px;
   border: 1px solid var(--color-gray-300);
-  background-color: white;
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-800);
   outline: none;
   font-family: inherit;
   font-size: 0.9rem;
@@ -536,12 +536,12 @@ function formatDate(dateString) {
 }
 
 .modal-content {
-  background: white;
+  background: var(--color-gray-100);
   width: 100%;
   max-width: 700px;
   max-height: 90vh;
   border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   animation: slideUp 0.3s ease-out;
@@ -598,7 +598,7 @@ function formatDate(dateString) {
   background-color: var(--color-gray-50);
   padding: 1.25rem;
   border-radius: 8px;
-  border: 1px solid var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
 }
 
 .meta-item {
@@ -648,16 +648,16 @@ function formatDate(dateString) {
 }
 
 .user-bubble .bubble-text {
-  background-color: #f0f9ff;
-  border: 1px solid #bae6fd;
-  color: #0369a1;
+  background-color: rgba(3, 105, 161, 0.2);
+  border: 1px solid rgba(3, 105, 161, 0.4);
+  color: #38bdf8;
   border-top-left-radius: 0;
 }
 
 .ai-bubble .bubble-text {
-  background-color: white;
+  background-color: var(--color-gray-50);
   border: 1px solid var(--color-gray-200);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   border-top-right-radius: 0;
 }
 

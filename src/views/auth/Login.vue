@@ -71,6 +71,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 
 const router = useRouter()
 const loading = ref(false)
@@ -102,10 +103,19 @@ async function handleLogin() {
     if (!response.ok) throw new Error('Credenciales inválidas')
     
     const data = await response.json()
-    localStorage.setItem('token', data.accessToken || data.access_token)
+    const newToken = data.accessToken || data.access_token
+    localStorage.setItem('token', newToken)
     
-    // Redirect to Home feed
-    router.push('/home')
+    // Redirect to Dashboard
+    const authStore = useAuthStore()
+    authStore.token = newToken
+    await authStore.fetchUser()
+    
+    if (authStore.user) {
+      router.push(`/${authStore.user.username.split('@')[0]}/dashboard`)
+    } else {
+      router.push('/home')
+    }
   } catch (error) {
     alert(error.message)
   } finally {

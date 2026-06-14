@@ -8,15 +8,23 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 
-onMounted(() => {
+onMounted(async () => {
   const token = route.query.token
   if (token) {
     localStorage.setItem('token', token)
-    router.push('/home')
+    authStore.token = token
+    await authStore.fetchUser()
+    if (authStore.user) {
+      router.push(`/${authStore.user.username.split('@')[0]}/dashboard`)
+    } else {
+      router.push('/home')
+    }
   } else {
     alert("Error de autenticación. Redirigiendo a inicio de sesión.")
     router.push('/login')

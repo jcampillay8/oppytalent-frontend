@@ -132,6 +132,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/:username/theme-config',
+    name: 'ThemeConfigAdmin',
+    component: () => import('../views/admin/ThemeConfigAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:username',
     name: 'UserPortfolio',
     component: () => import('../views/public/Home.vue'),
@@ -168,6 +174,23 @@ router.beforeEach((to, from, next) => {
   // En cualquier otro caso, continuar
   else {
     next()
+  }
+})
+
+import { useThemeStore } from '../stores/theme'
+
+router.afterEach(async (to, from) => {
+  const themeStore = useThemeStore()
+  let targetUser = to.params.username
+  
+  if (!targetUser && to.path.match(/^\/(portafolio|proyecto|experiencia|estudios|sobre-mi|contactame)/)) {
+    targetUser = localStorage.getItem('currentPortfolioUser')
+  }
+  
+  if (targetUser) {
+    await themeStore.fetchThemeForUser(targetUser)
+  } else {
+    themeStore.setTheme('dark-glass')
   }
 })
 

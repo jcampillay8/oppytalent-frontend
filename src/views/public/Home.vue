@@ -1,5 +1,5 @@
 <template>
-  <div class="portfolio-theme-wrapper">
+  <div class="portfolio-theme-wrapper" :class="portfolioThemeClass">
     <div class="chat-container">
       <!-- Sidebar / Perfil Breve en Escritorio -->
       <aside class="chat-sidebar">
@@ -39,6 +39,15 @@
           <router-link v-if="isOwner" to="/admin" class="btn btn-primary btn-sm" style="background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #fff;">
             Panel Admin
           </router-link>
+          <button 
+            v-if="authStore.token" 
+            @click="resetChatConversation" 
+            class="btn btn-outline btn-sm" 
+            title="Reiniciar Conversación"
+            style="padding: 0.25rem 0.5rem;"
+          >
+            🧹
+          </button>
           <router-link to="/portafolio" class="btn btn-outline btn-sm header-portfolio-btn">
             {{ $t('home.view_portfolio') }}
           </router-link>
@@ -131,6 +140,7 @@ import { useFrasesStore } from '../../stores/frases'
 import { useTranslatedData } from '../../composables/useTranslatedData'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
+import { useAuthStore } from '../../stores/auth'
 
 const router = useRouter()
 const route = useRoute()
@@ -142,9 +152,11 @@ const chatStore = useChatStore()
 const frasesStore = useFrasesStore()
 const { locale } = useI18n()
 const { getTranslated } = useTranslatedData()
+const authStore = useAuthStore()
 
 const currentUser = ref(null)
 const portfolioUser = ref(null)
+const portfolioThemeClass = computed(() => `theme-${portfolioUser.value?.portfolio_theme || 'dark-glass'}`)
 
 const isOwner = computed(() => {
   console.log("Checking isOwner:", currentUser.value?.username, portfolioUser.value?.username)
@@ -199,6 +211,12 @@ function handleChatClick(event) {
 
 
 
+function resetChatConversation() {
+  const defaultWelcome = `¡Hola! Soy el asistente virtual de ${portfolioUser.value?.firstName || route.params.username}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
+  const welcomeMsg = portfolioUser.value?.chat_welcome_message || defaultWelcome
+  chatStore.resetMessages(welcomeMsg, route.params.username || localStorage.getItem('currentPortfolioUser'))
+}
+
 async function send() {
   const text = input.value.trim()
   if (!text || loading.value) return
@@ -245,8 +263,8 @@ onMounted(async () => {
       
       const defaultWelcome = `¡Hola! Soy el asistente virtual de ${portfolioUser.value.firstName || username}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
       const welcomeMsg = portfolioUser.value?.chat_welcome_message || defaultWelcome
-      if (messages.value.length === 0 || messages.value.length === 1) {
-         chatStore.resetMessages(welcomeMsg)
+      if (chatStore.currentChatUsername !== username || messages.value.length <= 1) {
+         chatStore.resetMessages(welcomeMsg, username)
       }
     } catch (error) {
       console.error('Error fetching user for portfolio:', error)
@@ -261,7 +279,9 @@ onMounted(async () => {
         localStorage.setItem('currentPortfolioUser', newUsername)
         const defaultWelcome = `¡Hola! Soy el asistente virtual de ${newUsername}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
         const welcomeMsg = portfolioUser.value?.chat_welcome_message || defaultWelcome
-        chatStore.resetMessages(welcomeMsg)
+        if (chatStore.currentChatUsername !== newUsername || messages.value.length <= 1) {
+          chatStore.resetMessages(welcomeMsg, newUsername)
+        }
         
         // Re-fetch all data for the new user so reactivity updates the chat properly
         perfilStore.fetchAll()
@@ -298,9 +318,9 @@ onMounted(async () => {
 <style scoped>
 .portfolio-theme-wrapper {
   min-height: calc(100vh - 4.5rem);
-  background-color: #09090b;
+  background-color: var(--color-gray-50);
   padding: 1rem 0;
-  color: #fafafa;
+  color: var(--color-gray-800);
 }
 
 .chat-container {
@@ -319,16 +339,16 @@ onMounted(async () => {
 /* --- SIDEBAR --- */
 .chat-sidebar {
   width: 320px;
-  background: rgba(24, 24, 27, 0.5);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: var(--color-gray-100);
+  border-right: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: var(--color-gray-200) transparent;
   backdrop-filter: blur(12px);
 }
 
@@ -383,7 +403,7 @@ onMounted(async () => {
 .profile-name {
   font-size: 1.35rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-gray-900);
   margin-bottom: 0.25rem;
 }
 
@@ -444,13 +464,13 @@ onMounted(async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: rgba(9, 9, 11, 0.7);
+  background: var(--color-gray-50);
   backdrop-filter: blur(16px);
 }
 
 .chat-header {
   padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--color-gray-200);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -460,13 +480,13 @@ onMounted(async () => {
 .chat-header h2 {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--color-gray-900);
   margin: 0 0 0.125rem 0;
 }
 
 .online-indicator {
   font-size: 0.75rem;
-  color: #3b82f6;
+  color: var(--color-accent);
   margin: 0;
   display: flex;
   align-items: center;
@@ -475,8 +495,8 @@ onMounted(async () => {
 
 .btn-outline {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
   border-radius: 6px;
   text-decoration: none;
   transition: all 0.2s;
@@ -548,15 +568,15 @@ onMounted(async () => {
 }
 
 .chat-message-wrapper.user .message-avatar {
-  background: #3b82f6;
-  color: #fff;
+  background: var(--color-accent);
+  color: var(--color-gray-900);
   border-color: transparent;
 }
 
 .chat-message {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #e4e4e7;
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-800);
   padding: 0.875rem 1.25rem;
   border-radius: 18px;
   border-top-left-radius: 4px;
@@ -565,8 +585,8 @@ onMounted(async () => {
 }
 
 .chat-message-wrapper.user .chat-message {
-  background: #3b82f6;
-  color: #fff;
+  background: var(--color-accent);
+  color: var(--color-gray-900);
   border: none;
   border-radius: 18px;
   border-top-right-radius: 4px;
@@ -693,9 +713,9 @@ onMounted(async () => {
 .chat-input {
   flex: 1;
   padding: 0.875rem 1.25rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  color: var(--color-gray-900);
   border-radius: var(--radius-md, 12px);
   outline: none;
   font-family: inherit;
@@ -704,14 +724,14 @@ onMounted(async () => {
 }
 
 .chat-input:focus {
-  border-color: #3b82f6;
-  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--color-accent);
+  background: var(--color-gray-100);
 }
 
 .chat-send-btn {
   padding: 0 1.5rem;
   border: none;
-  background: #3b82f6;
+  background: var(--color-accent);
   color: #fff;
   border-radius: var(--radius-md, 12px);
   font-family: inherit;

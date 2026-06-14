@@ -54,6 +54,12 @@ export const api = {
       body: JSON.stringify(data),
     })
   },
+  updateThemeConfig(data) {
+    return request('/user/theme-config', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  },
 
   // Proyectos
   getProyectos(params = '') {

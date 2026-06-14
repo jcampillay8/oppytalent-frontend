@@ -1,0 +1,66 @@
+/* Default Dark Glassmorphism */
+html.theme-dark-glass {
+  --color-primary: #1a3a5c;
+  --color-accent: #3b82f6;
+  --color-gray-50: #09090b;   
+  --color-gray-100: #18181b;  
+  --color-gray-200: rgba(255, 255, 255, 0.08); 
+  --color-gray-800: #fafafa;  
+  --color-gray-900: #ffffff;  
+}
+
+/* Light Minimalist */
+html.theme-light-minimalist {
+  --color-primary: #f8fafc;
+  --color-accent: #0f172a;
+  --color-gray-50: #ffffff;   
+  --color-gray-100: #f1f5f9;  
+  --color-gray-200: #e2e8f0; 
+  --color-gray-800: #334155;  
+  --color-gray-900: #0f172a;  
+}
+html.theme-light-minimalist .chat-message-wrapper.bot {
+  background: rgba(241, 245, 249, 0.8);
+  border: 1px solid var(--color-gray-200);
+}
+
+/* Cyber Neon */
+html.theme-cyber-neon {
+  --color-primary: #000000;
+  --color-accent: #22c55e;
+  --color-gray-50: #000000;   
+  --color-gray-100: #052e16;  
+  --color-gray-200: rgba(34, 197, 94, 0.2); 
+  --color-gray-800: #86efac;  
+  --color-gray-900: #22c55e;  
+}
+
+/* Ocean Blue */
+html.theme-ocean-blue {
+  --color-primary: #0f172a;
+  --color-accent: #38bdf8;
+  --color-gray-50: #020617;   
+  --color-gray-100: #0f172a;  
+  --color-gray-200: rgba(56, 189, 248, 0.2); 
+  --color-gray-800: #bae6fd;  
+  --color-gray-900: #e0f2fe;  
+}
+
+/* Rose Gold */
+html.theme-rose-gold {
+  --color-primary: #2a101f;
+  --color-accent: #f43f5e;
+  --color-gray-50: #1a0b14;   
+  --color-gray-100: #2a101f;  
+  --color-gray-200: rgba(244, 63, 94, 0.2); 
+  --color-gray-800: #fda4af;  
+  --color-gray-900: #fff1f2;  
+}
+
+/* Base Wrapper rules to enforce theme */
+.portfolio-theme-wrapper {
+  background: var(--color-gray-50);
+  color: var(--color-gray-800);
+  min-height: 100vh;
+  width: 100%;
+}

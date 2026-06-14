@@ -1,3 +1,5 @@
+@import './themes.css';
+
 :root {
   --color-primary: #1a3a5c;
   --color-primary-light: #2c5282;
@@ -96,7 +98,7 @@ a:hover {
 }
 
 .card {
-  background: rgba(24, 24, 27, 0.6);
+  background: var(--color-gray-100);
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -150,7 +152,7 @@ a:hover {
   font-family: inherit;
   font-size: 0.875rem;
   color: var(--color-gray-800);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--color-gray-50);
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 
@@ -158,7 +160,7 @@ a:hover {
 .form-textarea:focus {
   outline: none;
   border-color: var(--color-accent);
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--color-gray-100);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 

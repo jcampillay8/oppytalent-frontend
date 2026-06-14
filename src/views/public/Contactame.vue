@@ -86,7 +86,7 @@ onMounted(() => {
 
 .contact-card {
   padding: 2.5rem;
-  background: #fff;
+  background: var(--color-gray-100);
 }
 
 .contact-header {

@@ -48,7 +48,34 @@
           <button class="nav-item"><i class="icon-jobs"></i> Empleos</button>
         </div>
         <div class="navbar-user">
-          <button @click="logout" class="btn-outline-glass">Cerrar Sesión</button>
+          <div class="user-dropdown-container" v-if="currentUser" @click.stop="isDropdownOpen = !isDropdownOpen">
+            <button class="dropdown-trigger btn-outline-glass">
+              <img v-if="currentUser.userImage || currentUser.avatar_url" :src="currentUser.userImage || currentUser.avatar_url" class="dropdown-avatar" />
+              <span v-else class="dropdown-avatar-placeholder">
+                {{ (currentUser.firstName || currentUser.username || 'U').charAt(0) }}{{ (currentUser.lastName || '').charAt(0) }}
+              </span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            
+            <div class="user-dropdown-menu glass-panel" v-if="isDropdownOpen" @click.stop>
+              <router-link to="/admin" class="dropdown-item" @click="isDropdownOpen = false">
+                <span class="icon">👤</span> Panel Admin
+              </router-link>
+              <router-link :to="`/${currentUser.username?.split('@')[0] || ''}`" class="dropdown-item" @click="isDropdownOpen = false">
+                <span class="icon">🤖</span> Mi Chat IA
+              </router-link>
+              <button class="dropdown-item" @click="goToMyPortfolio">
+                <span class="icon">💼</span> Mi Portafolio
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" @click="logout">
+                <span class="icon">🚪</span> Cerrar Sesión
+              </button>
+            </div>
+          </div>
+          <button class="lang-btn btn-outline-glass" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
+            {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
+          </button>
         </div>
       </div>
     </nav>
@@ -151,21 +178,34 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../services/api' // Asegúrate de que api.js esté configurado
+import { useAuthStore } from '../../stores/auth'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const { locale } = useI18n()
+
+const currentLang = computed(() => locale.value)
+
+function toggleLanguage() {
+  locale.value = locale.value === 'es' ? 'en' : 'es'
+  localStorage.setItem('user-language', locale.value)
+}
 
 const searchQuery = ref('')
 const searchResults = ref([])
 const showResults = ref(false)
 const isSearching = ref(false)
 const currentUser = ref(null)
+const isDropdownOpen = ref(false)
 let searchTimeout = null
 let blurTimeout = null
 
 onMounted(async () => {
+  document.addEventListener('click', () => { isDropdownOpen.value = false })
   try {
     currentUser.value = await api.me()
   } catch (error) {
@@ -204,14 +244,24 @@ function hideResultsDelay() {
   }, 200)
 }
 
+function goToMyPortfolio() {
+  if (currentUser.value?.username) {
+    const username = currentUser.value.username.split('@')[0]
+    localStorage.setItem('currentPortfolioUser', username)
+  }
+  isDropdownOpen.value = false
+  router.push('/portafolio')
+}
+
 function logout() {
-  localStorage.removeItem('token')
+  authStore.logout()
   router.push('/login')
 }
 
 onUnmounted(() => {
   if (searchTimeout) clearTimeout(searchTimeout)
   if (blurTimeout) clearTimeout(blurTimeout)
+  document.removeEventListener('click', () => { isDropdownOpen.value = false })
 })
 </script>
 

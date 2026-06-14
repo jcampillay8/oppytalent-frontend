@@ -3,7 +3,8 @@
     "chat": "AI Chat",
     "portafolio": "Portfolio",
     "contact": "Contact Me",
-    "admin": "Admin"
+    "admin": "Admin",
+    "about": "About {name}"
   },
   "language": {
     "es": "Español",

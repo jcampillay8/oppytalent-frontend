@@ -50,16 +50,35 @@
             <router-link to="/sobre-mi" class="nav-link nav-link-avatar" @click="closeMenu">
               <img v-if="avatarUrl" :src="avatarUrl" alt="" class="nav-avatar" />
               <span v-else class="nav-avatar-placeholder">👤</span>
-              Sobre Mí
+              {{ $t('nav.about', { name: portfolioOwnerName }) }}
             </router-link>
           </nav>
         </div>
 
         <div class="navbar-user">
-          <button v-if="authStore.token" class="btn-outline-glass" @click="handleLogout" style="margin-right: 0.5rem; border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">
-            Cerrar Sesión
-          </button>
-          
+          <div class="user-dropdown-container" v-if="authStore.token" @click.stop="isDropdownOpen = !isDropdownOpen">
+            <button class="dropdown-trigger btn-outline-glass">
+              <img v-if="authUserAvatar" :src="authUserAvatar" class="dropdown-avatar" />
+              <span v-else class="dropdown-avatar-placeholder">{{ authUserInitials }}</span>
+              <span class="dropdown-arrow">▼</span>
+            </button>
+            
+            <div class="user-dropdown-menu glass-panel" v-if="isDropdownOpen" @click.stop>
+              <router-link to="/admin" class="dropdown-item" @click="isDropdownOpen = false">
+                <span class="icon">👤</span> {{ $t('nav.admin') }}
+              </router-link>
+              <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="dropdown-item" @click="isDropdownOpen = false">
+                <span class="icon">🤖</span> Mi Chat IA
+              </router-link>
+              <button class="dropdown-item" @click="goToMyPortfolio">
+                <span class="icon">💼</span> Mi Portafolio
+              </button>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" @click="handleLogout">
+                <span class="icon">🚪</span> Cerrar Sesión
+              </button>
+            </div>
+          </div>
           <button class="lang-btn btn-outline-glass" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
             {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
           </button>
@@ -83,7 +102,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, onUnmounted } from 'vue'
+import { computed, onMounted, ref, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePerfilStore } from './stores/perfil'
@@ -99,6 +118,39 @@ const perfilStore = usePerfilStore()
 const authStore = useAuthStore()
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 const isMenuOpen = ref(false)
+const isDropdownOpen = ref(false)
+const portfolioOwnerName = ref('el Talento')
+const currentLang = computed(() => locale.value)
+
+const authUserAvatar = computed(() => authStore.user?.userImage || authStore.user?.avatar_url)
+const authUserInitials = computed(() => {
+  if (!authStore.user) return 'U'
+  return ((authStore.user.firstName || authStore.user.username || 'U').charAt(0) + (authStore.user.lastName || '').charAt(0)).toUpperCase()
+})
+
+onMounted(async () => {
+  document.addEventListener('click', () => { isDropdownOpen.value = false })
+  
+  if (authStore.token && !authStore.user) {
+    try {
+      await authStore.fetchUser()
+    } catch (e) {
+      console.warn("Failed to fetch auth user:", e)
+    }
+  }
+  
+  perfilStore.fetchAll()
+})
+
+watch(() => route.path, async () => {
+  const username = route.params.username || localStorage.getItem('currentPortfolioUser')
+  if (username) {
+    try {
+      const user = await api.getUserByUsername(username)
+      portfolioOwnerName.value = user.firstName || user.username
+    } catch(e) {}
+  }
+}, { immediate: true })
 
 const appRoutes = ['Landing', 'LoginUser', 'RegisterUser', 'HomeFeed', 'AuthCallback']
 const isAppLayout = computed(() => appRoutes.includes(route.name))
@@ -138,6 +190,15 @@ function hideResultsDelay() {
   }, 200)
 }
 
+function goToMyPortfolio() {
+  if (authStore.user?.username) {
+    const username = authStore.user.username.split('@')[0]
+    localStorage.setItem('currentPortfolioUser', username)
+  }
+  isDropdownOpen.value = false
+  router.push('/portafolio')
+}
+
 const chatLink = computed(() => {
   const _ = route.path // Reactividad forzada
   const saved = localStorage.getItem('currentPortfolioUser')
@@ -158,7 +219,6 @@ function toggleLanguage() {
   localStorage.setItem('user-language', locale.value)
 }
 
-const currentLang = computed(() => locale.value)
 
 onMounted(() => {
   perfilStore.fetchAll()
@@ -167,6 +227,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (searchTimeout) clearTimeout(searchTimeout)
   if (blurTimeout) clearTimeout(blurTimeout)
+  document.removeEventListener('click', () => { isDropdownOpen.value = false })
 })
 </script>
 
@@ -193,10 +254,10 @@ onUnmounted(() => {
 }
 
 .glass-panel {
-  background: rgba(24, 24, 27, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
-  backdrop-filter: blur(16px);
+  opacity: 0.95;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -210,10 +271,10 @@ onUnmounted(() => {
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.5px;
-  color: white;
+  color: var(--color-gray-900);
   text-decoration: none;
 }
-.logo span { color: #3b82f6; }
+.logo span { color: var(--color-accent); }
 
 .navbar-search-container {
   width: 100%;
@@ -227,11 +288,11 @@ onUnmounted(() => {
 
 .search-input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
   border-radius: 8px;
   padding: 0.5rem 1rem;
-  color: white;
+  color: var(--color-gray-900);
   font-family: inherit;
   font-size: 0.9rem;
   transition: all 0.2s;
@@ -239,9 +300,8 @@ onUnmounted(() => {
 
 .search-input:focus {
   outline: none;
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  background: var(--color-gray-100);
+  border-color: var(--color-accent);
 }
 
 .search-results {
@@ -260,7 +320,7 @@ onUnmounted(() => {
 .search-results.empty {
   padding: 1rem;
   text-align: center;
-  color: #a1a1aa;
+  color: var(--color-gray-500);
   font-size: 0.85rem;
 }
 
@@ -270,19 +330,19 @@ onUnmounted(() => {
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   text-decoration: none;
-  color: #fafafa;
+  color: var(--color-gray-900);
   transition: background 0.2s;
 }
 
 .search-result-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-gray-200);
 }
 
 .search-avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,7 +371,7 @@ onUnmounted(() => {
 
 .search-info span {
   font-size: 0.75rem;
-  color: #a1a1aa;
+  color: var(--color-gray-500);
 }
 
 .navbar-right-container {
@@ -339,14 +399,14 @@ onUnmounted(() => {
 
 .nav-link {
   padding: 0.375rem 0;
-  color: var(--color-gray-300);
+  color: var(--color-gray-500);
   font-size: 0.875rem;
   font-weight: 500;
   transition: color 0.15s;
 }
 
 .nav-link:hover {
-  color: #fff;
+  color: var(--color-gray-900);
   text-decoration: none;
 }
 
@@ -501,5 +561,110 @@ onUnmounted(() => {
     font-size: 1rem;
     padding: 0.5rem 0;
   }
+}
+</style>
+
+<style>
+/* Dropdown Styles */
+.user-dropdown-container {
+  position: relative;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dropdown-avatar-placeholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.dropdown-arrow {
+  font-size: 0.6rem;
+  color: var(--color-gray-500);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 200px;
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-gray-800);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--color-gray-100);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.dropdown-item .icon {
+  font-size: 1.1rem;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--color-gray-200);
+  margin: 0.5rem 0;
+}
+
+.text-danger {
+  color: var(--color-danger);
+}
+.text-danger:hover {
+  color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
 }
 </style>

@@ -15,7 +15,7 @@
         </router-link>
         <router-link to="/admin/experiencias" class="stat-card card">
           <div class="stat-number">{{ experienciasStore.items.length }}</div>
-          <div class="stat-label">Experiencias</div>
+          <div class="stat-label">Experiencia Laboral</div>
         </router-link>
         <router-link to="/admin/estudios" class="stat-card card">
           <div class="stat-number">{{ estudiosStore.items.length }}</div>
@@ -29,7 +29,7 @@
 
       <div class="admin-actions">
         <router-link to="/admin/proyectos" class="btn btn-primary">Gestionar Proyectos</router-link>
-        <router-link to="/admin/experiencias" class="btn btn-primary">Gestionar Experiencias</router-link>
+        <router-link to="/admin/experiencias" class="btn btn-primary">Gestionar Experiencia Laboral</router-link>
         <router-link to="/admin/estudios" class="btn btn-primary">Gestionar Estudios</router-link>
         <router-link to="/admin/perfil" class="btn btn-primary">Sobre Mí</router-link>
         <router-link to="/admin/chat-logs" class="btn btn-primary">Ver Logs del Chat</router-link>

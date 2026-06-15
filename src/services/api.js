@@ -212,5 +212,28 @@ export const api = {
   chat(messages) {
     const user = localStorage.getItem('currentPortfolioUser');
     return request('/chat/', { method: 'POST', body: JSON.stringify({ username: user, messages }) })
+  },
+  
+  // Storage & OAuth
+  getGoogleAuthUrl() {
+    return request('/storage/google/login')
+  },
+  
+  uploadImage(file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    // Usar fetch directamente porque enviamos FormData, no JSON
+    const token = localStorage.getItem('token')
+    return fetch('/api/v1/images/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    }).then(async (res) => {
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.detail || 'Error uploading file')
+      return data
+    })
   }
 }

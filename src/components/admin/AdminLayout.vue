@@ -5,7 +5,7 @@
       <nav class="sidebar-nav">
         <router-link :to="`/${route.params.username}/dashboard`" class="sidebar-link" exact>Dashboard</router-link>
         <router-link :to="`/${route.params.username}/proyectos`" class="sidebar-link">Proyectos</router-link>
-        <router-link :to="`/${route.params.username}/experiencias`" class="sidebar-link">Experiencias</router-link>
+        <router-link :to="`/${route.params.username}/experiencias`" class="sidebar-link">Experiencia Laboral</router-link>
         <router-link :to="`/${route.params.username}/estudios`" class="sidebar-link">Estudios</router-link>
         <router-link :to="`/${route.params.username}/perfil`" class="sidebar-link">Sobre Mí</router-link>
         <router-link :to="`/${route.params.username}/secciones`" class="sidebar-link">Secciones</router-link>
@@ -13,6 +13,7 @@
         <router-link :to="`/${route.params.username}/chat-logs`" class="sidebar-link">Chat Logs</router-link>
         <router-link :to="`/${route.params.username}/chat-config`" class="sidebar-link">Personaliza tu IA</router-link>
         <router-link :to="`/${route.params.username}/theme-config`" class="sidebar-link">Apariencia</router-link>
+        <router-link :to="`/${route.params.username}/almacenamiento`" class="sidebar-link">☁️ Almacenamiento</router-link>
       </nav>
       <router-link :to="`/${route.params.username}`" class="sidebar-back">&larr; Sitio Público</router-link>
     </aside>

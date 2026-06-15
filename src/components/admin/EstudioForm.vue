@@ -31,10 +31,10 @@
             <label>Año de Obtención</label>
             <input v-model.number="form.anio_obtencion" type="number" class="form-input" min="1900" :max="new Date().getFullYear()" required />
           </div>
-          <div class="form-group flex-1">
-            <label>URL de Imagen (o ID de Drive)</label>
-            <input v-model="form.image_url" type="text" class="form-input" placeholder="ID de Drive o URL" @blur="handleParseImageUrl" />
-          </div>
+        </div>
+        <div class="form-group">
+          <label>URL de Imagen (o ID de Drive)</label>
+          <ImageUploader v-model="form.image_url" />
         </div>
         <div class="form-group">
           <label>Enlace / URL de Credencial</label>
@@ -75,6 +75,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
+import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
   estudio: { type: Object, default: null },

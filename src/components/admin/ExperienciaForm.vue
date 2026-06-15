@@ -42,7 +42,7 @@
         </div>
         <div class="form-group">
           <label>URL de Imagen (o ID de Google Drive)</label>
-          <input v-model="form.image_url" type="text" class="form-input" placeholder="ID de Drive o URL" @blur="parseImageUrlHandler" />
+          <ImageUploader v-model="form.image_url" />
         </div>
         <div class="form-row">
           <div class="form-group flex-1">
@@ -95,6 +95,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
+import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
   experiencia: { type: Object, default: null },
@@ -204,6 +205,8 @@ async function handleSubmit() {
   currentTab.value = 'en'
   parseTags()
   currentTab.value = 'es'
+  
+  parseImageUrlHandler()
   
   try {
     const dataToSend = { ...form.value }

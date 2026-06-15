@@ -32,8 +32,8 @@
             <input v-model="form.fecha_proyecto" type="date" class="form-input" required />
           </div>
           <div class="form-group flex-1">
-            <label>URL de Imagen (o ID de Drive)</label>
-            <input v-model="form.image_url" type="text" class="form-input" placeholder="ID de Drive o URL" @blur="handleParseImageUrl" />
+            <label>Imagen del Proyecto</label>
+            <ImageUploader v-model="form.image_url" />
           </div>
         </div>
         <div class="form-row">
@@ -97,6 +97,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
+import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
   proyecto: { type: Object, default: null },

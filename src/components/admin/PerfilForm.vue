@@ -26,15 +26,13 @@
       <!-- COMMON FIELDS -->
       <div v-show="currentTab === 'es'" class="common-fields-section">
         <h4 class="section-title">Datos Generales</h4>
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label>URL de Imagen de perfil</label>
-            <input v-model="form.image_url" type="text" class="form-input" placeholder="ID de Drive o URL completa" @blur="handleParseImageUrl" />
-          </div>
-          <div class="form-group flex-1">
-            <label>URL del Avatar navbar</label>
-            <input v-model="form.avatar_url" type="text" class="form-input" placeholder="ID de Drive o URL completa" @blur="handleParseAvatarUrl" />
-          </div>
+        <div class="form-group">
+          <label>URL de Imagen de perfil</label>
+          <ImageUploader v-model="form.image_url" />
+        </div>
+        <div class="form-group">
+          <label>URL del Avatar navbar</label>
+          <ImageUploader v-model="form.avatar_url" />
         </div>
         <div class="form-row">
           <div class="form-group flex-1">
@@ -103,6 +101,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
+import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
   perfil: { type: Object, default: null },

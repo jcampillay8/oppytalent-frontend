@@ -138,6 +138,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/:username/almacenamiento',
+    name: 'StorageConfigAdmin',
+    component: () => import('../views/admin/StorageConfigAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:username',
     name: 'UserPortfolio',
     component: () => import('../views/public/Home.vue'),

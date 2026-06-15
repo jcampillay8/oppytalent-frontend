@@ -2,7 +2,7 @@
   <div class="container">
     <AdminLayout>
       <div class="admin-header">
-        <h1 class="page-title">Experiencias</h1>
+        <h1 class="page-title">Experiencia Laboral</h1>
         <button class="btn btn-primary" @click="openForm(null)">+ Nueva Experiencia</button>
       </div>
 

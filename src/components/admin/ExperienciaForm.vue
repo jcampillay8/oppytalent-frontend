@@ -191,7 +191,11 @@ async function translateWithAI() {
     
   } catch (error) {
     console.error("Error al traducir:", error)
-    alert("Ocurrió un error al intentar traducir con la IA.")
+    if (error.detail && error.detail.includes('Cuota agotada')) {
+      alert("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.")
+    } else {
+      alert("Ocurrió un error al intentar traducir con la IA.")
+    }
   } finally {
     isTranslating.value = false
   }

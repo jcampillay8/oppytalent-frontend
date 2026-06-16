@@ -132,6 +132,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/:username/oportunidades',
+    name: 'CoverLettersAdmin',
+    component: () => import('../views/admin/CoverLettersAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:username/theme-config',
     name: 'ThemeConfigAdmin',
     component: () => import('../views/admin/ThemeConfigAdmin.vue'),

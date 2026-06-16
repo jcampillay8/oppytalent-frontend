@@ -7,7 +7,20 @@
         Arquitecto de soluciones escalables. Especializado en sistemas distribuidos, pipelines de datos y 
         arquitecturas cloud-native con enfoque en minería, banca e IA.
       </p>
+      
+      <div class="hero-actions">
+        <button class="btn btn-primary generate-cover-btn" @click="showCoverLetterModal = true">
+          ✨ Generar Cover Letter para un Trabajo
+        </button>
+      </div>
     </section>
+
+    <!-- Modal Cover Letter -->
+    <CoverLetterModal 
+      v-if="showCoverLetterModal" 
+      :username="$route.params.username" 
+      @close="showCoverLetterModal = false" 
+    />
 
     <section class="section" :class="{ collapsed: !expanded.tags }">
       <h2 class="section-title" @click="toggle('tags')">
@@ -84,6 +97,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import ProyectoCard from '../../components/public/ProyectoCard.vue'
 import ExperienciaCard from '../../components/public/ExperienciaCard.vue'
 import FilterBar from '../../components/public/FilterBar.vue'
+import CoverLetterModal from '../../components/public/CoverLetterModal.vue'
 import { useProyectosStore } from '../../stores/proyectos'
 import { useExperienciasStore } from '../../stores/experiencias'
 import { useEstudiosStore } from '../../stores/estudios'
@@ -96,6 +110,8 @@ const experienciasStore = useExperienciasStore()
 const estudiosStore = useEstudiosStore()
 const { locale } = useI18n()
 const { getTranslated } = useTranslatedData()
+
+const showCoverLetterModal = ref(false)
 
 const { defaults, fetchConfigs } = useSectionConfig()
 
@@ -190,6 +206,30 @@ onMounted(async () => {
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+.hero-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.generate-cover-btn {
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.generate-cover-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
 .section {

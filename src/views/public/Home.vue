@@ -5,7 +5,7 @@
       <aside class="chat-sidebar">
         <div class="profile-card">
           <div class="avatar-container">
-            <img v-if="portfolioUser?.userImage" :src="portfolioUser.userImage" :alt="portfolioUser.firstName" class="profile-avatar" />
+            <img v-if="avatarUrl || portfolioUser?.userImage" :src="avatarUrl || portfolioUser.userImage" :alt="portfolioUser?.firstName || 'Avatar'" class="profile-avatar" />
             <div v-else class="avatar-placeholder">{{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username || 'U').charAt(0) + (portfolioUser.lastName || '').charAt(0) : '...' }}</div>
           </div>
           <h2 class="profile-name">{{ portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...' }}</h2>
@@ -36,9 +36,13 @@
           <p class="online-indicator">{{ $t('home.online') }}</p>
         </div>
         <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-          <router-link v-if="isOwner" to="/admin" class="btn btn-primary btn-sm" style="background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #fff;">
-            Panel Admin
-          </router-link>
+          <button 
+            @click="showCoverLetterModal = true" 
+            class="btn btn-primary btn-sm" 
+            style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); border: none; color: #fff; font-weight: 600;"
+          >
+            ✨ Ingresa URL Match Trabajo
+          </button>
           <button 
             v-if="authStore.token" 
             @click="resetChatConversation" 
@@ -122,6 +126,13 @@
         </p>
       </footer>
     </main>
+
+    <!-- Modal Cover Letter -->
+    <CoverLetterModal 
+      v-if="showCoverLetterModal" 
+      :username="route.params.username" 
+      @close="showCoverLetterModal = false" 
+    />
     </div>
   </div>
 </template>
@@ -141,6 +152,7 @@ import { useTranslatedData } from '../../composables/useTranslatedData'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../../stores/auth'
+import CoverLetterModal from '../../components/public/CoverLetterModal.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -156,6 +168,11 @@ const authStore = useAuthStore()
 
 const currentUser = ref(null)
 const portfolioUser = ref(null)
+const isDropdownOpen = ref(false)
+const showCoverLetterModal = ref(false)
+
+const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || perfilStore.items[0]?.image_url || null)
+
 const portfolioThemeClass = computed(() => `theme-${portfolioUser.value?.portfolio_theme || 'dark-glass'}`)
 
 const isOwner = computed(() => {

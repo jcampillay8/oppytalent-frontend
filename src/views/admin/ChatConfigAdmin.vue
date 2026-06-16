@@ -8,6 +8,30 @@
       <div class="card form-card">
         <form @submit.prevent="saveConfig" class="admin-form">
           
+          <h3 class="subsection-title">Configuración de Inteligencia Artificial</h3>
+          <p class="help-text">Tu portafolio utiliza <strong>Gemini 1.5 Flash</strong> para traducciones automáticas, lectura de CVs y el chatbot. Tienes <strong>{{ authStore.user?.ai_credits }} créditos gratuitos</strong>. Si ingresas tu propia API Key (gratuita en Google AI Studio), tus llamadas serán ilimitadas y sin costo para ti.</p>
+          
+          <div class="form-group">
+            <label for="geminiKey">Tu Google Gemini API Key</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input
+                type="password"
+                id="geminiKey"
+                v-model="geminiKeyForm"
+                class="form-input"
+                :placeholder="authStore.user?.has_gemini_key ? '•••••••••••••••••••••••• (Llave guardada)' : 'Pega tu API Key de Google Studio aquí'"
+              />
+              <button type="button" class="btn btn-outline" @click="saveGeminiKey" :disabled="savingKey">
+                <span v-if="savingKey">Validando...</span>
+                <span v-else>Guardar Llave</span>
+              </button>
+            </div>
+            <p v-if="keySuccessMsg" class="success-message" style="margin-top: 0.5rem;">{{ keySuccessMsg }}</p>
+            <p v-if="keyErrorMsg" class="error-message" style="margin-top: 0.5rem;">{{ keyErrorMsg }}</p>
+          </div>
+
+          <hr class="divider" />
+
           <h3 class="subsection-title">Mensaje Inicial</h3>
           <div class="form-group">
             <label for="welcomeMsg">Ingresa el mensaje inicial de tu asistente IA</label>
@@ -48,7 +72,6 @@
           <div class="form-group">
             <label for="q3">Pregunta Sugerida 3</label>
             <input
-              type="text"
               id="q3"
               v-model="form.chat_suggested_q3"
               class="form-input"
@@ -75,6 +98,9 @@
 import { ref, onMounted } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import { api } from '../../services/api'
+import { useAuthStore } from '../../stores/auth'
+
+const authStore = useAuthStore()
 
 const form = ref({
   chat_welcome_message: '',
@@ -86,6 +112,29 @@ const form = ref({
 const saving = ref(false)
 const successMsg = ref('')
 const errorMsg = ref('')
+
+const geminiKeyForm = ref('')
+const savingKey = ref(false)
+const keySuccessMsg = ref('')
+const keyErrorMsg = ref('')
+
+async function saveGeminiKey() {
+  if (!geminiKeyForm.value) return
+  savingKey.value = true
+  keySuccessMsg.value = ''
+  keyErrorMsg.value = ''
+  
+  try {
+    const res = await api.updateGeminiKey(geminiKeyForm.value)
+    keySuccessMsg.value = res.message
+    geminiKeyForm.value = ''
+    await authStore.fetchUser() // Actualizar el estado
+  } catch (err) {
+    keyErrorMsg.value = err.detail || 'La API Key ingresada no es válida.'
+  } finally {
+    savingKey.value = false
+  }
+}
 
 onMounted(async () => {
   try {

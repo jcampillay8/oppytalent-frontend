@@ -41,6 +41,13 @@ export const api = {
     return request('/user/profile')
   },
   
+  updateGeminiKey(api_key) {
+    return request('/user/gemini-key', {
+      method: 'PUT',
+      body: JSON.stringify({ api_key })
+    })
+  },
+  
   // Users
   searchUsers(query) {
     return request(`/user/search?q=${encodeURIComponent(query)}`)
@@ -234,6 +241,28 @@ export const api = {
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Error uploading file')
       return data
+    })
+  },
+  
+  // Cover Letters
+  generateCoverLetter(username, data) {
+    return request(`/cover-letters/generate/${encodeURIComponent(username)}`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+  sendCoverLetterEmail(letterId, data) {
+    return request(`/cover-letters/${letterId}/send-email`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  },
+  getCoverLetters() {
+    return request('/cover-letters')
+  },
+  deleteCoverLetter(letterId) {
+    return request(`/cover-letters/${letterId}`, {
+      method: 'DELETE'
     })
   }
 }

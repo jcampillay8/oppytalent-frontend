@@ -21,7 +21,22 @@ onMounted(async () => {
     authStore.token = token
     await authStore.fetchUser()
     if (authStore.user) {
-      router.push(`/${authStore.user.username.split('@')[0]}/dashboard`)
+      const baseUsername = authStore.user.username.split('@')[0]
+      try {
+        const perfilResponse = await fetch(`/api/v1/perfil/?username=${baseUsername}`)
+        if (perfilResponse.ok) {
+          const perfiles = await perfilResponse.json()
+          if (perfiles && perfiles.length > 0) {
+            router.push(`/${baseUsername}`)
+          } else {
+            router.push(`/${baseUsername}/dashboard`)
+          }
+        } else {
+          router.push(`/${baseUsername}/dashboard`)
+        }
+      } catch (e) {
+        router.push(`/${baseUsername}/dashboard`)
+      }
     } else {
       router.push('/home')
     }

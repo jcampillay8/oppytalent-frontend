@@ -231,7 +231,11 @@ async function handleCVUpload() {
     router.push(`/${route.params.username}/cv-wizard`)
     
   } catch (error) {
-    alert("Ocurrió un error al subir el CV: " + error.message)
+    if (error.detail && error.detail.includes('Cuota agotada')) {
+      alert("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.")
+    } else {
+      alert("Ocurrió un error al subir el CV: " + (error.detail || error.message))
+    }
   } finally {
     uploadingCV.value = false
   }

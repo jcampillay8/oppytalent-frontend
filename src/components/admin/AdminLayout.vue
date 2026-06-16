@@ -11,6 +11,7 @@
         <router-link :to="`/${route.params.username}/secciones`" class="sidebar-link">Secciones</router-link>
         <router-link :to="`/${route.params.username}/frases`" class="sidebar-link">Frases</router-link>
         <router-link :to="`/${route.params.username}/chat-logs`" class="sidebar-link">Chat Logs</router-link>
+        <router-link :to="`/${route.params.username}/oportunidades`" class="sidebar-link">Oportunidades</router-link>
         <router-link :to="`/${route.params.username}/chat-config`" class="sidebar-link">Personaliza tu IA</router-link>
         <router-link :to="`/${route.params.username}/theme-config`" class="sidebar-link">Apariencia</router-link>
         <router-link :to="`/${route.params.username}/almacenamiento`" class="sidebar-link">☁️ Almacenamiento</router-link>

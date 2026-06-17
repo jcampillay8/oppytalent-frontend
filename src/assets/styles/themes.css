@@ -1,66 +1,199 @@
-/* Default Dark Glassmorphism */
-html.theme-dark-glass {
-  --color-primary: #1a3a5c;
-  --color-accent: #3b82f6;
-  --color-gray-50: #09090b;   
-  --color-gray-100: #18181b;  
-  --color-gray-200: rgba(255, 255, 255, 0.08); 
-  --color-gray-800: #fafafa;  
-  --color-gray-900: #ffffff;  
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root, html.theme-light-minimalist {
+    /* OppyTec Light Theme */
+    --background: 220 33% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    
+    --primary: 161 72% 38%;
+    --primary-foreground: 210 20% 98%;
+    
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 224 71% 4%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 224 71% 4%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 161 72% 38%;
+    
+    --radius: 0.75rem;
+
+    /* Backward compatibility for old OppyTalent CSS */
+    --color-primary: hsl(var(--primary));
+    --color-primary-light: hsl(var(--primary) / 0.8);
+    --color-primary-dark: hsl(var(--background));
+    --color-accent: hsl(var(--ring));
+    --color-gray-50: hsl(var(--background));
+    --color-gray-100: hsl(var(--secondary));
+    --color-gray-200: hsl(var(--border));
+    --color-gray-800: hsl(var(--foreground));
+    --color-gray-900: hsl(var(--foreground));
+  }
+
+  .dark, html.theme-dark-glass {
+    /* OppyTec Dark Theme (Default) */
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+    --card: 224 71% 6%;
+    --card-foreground: 210 20% 98%;
+    
+    --primary: 161 72% 45%;
+    --primary-foreground: 224 71% 4%;
+    
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 215 28% 17%;
+    --accent-foreground: 210 20% 98%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 161 72% 45%;
+
+    --color-primary: hsl(var(--primary));
+    --color-primary-light: hsl(var(--primary) / 0.8);
+    --color-primary-dark: hsl(var(--background));
+    --color-accent: hsl(var(--ring));
+    --color-gray-50: hsl(var(--background));
+    --color-gray-100: hsl(var(--secondary));
+    --color-gray-200: hsl(var(--border));
+    --color-gray-800: hsl(var(--muted-foreground));
+    --color-gray-900: hsl(var(--foreground));
+  }
+
+  .ocean-blue, html.theme-ocean-blue {
+    /* OppyTec Ocean Blue Theme */
+    --background: 222 47% 7%;
+    --foreground: 210 100% 92%;
+    --card: 220 40% 10%;
+    --card-foreground: 210 100% 92%;
+    
+    --primary: 186 100% 50%;
+    --primary-foreground: 222 47% 7%;
+    
+    --secondary: 220 35% 16%;
+    --secondary-foreground: 210 100% 92%;
+    --muted: 220 35% 14%;
+    --muted-foreground: 213 50% 65%;
+    --accent: 220 35% 16%;
+    --accent-foreground: 186 100% 70%;
+    --border: 220 40% 18%;
+    --input: 220 40% 18%;
+    --ring: 186 100% 50%;
+
+    --color-primary: hsl(var(--primary));
+    --color-primary-light: hsl(var(--primary) / 0.8);
+    --color-primary-dark: hsl(var(--background));
+    --color-accent: hsl(var(--ring));
+    --color-gray-50: hsl(var(--background));
+    --color-gray-100: hsl(var(--card));
+    --color-gray-200: hsl(var(--border));
+    --color-gray-800: hsl(var(--muted-foreground));
+    --color-gray-900: hsl(var(--foreground));
+  }
+
+  .cyber-neon, html.theme-cyber-neon {
+    /* Cyber Neon Theme */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    
+    --primary: 316 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 0 0% 10%;
+    --accent-foreground: 316 100% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 316 100% 50%;
+
+    --color-primary: hsl(var(--primary));
+    --color-primary-light: hsl(var(--primary) / 0.8);
+    --color-primary-dark: hsl(var(--background));
+    --color-accent: hsl(var(--ring));
+    --color-gray-50: hsl(var(--background));
+    --color-gray-100: hsl(var(--card));
+    --color-gray-200: hsl(var(--border));
+    --color-gray-800: hsl(var(--muted-foreground));
+    --color-gray-900: hsl(var(--foreground));
+  }
+
+  .rose-gold, html.theme-rose-gold {
+    /* Rose Gold Theme */
+    --background: 345 30% 10%;
+    --foreground: 35 100% 90%;
+    --card: 345 30% 15%;
+    --card-foreground: 35 100% 90%;
+    
+    --primary: 350 50% 60%;
+    --primary-foreground: 345 30% 10%;
+    
+    --secondary: 345 25% 20%;
+    --secondary-foreground: 35 100% 90%;
+    --muted: 345 25% 20%;
+    --muted-foreground: 345 20% 65%;
+    --accent: 345 25% 20%;
+    --accent-foreground: 350 50% 60%;
+    --border: 345 25% 25%;
+    --input: 345 25% 25%;
+    --ring: 350 50% 60%;
+
+    --color-primary: hsl(var(--primary));
+    --color-primary-light: hsl(var(--primary) / 0.8);
+    --color-primary-dark: hsl(var(--background));
+    --color-accent: hsl(var(--ring));
+    --color-gray-50: hsl(var(--background));
+    --color-gray-100: hsl(var(--card));
+    --color-gray-200: hsl(var(--border));
+    --color-gray-800: hsl(var(--muted-foreground));
+    --color-gray-900: hsl(var(--foreground));
+  }
 }
 
-/* Light Minimalist */
-html.theme-light-minimalist {
-  --color-primary: #f8fafc;
-  --color-accent: #0f172a;
-  --color-gray-50: #ffffff;   
-  --color-gray-100: #f1f5f9;  
-  --color-gray-200: #e2e8f0; 
-  --color-gray-800: #334155;  
-  --color-gray-900: #0f172a;  
-}
-html.theme-light-minimalist .chat-message-wrapper.bot {
-  background: rgba(241, 245, 249, 0.8);
-  border: 1px solid var(--color-gray-200);
-}
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(at 0% 0%, hsla(161, 72%, 38%, 0.05) 0, transparent 50%),
+                      radial-gradient(at 100% 100%, hsla(224, 71%, 4%, 0.05) 0, transparent 50%);
+  }
+  
+  .dark body {
+    background-image: radial-gradient(at 0% 0%, hsla(161, 72%, 38%, 0.1) 0, transparent 50%),
+                      radial-gradient(at 100% 0%, hsla(224, 71%, 4%, 0.1) 0, transparent 50%);
+  }
 
-/* Cyber Neon */
-html.theme-cyber-neon {
-  --color-primary: #000000;
-  --color-accent: #22c55e;
-  --color-gray-50: #000000;   
-  --color-gray-100: #052e16;  
-  --color-gray-200: rgba(34, 197, 94, 0.2); 
-  --color-gray-800: #86efac;  
-  --color-gray-900: #22c55e;  
-}
-
-/* Ocean Blue */
-html.theme-ocean-blue {
-  --color-primary: #0f172a;
-  --color-accent: #38bdf8;
-  --color-gray-50: #020617;   
-  --color-gray-100: #0f172a;  
-  --color-gray-200: rgba(56, 189, 248, 0.2); 
-  --color-gray-800: #bae6fd;  
-  --color-gray-900: #e0f2fe;  
-}
-
-/* Rose Gold */
-html.theme-rose-gold {
-  --color-primary: #2a101f;
-  --color-accent: #f43f5e;
-  --color-gray-50: #1a0b14;   
-  --color-gray-100: #2a101f;  
-  --color-gray-200: rgba(244, 63, 94, 0.2); 
-  --color-gray-800: #fda4af;  
-  --color-gray-900: #fff1f2;  
+  .ocean-blue body {
+    background-image:
+      radial-gradient(ellipse at 10% 20%, hsla(186, 100%, 50%, 0.10) 0, transparent 45%),
+      radial-gradient(ellipse at 85% 10%, hsla(258, 80%, 60%, 0.10) 0, transparent 40%),
+      radial-gradient(ellipse at 50% 90%, hsla(152, 80%, 50%, 0.07) 0, transparent 45%),
+      radial-gradient(ellipse at 90% 70%, hsla(186, 100%, 50%, 0.06) 0, transparent 35%);
+  }
 }
 
 /* Base Wrapper rules to enforce theme */
 .portfolio-theme-wrapper {
-  background: var(--color-gray-50);
-  color: var(--color-gray-800);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
   min-height: 100vh;
   width: 100%;
 }

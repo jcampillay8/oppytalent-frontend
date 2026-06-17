@@ -1,16 +1,26 @@
 <template>
-  <div class="filter-bar">
-    <div class="filter-tags">
+  <div class="flex items-center flex-wrap gap-3 mb-8">
+    <div class="flex flex-wrap gap-2">
       <button
         v-for="tag in allTags"
         :key="tag"
-        :class="['filter-tag', { active: selectedTags.includes(tag) }]"
+        :class="[
+          'px-4 py-1.5 text-sm font-medium rounded-full border transition-all duration-200 outline-none',
+          selectedTags.includes(tag) 
+            ? 'bg-primary border-primary text-primary-foreground shadow-md shadow-primary/20' 
+            : 'bg-secondary border-border/50 text-muted-foreground hover:border-primary/50 hover:text-foreground'
+        ]"
         @click="toggleTag(tag)"
       >
         {{ tag }}
       </button>
     </div>
-    <button v-if="selectedTags.length" class="btn btn-outline btn-sm" @click="$emit('clear')">
+    
+    <button 
+      v-if="selectedTags.length" 
+      class="px-3 py-1.5 text-xs font-medium rounded-full border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors outline-none" 
+      @click="$emit('clear')"
+    >
       Limpiar filtros
     </button>
   </div>
@@ -28,47 +38,3 @@ function toggleTag(tag) {
   emit('toggle', tag)
 }
 </script>
-
-<style scoped>
-.filter-bar {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-}
-
-.filter-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.filter-tag {
-  padding: 0.375rem 1rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  border: 1px solid var(--color-gray-300);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--color-gray-600);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.filter-tag:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
-}
-
-.filter-tag.active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: #fff;
-}
-
-.btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-}
-</style>

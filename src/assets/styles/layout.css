@@ -1,0 +1,24 @@
+/* Archivo Orquestador de Layout Global */
+:root {
+  /* Configuración del ancho máximo global */
+  --layout-max-width: 1536px;
+  --layout-padding-x: 2rem;
+}
+
+/* Contenedor universal para todas las vistas y el Navbar */
+.container {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding-left: var(--layout-padding-x);
+  padding-right: var(--layout-padding-x);
+}
+
+/* Alineación especial para Navbars o elementos horizontales dentro del container */
+.navbar-inner {
+  display: grid;
+  grid-template-columns: 1fr minmax(auto, 400px) 1fr;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}

@@ -1,310 +1,90 @@
 <template>
-  <div class="landing-container">
-    <div class="background-effects">
-      <div class="glow-sphere sphere-1"></div>
-      <div class="glow-sphere sphere-2"></div>
+  <div class="min-h-screen bg-[#09090b] text-zinc-50 relative flex flex-col overflow-hidden selection:bg-primary/30">
+    <!-- Efectos de Fondo -->
+    <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <div class="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[radial-gradient(circle,rgba(59,130,246,0.15)_0%,transparent_70%)] blur-[80px]"></div>
+      <div class="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.15)_0%,transparent_70%)] blur-[80px]"></div>
+      <div class="absolute top-[20%] right-[20%] w-[30vw] h-[30vw] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.1)_0%,transparent_70%)] blur-[80px]"></div>
     </div>
     
-    <header class="landing-header">
-      <div class="logo">Oppy<span>Talent</span></div>
-      <div class="header-actions">
-        <router-link to="/login" class="btn-ghost">Iniciar Sesión</router-link>
-        <router-link to="/register" class="btn-glow">Registrarse</router-link>
+    <!-- Navbar -->
+    <header class="relative z-10 flex justify-between items-center px-6 md:px-12 py-5 bg-[#09090b]/40 backdrop-blur-xl border-b border-white/5" v-motion :initial="{ opacity: 0, y: -20 }" :enter="{ opacity: 1, y: 0 }">
+      <div class="text-2xl font-extrabold tracking-tight">Oppy<span class="text-primary">Talent</span></div>
+      <div class="flex items-center gap-4">
+        <router-link to="/login" class="text-zinc-400 font-medium hover:text-white transition-colors text-sm md:text-base">Iniciar Sesión</router-link>
+        <router-link to="/register">
+          <NeonButton glow variant="primary" size="sm">Registrarse</NeonButton>
+        </router-link>
       </div>
     </header>
 
-    <main class="hero-section">
-      <div class="hero-content">
-        <h1 class="hero-title">
-          Impulsa tu <span class="text-gradient">Potencial</span><br />
+    <!-- Hero Section -->
+    <main class="relative z-10 flex-1 flex flex-col lg:flex-row items-center px-6 md:px-16 gap-12 lg:gap-24 container mx-auto max-w-7xl py-12 lg:py-0">
+      
+      <!-- Contenido Textual -->
+      <div class="flex-1 max-w-2xl text-center lg:text-left" v-motion :initial="{ opacity: 0, x: -30 }" :enter="{ opacity: 1, x: 0, transition: { delay: 100 } }">
+        <Badge variant="outline" class="mb-6 border-primary/30 text-primary/80 bg-primary/5 uppercase tracking-wider backdrop-blur-sm">Nueva Era del Talento</Badge>
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-white drop-shadow-sm">
+          Impulsa tu <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">Potencial</span><br class="hidden md:block" />
           al Siguiente Nivel
         </h1>
-        <p class="hero-subtitle">
+        <p class="text-lg md:text-xl text-zinc-400 leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0">
           La plataforma definitiva para conectar talento extraordinario con oportunidades de clase mundial.
-          Únete a la red donde las habilidades se encuentran con la innovación.
+          Únete a la red donde tus habilidades se potencian con Inteligencia Artificial.
         </p>
-        <div class="hero-cta">
-          <router-link to="/register" class="btn-glow large">Comenzar Ahora</router-link>
-          <router-link to="/portafolio" class="btn-glass large">Explorar Portafolio</router-link>
+        <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+          <router-link to="/register">
+            <NeonButton glow variant="primary" class="w-full sm:w-auto px-8 py-3 text-lg">Comenzar Ahora <ArrowRight :size="20" class="inline ml-2" /></NeonButton>
+          </router-link>
+          <router-link to="/portafolio">
+            <NeonButton variant="outline" class="w-full sm:w-auto px-8 py-3 text-lg border-white/10 hover:border-white/30 text-white hover:bg-white/5">
+              <Sparkles :size="20" class="inline mr-2 text-indigo-400" /> Explorar Portafolio
+            </NeonButton>
+          </router-link>
         </div>
       </div>
       
-      <div class="hero-visual">
-        <div class="glass-card mockup-card">
-          <div class="mockup-header">
-            <div class="dot red"></div>
-            <div class="dot yellow"></div>
-            <div class="dot green"></div>
+      <!-- Visual (Mockup Card) -->
+      <div class="flex-1 flex justify-center lg:justify-end w-full perspective-1000" v-motion :initial="{ opacity: 0, scale: 0.9, rotateY: 0 }" :enter="{ opacity: 1, scale: 1, transition: { delay: 300 } }">
+        <div class="w-full max-w-lg h-[400px] rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] p-6 flex flex-col transform lg:rotate-y-[-15deg] lg:rotate-x-[5deg] transition-transform duration-500 hover:rotate-0 group">
+          <div class="flex gap-2 mb-8">
+            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
           </div>
-          <div class="mockup-body">
-            <div class="placeholder-chart"></div>
-            <div class="placeholder-lines">
-              <div class="line w-full"></div>
-              <div class="line w-3/4"></div>
-              <div class="line w-1/2"></div>
+          <div class="flex-1 flex flex-col gap-6">
+            <!-- Gráfico falso -->
+            <div class="h-32 bg-gradient-to-t from-primary/20 to-transparent border-b-2 border-primary rounded-t-lg relative overflow-hidden group-hover:from-primary/30 transition-colors">
+              <div class="absolute bottom-0 left-0 w-full h-[1px] bg-primary/50 shadow-[0_0_15px_rgba(59,130,246,0.8)]"></div>
+            </div>
+            <!-- Líneas de texto falso -->
+            <div class="space-y-3">
+              <div class="h-3 bg-white/10 rounded-full w-full"></div>
+              <div class="h-3 bg-white/10 rounded-full w-3/4"></div>
+              <div class="h-3 bg-white/10 rounded-full w-1/2"></div>
             </div>
           </div>
         </div>
       </div>
+
     </main>
   </div>
 </template>
 
+<script setup>
+import NeonButton from '../../components/ui/NeonButton.vue'
+import Badge from '../../components/ui/Badge.vue'
+import { ArrowRight, Sparkles } from 'lucide-vue-next'
+</script>
+
 <style scoped>
-.landing-container {
-  min-height: 100vh;
-  background-color: #09090b; /* Zinc 950 */
-  color: #fafafa;
-  font-family: 'Inter', sans-serif;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+.perspective-1000 {
+  perspective: 1000px;
 }
-
-.background-effects {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
+.rotate-y-\[-15deg\] {
+  transform: rotateY(-15deg);
 }
-
-.glow-sphere {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
-}
-
-.sphere-1 {
-  top: -10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(30,58,138,0) 70%);
-}
-
-.sphere-2 {
-  bottom: -20%;
-  right: -10%;
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, rgba(76,29,149,0) 70%);
-}
-
-.landing-header {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 4rem;
-  background: rgba(9, 9, 11, 0.4);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-
-.logo span {
-  color: #3b82f6; /* Blue 500 */
-}
-
-.header-actions {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.btn-ghost {
-  color: #a1a1aa; /* Zinc 400 */
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.btn-ghost:hover {
-  color: #fafafa;
-}
-
-.btn-glow {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  color: white;
-  padding: 0.6rem 1.5rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-  text-decoration: none;
-}
-
-.btn-glow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
-  text-decoration: none;
-}
-
-.hero-section {
-  position: relative;
-  z-index: 10;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  padding: 0 4rem;
-  gap: 4rem;
-}
-
-.hero-content {
-  flex: 1;
-  max-width: 600px;
-}
-
-.hero-title {
-  font-size: 4rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
-  letter-spacing: -1px;
-}
-
-.text-gradient {
-  background: linear-gradient(to right, #60a5fa, #c084fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hero-subtitle {
-  font-size: 1.25rem;
-  color: #a1a1aa;
-  line-height: 1.6;
-  margin-bottom: 3rem;
-}
-
-.hero-cta {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn-glow.large {
-  padding: 0.8rem 2rem;
-  font-size: 1.125rem;
-}
-
-.btn-glass {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 0.8rem 2rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  text-decoration: none;
-}
-
-.btn-glass:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-}
-
-.hero-visual {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
-.mockup-card {
-  width: 100%;
-  max-width: 500px;
-  height: 350px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
-  transition: transform 0.5s ease;
-}
-
-.mockup-card:hover {
-  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
-}
-
-.mockup-header {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.dot.red { background: #ef4444; }
-.dot.yellow { background: #f59e0b; }
-.dot.green { background: #10b981; }
-
-.mockup-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.placeholder-chart {
-  height: 120px;
-  background: linear-gradient(180deg, rgba(59,130,246,0.2) 0%, rgba(59,130,246,0) 100%);
-  border-bottom: 2px solid #3b82f6;
-  border-radius: 8px 8px 0 0;
-  position: relative;
-}
-
-.placeholder-lines {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.line {
-  height: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-}
-
-.w-full { width: 100%; }
-.w-3\/4 { width: 75%; }
-.w-1\/2 { width: 50%; }
-
-@media (max-width: 1024px) {
-  .hero-section {
-    flex-direction: column;
-    padding: 2rem;
-    text-align: center;
-  }
-  .hero-cta {
-    justify-content: center;
-  }
-  .mockup-card {
-    transform: none;
-  }
-  .mockup-card:hover {
-    transform: none;
-  }
+.rotate-x-\[5deg\] {
+  transform: rotateX(5deg);
 }
 </style>

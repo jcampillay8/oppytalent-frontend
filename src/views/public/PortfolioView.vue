@@ -1,33 +1,35 @@
 <template>
-  <div class="container">
-    <section class="hero">
-      <h1 class="hero-title">Jaime Gabriel Campillay Rojas</h1>
-      <p class="hero-subtitle">Ingeniero Civil Industrial &middot; Magíster &middot; Senior Software/Data Engineer</p>
-      <p class="hero-desc">
-        Arquitecto de soluciones escalables. Especializado en sistemas distribuidos, pipelines de datos y 
-        arquitecturas cloud-native con enfoque en minería, banca e IA.
-      </p>
+  <div class="container py-8 max-w-5xl mx-auto">
+    <!-- Hero Section -->
+    <section class="text-center py-12 px-4 relative mb-8" v-motion :initial="{ opacity: 0, y: 20 }" :enter="{ opacity: 1, y: 0 }">
+      <!-- Decoración de fondo opcional si lo deseas -->
+      <div class="absolute inset-0 bg-primary/5 rounded-[3rem] -z-10 blur-3xl opacity-50"></div>
       
-      <div class="hero-actions">
-        <button class="btn btn-primary generate-cover-btn" @click="showCoverLetterModal = true">
-          ✨ Generar Cover Letter para un Trabajo
-        </button>
+      <div class="relative w-32 h-32 mx-auto mb-6 rounded-full border-4 border-primary/20 overflow-hidden shadow-xl" v-if="perfil?.avatar_url">
+        <img :src="perfil.avatar_url" class="w-full h-full object-cover" alt="Profile avatar" />
       </div>
+
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
+        {{ perfil?.nombre_completo || 'Jaime Gabriel Campillay Rojas' }}
+      </h1>
+      <p class="text-lg md:text-xl text-primary font-medium mb-6">
+        {{ perfil?.ocupacion || 'Ingeniero Civil Industrial • Magíster • Senior Software/Data Engineer' }}
+      </p>
+      <p class="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        {{ perfil?.descripcion || 'Arquitecto de soluciones escalables. Especializado en sistemas distribuidos, pipelines de datos y arquitecturas cloud-native con enfoque en minería, banca e IA.' }}
+      </p>
     </section>
-
-    <!-- Modal Cover Letter -->
-    <CoverLetterModal 
-      v-if="showCoverLetterModal" 
-      :username="$route.params.username" 
-      @close="showCoverLetterModal = false" 
-    />
-
-    <section class="section" :class="{ collapsed: !expanded.tags }">
-      <h2 class="section-title" @click="toggle('tags')">
-        Tags
-        <span class="chevron">{{ expanded.tags ? '▾' : '▸' }}</span>
+      
+    <!-- Tags / Filters -->
+    <section class="mb-12" :class="{ 'opacity-80': !expanded.tags }">
+      <h2 class="flex items-center justify-between text-xl font-bold border-b border-border/50 pb-3 mb-6 cursor-pointer hover:text-primary transition-colors group" @click="toggle('tags')">
+        <div class="flex items-center gap-2">
+          <Filter :size="20" class="text-primary" />
+          Tags
+        </div>
+        <ChevronDown :size="20" class="transition-transform duration-300" :class="{ 'rotate-180': expanded.tags }" />
       </h2>
-      <div v-if="expanded.tags">
+      <div v-show="expanded.tags" v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1 }">
         <FilterBar
           :all-tags="availableTags"
           :selected-tags="selectedTags"
@@ -37,54 +39,77 @@
       </div>
     </section>
 
-    <section class="section" :class="{ collapsed: !expanded.proyectos }">
-      <h2 class="section-title" @click="toggle('proyectos')">
-        <span>{{ $t('portfolio.proyectos') }} <span class="count">{{ filteredProyectos.length }}</span></span>
-        <span class="chevron">{{ expanded.proyectos ? '▾' : '▸' }}</span>
+    <!-- Proyectos -->
+    <section class="mb-12" :class="{ 'opacity-80': !expanded.proyectos }">
+      <h2 class="flex items-center justify-between text-xl font-bold border-b border-border/50 pb-3 mb-6 cursor-pointer hover:text-primary transition-colors group" @click="toggle('proyectos')">
+        <div class="flex items-center gap-2">
+          <FolderKanban :size="20" class="text-blue-500" />
+          <span>{{ $t('portfolio.proyectos') }} <Badge variant="secondary" class="ml-2">{{ filteredProyectos.length }}</Badge></span>
+        </div>
+        <ChevronDown :size="20" class="transition-transform duration-300" :class="{ 'rotate-180': expanded.proyectos }" />
       </h2>
-      <div v-if="expanded.proyectos">
-        <div v-if="proyectosStore.loading" class="loading"><div class="spinner"></div></div>
-        <div v-else-if="!filteredProyectos.length" class="empty-state">
+      <div v-show="expanded.proyectos">
+        <div v-if="proyectosStore.loading" class="flex justify-center py-10"><Loader2 class="animate-spin text-primary" :size="32" /></div>
+        <div v-else-if="!filteredProyectos.length" class="text-center py-10 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">
           No se encontraron proyectos con los filtros seleccionados.
         </div>
-        <div v-else class="grid">
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ProyectoCard v-for="p in filteredProyectos" :key="p.id" :proyecto="p" />
         </div>
       </div>
     </section>
 
-    <section class="section" :class="{ collapsed: !expanded.experiencia }">
-      <h2 class="section-title" @click="toggle('experiencia')">
-        <span>{{ $t('portfolio.experiencia') }} <span class="count">{{ filteredExperiencias.length }}</span></span>
-        <span class="chevron">{{ expanded.experiencia ? '▾' : '▸' }}</span>
+    <!-- Experiencia -->
+    <section class="mb-12" :class="{ 'opacity-80': !expanded.experiencia }">
+      <h2 class="flex items-center justify-between text-xl font-bold border-b border-border/50 pb-3 mb-6 cursor-pointer hover:text-primary transition-colors group" @click="toggle('experiencia')">
+        <div class="flex items-center gap-2">
+          <Briefcase :size="20" class="text-emerald-500" />
+          <span>{{ $t('portfolio.experiencia') }} <Badge variant="secondary" class="ml-2">{{ filteredExperiencias.length }}</Badge></span>
+        </div>
+        <ChevronDown :size="20" class="transition-transform duration-300" :class="{ 'rotate-180': expanded.experiencia }" />
       </h2>
-      <div v-if="expanded.experiencia">
-        <div v-if="experienciasStore.loading" class="loading"><div class="spinner"></div></div>
-        <div v-else-if="!filteredExperiencias.length" class="empty-state">
+      <div v-show="expanded.experiencia">
+        <div v-if="experienciasStore.loading" class="flex justify-center py-10"><Loader2 class="animate-spin text-primary" :size="32" /></div>
+        <div v-else-if="!filteredExperiencias.length" class="text-center py-10 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">
           No se encontraron experiencias con los filtros seleccionados.
         </div>
-        <div v-else class="grid">
+        <div v-else class="grid grid-cols-1 gap-6 relative">
+          <!-- Timeline line -->
+          <div class="absolute left-6 top-4 bottom-4 w-px bg-border/50 hidden md:block"></div>
           <ExperienciaCard v-for="e in filteredExperiencias" :key="e.id" :experiencia="e" />
         </div>
       </div>
     </section>
 
-    <section class="section" :class="{ collapsed: !expanded.estudios }">
-      <h2 class="section-title" @click="toggle('estudios')">
-        <span>{{ $t('portfolio.estudios') }} <span class="count">{{ estudiosStore.items.length }}</span></span>
-        <span class="chevron">{{ expanded.estudios ? '▾' : '▸' }}</span>
+    <!-- Estudios -->
+    <section class="mb-12" :class="{ 'opacity-80': !expanded.estudios }">
+      <h2 class="flex items-center justify-between text-xl font-bold border-b border-border/50 pb-3 mb-6 cursor-pointer hover:text-primary transition-colors group" @click="toggle('estudios')">
+        <div class="flex items-center gap-2">
+          <GraduationCap :size="20" class="text-amber-500" />
+          <span>{{ $t('portfolio.estudios') }} <Badge variant="secondary" class="ml-2">{{ estudiosStore.items.length }}</Badge></span>
+        </div>
+        <ChevronDown :size="20" class="transition-transform duration-300" :class="{ 'rotate-180': expanded.estudios }" />
       </h2>
-      <div v-if="expanded.estudios">
-        <div v-if="estudiosStore.loading" class="loading"><div class="spinner"></div></div>
-        <div v-else-if="!estudiosStore.items.length" class="empty-state">Sin estudios registrados.</div>
-        <div v-else class="estudios-list">
-          <router-link v-for="e in sortedEstudios" :key="e.item.id" :to="`/estudios/${e.item.id}`" class="card estudio-item">
-            <img v-if="e.tData.image_url" :src="e.tData.image_url" :alt="e.tData.institucion" class="estudio-img" />
-            <div class="estudio-year">{{ e.tData.anio_obtencion }}</div>
-            <div class="estudio-info">
-              <h3>{{ e.tData.titulo }}</h3>
-              <span class="estudio-institucion">{{ e.tData.institucion }}</span>
-            </div>
+      <div v-show="expanded.estudios">
+        <div v-if="estudiosStore.loading" class="flex justify-center py-10"><Loader2 class="animate-spin text-primary" :size="32" /></div>
+        <div v-else-if="!estudiosStore.items.length" class="text-center py-10 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">
+          Sin estudios registrados.
+        </div>
+        <div v-else class="flex flex-col gap-4">
+          <router-link v-for="e in sortedEstudios" :key="e.item.id" :to="`/estudios/${e.item.id}`" class="block outline-none group">
+            <GlassCard hoverEffect class="flex items-center gap-6 p-5 transition-transform group-hover:translate-x-2">
+              <div class="w-16 h-16 rounded-xl border border-border/50 bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                <img v-if="e.tData.image_url" :src="e.tData.image_url" :alt="e.tData.institucion" class="w-full h-full object-cover" />
+                <Building2 v-else :size="24" class="text-muted-foreground" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-bold text-foreground mb-1 truncate">{{ e.tData.titulo }}</h3>
+                <span class="text-sm text-muted-foreground flex items-center gap-1"><Building2 :size="14" /> {{ e.tData.institucion }}</span>
+              </div>
+              <div class="text-2xl font-black text-primary opacity-50 shrink-0">
+                {{ e.tData.anio_obtencion }}
+              </div>
+            </GlassCard>
           </router-link>
         </div>
       </div>
@@ -93,14 +118,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ProyectoCard from '../../components/public/ProyectoCard.vue'
 import ExperienciaCard from '../../components/public/ExperienciaCard.vue'
 import FilterBar from '../../components/public/FilterBar.vue'
-import CoverLetterModal from '../../components/public/CoverLetterModal.vue'
+import GlassCard from '../../components/ui/GlassCard.vue'
+import Badge from '../../components/ui/Badge.vue'
+import { Filter, FolderKanban, Briefcase, GraduationCap, ChevronDown, Loader2, Building2 } from 'lucide-vue-next'
+
 import { useProyectosStore } from '../../stores/proyectos'
 import { useExperienciasStore } from '../../stores/experiencias'
 import { useEstudiosStore } from '../../stores/estudios'
+import { usePerfilStore } from '../../stores/perfil'
 import { useSectionConfig } from '../../composables/useSectionConfig'
 import { useTranslatedData } from '../../composables/useTranslatedData'
 import { useI18n } from 'vue-i18n'
@@ -108,14 +137,15 @@ import { useI18n } from 'vue-i18n'
 const proyectosStore = useProyectosStore()
 const experienciasStore = useExperienciasStore()
 const estudiosStore = useEstudiosStore()
+const perfilStore = usePerfilStore()
+
 const { locale } = useI18n()
 const { getTranslated } = useTranslatedData()
-
-const showCoverLetterModal = ref(false)
-
 const { defaults, fetchConfigs } = useSectionConfig()
 
 const expanded = defaults
+
+const perfil = computed(() => perfilStore.items[0] || null)
 
 function toggle(key) {
   expanded[key] = !expanded[key]
@@ -173,153 +203,10 @@ function handleToggleTag(tag) {
 onMounted(async () => {
   await Promise.all([
     fetchConfigs(),
+    perfilStore.fetchAll(),
     proyectosStore.fetchAll(),
     experienciasStore.fetchAll(),
     estudiosStore.fetchAll(),
   ])
 })
 </script>
-
-<style scoped>
-.hero {
-  text-align: center;
-  padding: 3rem 1rem 2rem;
-}
-
-.hero-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin-bottom: 0.5rem;
-}
-
-.hero-subtitle {
-  font-size: 1rem;
-  color: var(--color-accent);
-  font-weight: 500;
-  margin-bottom: 1rem;
-}
-
-.hero-desc {
-  font-size: 0.9375rem;
-  color: var(--color-gray-500);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
-.hero-actions {
-  margin-top: 1.5rem;
-  display: flex;
-  justify-content: center;
-}
-
-.generate-cover-btn {
-  font-size: 0.95rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  color: white;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.generate-cover-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
-
-.section {
-  margin-bottom: 3rem;
-}
-
-.section-title {
-  cursor: pointer;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-gray-200);
-  margin-bottom: 1rem;
-}
-
-.section-title:hover {
-  color: var(--color-accent);
-}
-
-.count {
-  font-weight: 400;
-  color: var(--color-gray-400);
-  margin-left: 0.375rem;
-}
-
-.chevron {
-  font-size: 0.875rem;
-  transition: transform 0.2s;
-}
-
-.section.collapsed .section-title {
-  margin-bottom: 0;
-  border-bottom-color: transparent;
-}
-
-.section.collapsed {
-  margin-bottom: 1rem;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.25rem;
-}
-
-.estudios-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.estudio-item {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.estudio-item:hover {
-  text-decoration: none;
-  color: inherit;
-}
-
-.estudio-img {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-}
-
-.estudio-year {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  min-width: 60px;
-}
-
-.estudio-info h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-  margin-bottom: 0.25rem;
-}
-
-.estudio-institucion {
-  font-size: 0.875rem;
-  color: var(--color-gray-500);
-}
-</style>

@@ -1,40 +1,104 @@
 <template>
-  <div class="container">
+  
     <AdminLayout>
-      <div class="admin-header">
-        <h1 class="page-title">Estudios & Certificaciones</h1>
-        <button class="btn btn-primary" @click="openForm(null)">+ Nuevo Estudio</button>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Estudios & Certificaciones</h1>
+          <p class="text-muted-foreground mt-1">Registra tu formación académica y certificados.</p>
+        </div>
+        <NeonButton @click="openForm(null)" glow variant="primary">
+          <template #icon-left><Plus :size="18" /></template>
+          Nuevo Estudio
+        </NeonButton>
       </div>
 
-      <EstudioForm
-        v-if="showForm"
-        :estudio="editingEstudio"
-        @save="handleSave"
-        @cancel="showForm = false"
-      />
+      <div v-if="showForm" class="mb-8" v-motion :initial="{ opacity: 0, y: -20 }" :enter="{ opacity: 1, y: 0 }">
+        <GlassCard>
+          <div class="flex items-center justify-between mb-4 border-b border-border/50 pb-4">
+            <h2 class="text-lg font-bold text-foreground">
+              {{ editingEstudio ? 'Editar Estudio' : 'Registrar Estudio' }}
+            </h2>
+            <button @click="showForm = false" class="p-2 text-muted-foreground hover:text-destructive transition-colors">
+              <X :size="20" />
+            </button>
+          </div>
+          <EstudioForm
+            :estudio="editingEstudio"
+            @save="handleSave"
+            @cancel="showForm = false"
+          />
+        </GlassCard>
+      </div>
 
-      <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
-      <div v-else-if="!store.items.length" class="empty-state">No hay estudios registrados.</div>
-      <div v-else class="admin-list">
-        <div v-for="e in store.items" :key="e.id" class="card admin-item">
-          <div class="admin-item-info">
-            <h3>{{ e.titulo }}</h3>
-            <span class="admin-item-meta">{{ e.institucion }} &middot; {{ e.anio_obtencion }}</span>
-          </div>
-          <div class="admin-item-actions">
-            <button class="btn btn-outline btn-sm" @click="openForm(e)">Editar</button>
-            <button class="btn btn-danger btn-sm" @click="handleDelete(e.id)">Eliminar</button>
-          </div>
+      <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
+        <Loader2 class="h-10 w-10 animate-spin mb-4" />
+        <p class="text-sm font-medium text-muted-foreground">Cargando estudios...</p>
+      </div>
+      
+      <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
+        <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
+          <GraduationCap :size="32" />
         </div>
+        <h3 class="text-xl font-bold text-foreground">No hay estudios registrados</h3>
+        <p class="text-muted-foreground mt-2 max-w-sm text-center">Aún no has agregado tus títulos o certificaciones académicas.</p>
+        <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
+          Agregar el primero
+        </NeonButton>
+      </div>
+
+      <div v-else class="grid grid-cols-1 gap-4">
+        <TransitionGroup 
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 translate-y-4"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-200 ease-in absolute w-full"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0 scale-95"
+          move-class="transition-transform duration-300"
+        >
+          <GlassCard 
+            v-for="e in store.items" 
+            :key="e.id" 
+            hoverEffect 
+            class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5"
+          >
+            <div class="flex-1 flex flex-col gap-2 min-w-0">
+              <div class="flex items-center gap-3">
+                <div class="p-2 rounded-md bg-amber-500/10 text-amber-500 shrink-0">
+                  <BookOpen :size="18" />
+                </div>
+                <h3 class="font-bold text-lg text-foreground truncate" :title="e.titulo">{{ e.titulo }}</h3>
+              </div>
+              <div class="flex items-center gap-3 text-sm text-muted-foreground mt-1 flex-wrap">
+                <span class="flex items-center gap-1 font-medium"><Building2 :size="14" /> {{ e.institucion }}</span>
+                <span class="hidden sm:inline">&middot;</span>
+                <span class="flex items-center gap-1"><Award :size="14" /> {{ e.anio_obtencion }}</span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-4 sm:mt-0">
+              <NeonButton variant="outline" @click="openForm(e)">
+                <template #icon-left><Edit2 :size="14" /></template>
+                Editar
+              </NeonButton>
+              <NeonButton variant="destructive" @click="handleDelete(e.id)">
+                <template #icon-left><Trash2 :size="14" /></template>
+              </NeonButton>
+            </div>
+          </GlassCard>
+        </TransitionGroup>
       </div>
     </AdminLayout>
-  </div>
+  
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import EstudioForm from '../../components/admin/EstudioForm.vue'
+import GlassCard from '../../components/ui/GlassCard.vue'
+import NeonButton from '../../components/ui/NeonButton.vue'
+import { Plus, X, Loader2, GraduationCap, Edit2, Trash2, Building2, Award, BookOpen } from 'lucide-vue-next'
 import { useEstudiosStore } from '../../stores/estudios'
 
 const store = useEstudiosStore()
@@ -44,6 +108,7 @@ const editingEstudio = ref(null)
 function openForm(estudio) {
   editingEstudio.value = estudio ? { ...estudio } : null
   showForm.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 async function handleSave(data) {
@@ -56,7 +121,7 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Eliminar este estudio?')) {
+  if (confirm('¿Estás seguro de que deseas eliminar este estudio?')) {
     await store.remove(id)
   }
 }
@@ -65,48 +130,14 @@ onMounted(() => store.fetchAll())
 </script>
 
 <style scoped>
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
+/* Transiciones suaves para la lista */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s ease;
 }
-
-.admin-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.admin-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-}
-
-.admin-item-info {
-  flex: 1;
-}
-
-.admin-item-info h3 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-}
-
-.admin-item-meta {
-  font-size: 0.8125rem;
-  color: var(--color-gray-500);
-}
-
-.admin-item-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 </style>

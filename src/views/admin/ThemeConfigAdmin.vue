@@ -1,56 +1,72 @@
 <template>
-  <div class="container">
+  
     <AdminLayout>
-      <div class="admin-header">
-        <h1 class="page-title">Personalización Visual</h1>
+      <div class="mb-8">
+        <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+          <Palette :size="32" class="text-primary" /> Personalización Visual
+        </h1>
+        <p class="text-muted-foreground mt-1">Selecciona el estilo visual que mejor represente tu marca personal.</p>
       </div>
 
-      <div class="card form-card">
-        <form @submit.prevent="saveConfig" class="admin-form">
-          
-          <h3 class="subsection-title">Elige el Tema de tu Portafolio</h3>
-          <p class="help-text">Selecciona el estilo visual que mejor represente tu marca personal.</p>
-
-          <div class="themes-grid">
+      <GlassCard class="p-6 md:p-8 w-full">
+        <form @submit.prevent="saveConfig">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div 
               v-for="theme in availableThemes" 
               :key="theme.id"
-              class="theme-card"
-              :class="{ active: form.portfolio_theme === theme.id }"
+              class="relative rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-hidden group"
+              :class="form.portfolio_theme === theme.id ? 'border-primary shadow-lg shadow-primary/20 scale-[1.02]' : 'border-border/50 hover:border-border hover:scale-[1.01] bg-secondary/20'"
               @click="selectTheme(theme.id)"
             >
-              <div class="theme-preview" :style="theme.previewStyle">
-                <div class="preview-element primary"></div>
-                <div class="preview-element secondary"></div>
+              <!-- Selector Activo -->
+              <div v-if="form.portfolio_theme === theme.id" class="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-md z-10">
+                <Check :size="14" class="text-primary-foreground" />
               </div>
-              <div class="theme-info">
-                <h4>{{ theme.name }}</h4>
-                <p>{{ theme.description }}</p>
+
+              <!-- Preview del Tema -->
+              <div class="h-32 p-4 flex flex-col gap-3 relative overflow-hidden" :style="theme.previewStyle">
+                <!-- Efecto Glass simulado -->
+                <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent mix-blend-overlay"></div>
+                <div class="w-3/4 h-3 rounded-md bg-white/20 backdrop-blur-md shadow-sm"></div>
+                <div class="w-1/2 h-3 rounded-md bg-white/10 backdrop-blur-md shadow-sm"></div>
+                <div class="w-full h-12 rounded-lg bg-white/5 backdrop-blur-md mt-auto border border-white/10 flex items-center px-3">
+                  <div class="w-8 h-8 rounded-full bg-white/20"></div>
+                </div>
               </div>
-              <div class="theme-selector" v-if="form.portfolio_theme === theme.id">
-                <span class="check-icon">✓</span>
+
+              <!-- Info del Tema -->
+              <div class="p-4 bg-card/80 backdrop-blur-sm border-t border-border/50">
+                <h4 class="font-bold text-foreground mb-1">{{ theme.name }}</h4>
+                <p class="text-xs text-muted-foreground leading-relaxed">{{ theme.description }}</p>
               </div>
             </div>
           </div>
 
-          <div class="form-actions" style="margin-top: 2rem;">
-            <button type="submit" class="btn btn-primary" :disabled="saving">
-              <span v-if="saving" class="spinner"></span>
-              {{ saving ? 'Guardando...' : 'Guardar Apariencia' }}
-            </button>
+          <div class="mt-8 flex justify-end pt-6 border-t border-border/50">
+            <NeonButton type="submit" glow :disabled="saving">
+              <template #icon-left><Save :size="18" v-if="!saving" /></template>
+              <span v-if="saving" class="flex items-center gap-2">
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Guardando...
+              </span>
+              <span v-else>Guardar Apariencia</span>
+            </NeonButton>
           </div>
         </form>
-      </div>
+      </GlassCard>
     </AdminLayout>
-  </div>
+  
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useAuthStore } from '../../stores/auth'
-import { useThemeStore } from '../../stores/theme'
-import { api } from '../../services/api'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
+import GlassCard from '../../components/ui/GlassCard.vue'
+import NeonButton from '../../components/ui/NeonButton.vue'
+import { Palette, Check, Save } from 'lucide-vue-next'
+import { useAuthStore } from '../../stores/auth'
+import { useThemeStore } from '../../stores/useThemeStore'
+import { api } from '../../services/api'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
@@ -64,33 +80,33 @@ const saving = ref(false)
 const availableThemes = [
   {
     id: 'dark-glass',
-    name: 'Dark Glassmorphism',
+    name: 'Dark Glass',
     description: 'Elegante, tecnológico y profundo. (Por defecto)',
-    previewStyle: { background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)', borderColor: '#3f3f46' }
+    previewStyle: { background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' }
   },
   {
     id: 'light-minimalist',
-    name: 'Light Minimalist',
+    name: 'Light Minimal',
     description: 'Limpio, luminoso y profesional.',
-    previewStyle: { background: '#f8fafc', borderColor: '#e2e8f0' }
+    previewStyle: { background: '#f8fafc' }
   },
   {
     id: 'cyber-neon',
     name: 'Cyber Neon',
     description: 'Alto contraste, vibrante y hacker.',
-    previewStyle: { background: '#000000', borderColor: '#22c55e' }
+    previewStyle: { background: '#000000' }
   },
   {
     id: 'ocean-blue',
     name: 'Ocean Blue',
-    description: 'Corporativo, serio y confiable.',
-    previewStyle: { background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)', borderColor: '#3b82f6' }
+    description: 'Corporativo, serio y confiable. Estilo OppyTec.',
+    previewStyle: { background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)' }
   },
   {
     id: 'rose-gold',
     name: 'Rose Gold',
     description: 'Creativo, cálido y personal.',
-    previewStyle: { background: 'linear-gradient(135deg, #2a101f 0%, #701a40 100%)', borderColor: '#f43f5e' }
+    previewStyle: { background: 'linear-gradient(135deg, #2a101f 0%, #701a40 100%)' }
   }
 ]
 
@@ -120,118 +136,13 @@ const saveConfig = async () => {
     await api.updateThemeConfig({
       portfolio_theme: form.value.portfolio_theme
     })
-    alert('Tema actualizado correctamente.')
+    // Simulate a brief delay for UI feedback
+    setTimeout(() => {
+      saving.value = false
+    }, 500)
   } catch (err) {
     alert(err.message || 'Error al guardar el tema')
-  } finally {
     saving.value = false
   }
 }
 </script>
-
-<style scoped>
-.form-card {
-  max-width: 800px;
-  margin-top: 1.5rem;
-}
-
-.subsection-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-gray-100);
-  margin-bottom: 0.5rem;
-}
-
-.help-text {
-  color: var(--color-gray-400);
-  font-size: 0.875rem;
-  margin-bottom: 2rem;
-}
-
-.themes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-}
-
-.theme-card {
-  background: rgba(24, 24, 27, 0.4);
-  border: 2px solid var(--color-gray-800);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.theme-card:hover {
-  border-color: var(--color-gray-600);
-  transform: translateY(-2px);
-}
-
-.theme-card.active {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
-  background: rgba(24, 24, 27, 0.8);
-}
-
-.theme-preview {
-  height: 100px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem;
-}
-
-.preview-element {
-  height: 12px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.preview-element.primary {
-  width: 60%;
-}
-
-.preview-element.secondary {
-  width: 40%;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.theme-info {
-  padding: 1rem;
-}
-
-.theme-info h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-gray-100);
-  margin-bottom: 0.25rem;
-}
-
-.theme-info p {
-  font-size: 0.8rem;
-  color: var(--color-gray-400);
-  line-height: 1.4;
-}
-
-.theme-selector {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  width: 24px;
-  height: 24px;
-  background: var(--color-primary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.check-icon {
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-}
-</style>

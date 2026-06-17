@@ -1,138 +1,170 @@
 <template>
-  <div class="portfolio-theme-wrapper" :class="portfolioThemeClass">
-    <div class="chat-container">
+  <div class="min-h-[calc(100vh-4.5rem)] bg-background py-4 text-foreground transition-colors duration-300" :class="portfolioThemeClass">
+    <div class="max-w-[1300px] mx-auto h-[calc(100vh-100px)] flex bg-background/50 border border-border/50 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl relative">
+      
       <!-- Sidebar / Perfil Breve en Escritorio -->
-      <aside class="chat-sidebar">
-        <div class="profile-card">
-          <div class="avatar-container">
-            <img v-if="avatarUrl || portfolioUser?.userImage" :src="avatarUrl || portfolioUser.userImage" :alt="portfolioUser?.firstName || 'Avatar'" class="profile-avatar" />
-            <div v-else class="avatar-placeholder">{{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username || 'U').charAt(0) + (portfolioUser.lastName || '').charAt(0) : '...' }}</div>
-          </div>
-          <h2 class="profile-name">{{ portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...' }}</h2>
-          <p class="profile-title">{{ portfolioUser?.occupation || 'Talento OppyTalent' }}</p>
-          <div class="profile-badges">
-            <span class="badge">OppyTalent</span>
-          </div>
-        </div>
-
-      <div class="sidebar-help">
-        <h3>{{ $t('portfolio.frases') }}</h3>
-        <blockquote class="sidebar-quote" v-if="tFrase">
-          "{{ tFrase.texto }}"
-          <footer>{{ tFrase.autor }}</footer>
-        </blockquote>
-        <blockquote class="sidebar-quote" v-else>
-          "Cada gran proyecto comienza con un primer paso. Pronto compartiré aquí las frases y filosofías que inspiran mi trabajo y mi carrera profesional."
-          <footer>{{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username) : 'Talento OppyTalent' }}</footer>
-        </blockquote>
-      </div>
-    </aside>
-
-    <!-- Ventana Principal de Chat -->
-    <main class="chat-main">
-      <div class="chat-header">
-        <div class="chat-header-info">
-          <h2>{{ $t('home.title') }}</h2>
-          <p class="online-indicator">{{ $t('home.online') }}</p>
-        </div>
-        <div class="header-actions" style="display: flex; gap: 0.5rem; align-items: center;">
-          <button 
-            @click="showCoverLetterModal = true" 
-            class="btn btn-primary btn-sm" 
-            style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); border: none; color: #fff; font-weight: 600;"
-          >
-            ✨ Ingresa URL Match Trabajo
-          </button>
-          <button 
-            v-if="authStore.token" 
-            @click="resetChatConversation" 
-            class="btn btn-outline btn-sm" 
-            title="Reiniciar Conversación"
-            style="padding: 0.25rem 0.5rem;"
-          >
-            🧹
-          </button>
-          <router-link to="/portafolio" class="btn btn-outline btn-sm header-portfolio-btn">
-            {{ $t('home.view_portfolio') }}
-          </router-link>
-        </div>
-      </div>
-
-      <!-- Cuerpo del Chat -->
-      <div class="chat-body" ref="chatBody" @click="handleChatClick">
-        <!-- Lista de Mensajes -->
-        <template v-if="!isPortfolioEmpty">
-          <div 
-            v-for="(msg, i) in messages" 
-            :key="i" 
-            class="chat-message-wrapper"
-            :class="msg.role"
-            :data-log-id="msg.log_id"
-          >
-            <div class="message-avatar">
-              <span v-if="msg.role === 'bot'">🤖</span>
-              <span v-else>👤</span>
+      <aside class="w-80 bg-secondary/80 border-r border-border/50 p-8 flex flex-col gap-8 overflow-y-auto hidden md:flex custom-scrollbar relative z-10 backdrop-blur-md">
+        <!-- Profile Card -->
+        <div class="flex flex-col items-center text-center">
+          <div class="mb-5 relative group">
+            <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-primary/20 shadow-xl relative z-10 bg-secondary transition-transform duration-300 group-hover:scale-105">
+              <img v-if="avatarUrl || portfolioUser?.userImage" :src="avatarUrl || portfolioUser.userImage" :alt="portfolioUser?.firstName || 'Avatar'" class="w-full h-full object-cover" />
+              <div v-else class="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground">
+                {{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username || 'U').charAt(0) + (portfolioUser.lastName || '').charAt(0) : '...' }}
+              </div>
             </div>
-            <div class="chat-message" v-html="renderMarkdown(msg.content)"></div>
+            <!-- Glow effect behind avatar -->
+            <div class="absolute inset-0 bg-primary/30 rounded-full blur-xl scale-110 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </div>
-        </template>
+          
+          <h2 class="text-2xl font-bold text-foreground mb-1">{{ portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...' }}</h2>
+          <p class="text-sm font-medium text-muted-foreground mb-4 leading-relaxed">{{ portfolioUser?.occupation || 'Talento OppyTalent' }}</p>
+          
+          <div class="flex flex-wrap gap-2 justify-center">
+            <Badge variant="primary" class="shadow-sm">OppyTalent</Badge>
+          </div>
+        </div>
 
-        <!-- Indicador de Carga / Escribiendo -->
-        <div v-if="loading" class="chat-message-wrapper bot">
-          <div class="message-avatar">🤖</div>
-          <div class="chat-message loading-bubble">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
+        <!-- Sidebar Help / Quote -->
+        <div class="bg-card/50 border border-border/50 p-5 rounded-xl mt-auto relative overflow-hidden group">
+          <!-- Decoración de vidrio -->
+          <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-white/10 to-transparent opacity-50 rounded-bl-full pointer-events-none"></div>
+          
+          <h3 class="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+            <Quote :size="16" /> {{ $t('portfolio.frases') }}
+          </h3>
+          <blockquote class="text-sm italic text-muted-foreground leading-relaxed relative z-10" v-if="tFrase">
+            "{{ tFrase.texto }}"
+            <footer class="mt-3 text-xs font-bold text-primary text-right not-italic">— {{ tFrase.autor }}</footer>
+          </blockquote>
+          <blockquote class="text-sm italic text-muted-foreground leading-relaxed relative z-10" v-else>
+            "Cada gran proyecto comienza con un primer paso. Pronto compartiré aquí las frases y filosofías que inspiran mi carrera."
+            <footer class="mt-3 text-xs font-bold text-primary text-right not-italic">— {{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username) : 'Talento OppyTalent' }}</footer>
+          </blockquote>
         </div>
-        <!-- Indicador de portafolio vacío -->
-        <div v-if="isPortfolioEmpty" class="chat-message-wrapper bot">
-          <div class="message-avatar">🤖</div>
-          <div class="chat-message">
-            <p v-if="isOwner">
-              ¡Hola! Tu portafolio parece estar vacío. Agrega al menos un proyecto, experiencia, estudio o tus datos de "Sobre Mí" en el <router-link to="/admin">Panel de Administración</router-link> para habilitar este chat interactivo.
-            </p>
-            <p v-else>
-              El portafolio de este usuario aún está en construcción. El chat se habilitará cuando agregue información a su perfil.
-            </p>
-          </div>
-        </div>
-      </div>
+      </aside>
 
-      <!-- Pie del Chat / Entrada -->
-      <footer class="chat-footer-area">
-        <div class="suggested-chips" v-if="!isPortfolioEmpty && (portfolioUser?.chat_suggested_q1 || portfolioUser?.chat_suggested_q2 || portfolioUser?.chat_suggested_q3)">
-          <button v-if="portfolioUser?.chat_suggested_q1" @click="input = portfolioUser.chat_suggested_q1; send()" class="chip-btn">{{ portfolioUser.chat_suggested_q1 }}</button>
-          <button v-if="portfolioUser?.chat_suggested_q2" @click="input = portfolioUser.chat_suggested_q2; send()" class="chip-btn">{{ portfolioUser.chat_suggested_q2 }}</button>
-          <button v-if="portfolioUser?.chat_suggested_q3" @click="input = portfolioUser.chat_suggested_q3; send()" class="chip-btn">{{ portfolioUser.chat_suggested_q3 }}</button>
-        </div>
+      <!-- Ventana Principal de Chat -->
+      <main class="flex-1 flex flex-col bg-background/40 relative z-10 backdrop-blur-sm">
         
-        <form class="chat-form" @submit.prevent="send">
-          <input
-            v-model="input"
-            type="text"
-            class="chat-input"
-            :placeholder="isPortfolioEmpty ? 'El chat está deshabilitado temporalmente...' : $t('home.placeholder')"
-            :disabled="loading || isPortfolioEmpty"
-          />
-          <button type="submit" class="chat-send-btn" :disabled="loading || !input.trim() || isPortfolioEmpty">
-            <span>{{ $t('contact.enviar') }}</span>
-            <span class="send-icon">&rarr;</span>
-          </button>
-        </form>
-        <p class="chat-footer-disclaimer">
-          {{ $t('home.disclaimer_1') }}<router-link to="/portafolio">{{ $t('home.disclaimer_link') }}</router-link>{{ $t('home.disclaimer_2') }}
-        </p>
-      </footer>
-    </main>
+        <!-- Chat Header -->
+        <div class="px-6 py-4 border-b border-border/50 flex justify-between items-center bg-card/30 backdrop-blur-md sticky top-0 z-20">
+          <div>
+            <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
+              <Bot :size="20" class="text-primary" /> {{ $t('home.title') }}
+            </h2>
+            <p class="text-xs text-primary flex items-center gap-1.5 font-medium mt-0.5">
+              <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> {{ $t('home.online') }}
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button 
+              v-if="authStore.token" 
+              @click="resetChatConversation" 
+              class="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" 
+              title="Reiniciar Conversación"
+            >
+              <RotateCcw :size="18" />
+            </button>
+            <router-link to="/portafolio">
+              <NeonButton variant="outline" class="hidden sm:flex" size="sm">
+                <template #icon-left><FolderKanban :size="16" /></template>
+                {{ $t('home.view_portfolio') }}
+              </NeonButton>
+              <button class="sm:hidden p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors">
+                <FolderKanban :size="18" />
+              </button>
+            </router-link>
+          </div>
+        </div>
 
-    <!-- Modal Cover Letter -->
-    <CoverLetterModal 
-      v-if="showCoverLetterModal" 
-      :username="route.params.username" 
-      @close="showCoverLetterModal = false" 
-    />
+        <!-- Cuerpo del Chat -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6 custom-scrollbar" ref="chatBody" @click="handleChatClick">
+          
+          <template v-if="!isPortfolioEmpty">
+            <div 
+              v-for="(msg, i) in messages" 
+              :key="i" 
+              class="flex gap-4 max-w-[90%] sm:max-w-[85%] animate-in fade-in slide-in-from-bottom-4 duration-300"
+              :class="msg.role === 'user' ? 'self-end flex-row-reverse' : 'self-start'"
+              :data-log-id="msg.log_id"
+            >
+              <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border shadow-sm text-lg z-10" :class="msg.role === 'user' ? 'bg-primary text-primary-foreground border-primary/20' : 'bg-secondary border-border/50'">
+                <Bot v-if="msg.role === 'bot'" :size="20" class="text-foreground" />
+                <User v-else :size="20" />
+              </div>
+              
+              <!-- Burbuja de Chat -->
+              <div 
+                class="px-5 py-4 text-[15px] leading-relaxed shadow-sm relative group"
+                :class="msg.role === 'user' ? 'bg-primary text-primary-foreground rounded-2xl rounded-tr-sm' : 'bg-secondary border border-border/50 text-foreground rounded-2xl rounded-tl-sm markdown-body'"
+                v-html="renderMarkdown(msg.content)"
+              ></div>
+            </div>
+          </template>
+
+          <!-- Loading Indicator -->
+          <div v-if="loading" class="flex gap-4 max-w-[85%] self-start animate-in fade-in duration-300">
+            <div class="w-10 h-10 rounded-full bg-secondary border border-border/50 flex items-center justify-center shrink-0 shadow-sm text-lg z-10">
+              <Bot :size="20" class="text-foreground" />
+            </div>
+            <div class="bg-secondary border border-border/50 px-5 py-4 rounded-2xl rounded-tl-sm flex items-center gap-1.5 h-[52px]">
+              <div class="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+              <div class="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+              <div class="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+            </div>
+          </div>
+
+          <!-- Empty Portfolio Indicator -->
+          <div v-if="isPortfolioEmpty" class="flex gap-4 max-w-[85%] self-start">
+            <div class="w-10 h-10 rounded-full bg-secondary border border-border/50 flex items-center justify-center shrink-0 shadow-sm text-lg">
+              <Bot :size="20" class="text-foreground" />
+            </div>
+            <div class="bg-secondary border border-border/50 text-foreground px-5 py-4 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed shadow-sm">
+              <p v-if="isOwner">
+                ¡Hola! Tu portafolio parece estar vacío. Agrega al menos un proyecto, experiencia, estudio o tus datos de "Sobre Mí" en el <router-link to="/admin" class="text-primary hover:underline font-semibold">Panel de Administración</router-link> para habilitar este chat interactivo.
+              </p>
+              <p v-else>
+                El portafolio de este usuario aún está en construcción. El chat se habilitará cuando agregue información a su perfil.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Footer -->
+        <footer class="p-4 sm:p-6 border-t border-border/50 bg-card/30 backdrop-blur-md relative z-20">
+          <!-- Sugerencias (Chips) -->
+          <div class="flex flex-wrap justify-center gap-2 mb-4" v-if="!isPortfolioEmpty && (portfolioUser?.chat_suggested_q1 || portfolioUser?.chat_suggested_q2 || portfolioUser?.chat_suggested_q3)">
+            <button v-if="portfolioUser?.chat_suggested_q1" @click="input = portfolioUser.chat_suggested_q1; send()" class="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-secondary/50 border border-border/50 text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-primary/30 transition-all shadow-sm">
+              {{ portfolioUser.chat_suggested_q1 }}
+            </button>
+            <button v-if="portfolioUser?.chat_suggested_q2" @click="input = portfolioUser.chat_suggested_q2; send()" class="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-secondary/50 border border-border/50 text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-primary/30 transition-all shadow-sm">
+              {{ portfolioUser.chat_suggested_q2 }}
+            </button>
+            <button v-if="portfolioUser?.chat_suggested_q3" @click="input = portfolioUser.chat_suggested_q3; send()" class="px-4 py-2 rounded-full text-xs sm:text-sm font-medium bg-secondary/50 border border-border/50 text-muted-foreground hover:bg-secondary hover:text-foreground hover:border-primary/30 transition-all shadow-sm">
+              {{ portfolioUser.chat_suggested_q3 }}
+            </button>
+          </div>
+          
+          <form class="flex gap-2 max-w-4xl mx-auto" @submit.prevent="send">
+            <input
+              v-model="input"
+              type="text"
+              class="flex-1 px-5 py-3.5 bg-secondary border border-border/50 text-foreground rounded-xl outline-none focus:ring-2 focus:ring-primary/50 transition-all text-[15px] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              :placeholder="isPortfolioEmpty ? 'El chat está deshabilitado temporalmente...' : $t('home.placeholder')"
+              :disabled="loading || isPortfolioEmpty"
+            />
+            <NeonButton type="submit" :disabled="loading || !input.trim() || isPortfolioEmpty" glow class="px-6 h-[52px]">
+              <span class="hidden sm:inline mr-2">{{ $t('contact.enviar') }}</span>
+              <Send :size="18" class="sm:ml-1" />
+            </NeonButton>
+          </form>
+          
+          <p class="text-center text-xs text-muted-foreground mt-4">
+            {{ $t('home.disclaimer_1') }}<router-link to="/portafolio" class="text-primary hover:underline font-medium mx-1">{{ $t('home.disclaimer_link') }}</router-link>{{ $t('home.disclaimer_2') }}
+          </p>
+        </footer>
+      </main>
     </div>
   </div>
 </template>
@@ -152,7 +184,9 @@ import { useTranslatedData } from '../../composables/useTranslatedData'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../../stores/auth'
-import CoverLetterModal from '../../components/public/CoverLetterModal.vue'
+import NeonButton from '../../components/ui/NeonButton.vue'
+import Badge from '../../components/ui/Badge.vue'
+import { Bot, User, Send, Quote, RotateCcw, FolderKanban } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
@@ -168,15 +202,12 @@ const authStore = useAuthStore()
 
 const currentUser = ref(null)
 const portfolioUser = ref(null)
-const isDropdownOpen = ref(false)
-const showCoverLetterModal = ref(false)
 
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || perfilStore.items[0]?.image_url || null)
 
 const portfolioThemeClass = computed(() => `theme-${portfolioUser.value?.portfolio_theme || 'dark-glass'}`)
 
 const isOwner = computed(() => {
-  console.log("Checking isOwner:", currentUser.value?.username, portfolioUser.value?.username)
   if (!currentUser.value || !portfolioUser.value) return false
   return currentUser.value.username?.toLowerCase() === portfolioUser.value.username?.toLowerCase()
 })
@@ -196,8 +227,6 @@ const loading = ref(false)
 const chatBody = ref(null)
 
 const { messages } = storeToRefs(chatStore)
-
-
 
 function renderMarkdown(text) {
   if (!text) return ''
@@ -225,8 +254,6 @@ function handleChatClick(event) {
     event.preventDefault()
   }
 }
-
-
 
 function resetChatConversation() {
   const defaultWelcome = `¡Hola! Soy el asistente virtual de ${portfolioUser.value?.firstName || route.params.username}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
@@ -266,16 +293,14 @@ watch(messages, async () => {
 onMounted(async () => {
   try {
     currentUser.value = await api.me()
-    console.log("currentUser fetched:", currentUser.value)
   } catch (error) {
-    console.warn("Failed to fetch currentUser:", error)
+    // Ignorar error si no está logueado
   }
 
   const username = route.params.username
   if (username) {
     try {
       portfolioUser.value = await api.getUserByUsername(username)
-      console.log("portfolioUser fetched:", portfolioUser.value)
       localStorage.setItem('currentPortfolioUser', username)
       
       const defaultWelcome = `¡Hola! Soy el asistente virtual de ${portfolioUser.value.firstName || username}. Estoy aquí para responder tus dudas sobre su perfil profesional. ¿De qué te gustaría hablar hoy?\n\n**¿Qué puedes preguntar por ejemplo?**\n- Mis Habilidades técnicas y stack.\n- Qué Experiencia laboral tengo.\n- Qué Proyectos clave y KPIs he logrado.\n- Mis datos de contacto.`
@@ -284,8 +309,7 @@ onMounted(async () => {
          chatStore.resetMessages(welcomeMsg, username)
       }
     } catch (error) {
-      console.error('Error fetching user for portfolio:', error)
-      router.push('/home') // Redirigir si no existe
+      router.push('/home')
     }
   }
 
@@ -300,14 +324,12 @@ onMounted(async () => {
           chatStore.resetMessages(welcomeMsg, newUsername)
         }
         
-        // Re-fetch all data for the new user so reactivity updates the chat properly
         perfilStore.fetchAll()
         proyectosStore.fetchAll()
         experienciasStore.fetchAll()
         estudiosStore.fetchAll()
         await frasesStore.fetchAll()
       } catch (error) {
-        console.error('Error fetching user for portfolio:', error)
         router.push('/home')
       }
     }
@@ -333,559 +355,62 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.portfolio-theme-wrapper {
-  min-height: calc(100vh - 4.5rem);
-  background-color: var(--color-gray-50);
-  padding: 1rem 0;
-  color: var(--color-gray-800);
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
 }
-
-.chat-container {
-  display: flex;
-  height: calc(100vh - 100px);
-  max-width: 1300px;
-  margin: 0 auto;
-  background: transparent;
-  border-radius: var(--radius-lg, 16px);
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px);
-}
-
-/* --- SIDEBAR --- */
-.chat-sidebar {
-  width: 320px;
-  background: var(--color-gray-100);
-  border-right: 1px solid var(--color-gray-200);
-  color: var(--color-gray-800);
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-gray-200) transparent;
-  backdrop-filter: blur(12px);
-}
-
-.chat-sidebar::-webkit-scrollbar {
-  width: 4px;
-}
-.chat-sidebar::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-.chat-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsla(var(--foreground), 0.1);
   border-radius: 4px;
 }
-.chat-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsla(var(--foreground), 0.2);
 }
 
-.profile-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.avatar-container {
-  margin-bottom: 1.25rem;
-}
-
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--color-accent, #2563eb);
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-}
-
-.avatar-placeholder {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: var(--color-gray-700, #334155);
-  color: var(--color-gray-300);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.25rem;
-  font-weight: 700;
-  border: 3px solid var(--color-accent, #2563eb);
-}
-
-.profile-name {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin-bottom: 0.25rem;
-}
-
-.profile-title {
-  font-size: 0.75rem;
-  color: var(--color-gray-400, #94a3b8);
-  font-weight: 500;
-  margin-bottom: 1.25rem;
-  line-height: 1.3;
-}
-
-.profile-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  justify-content: center;
-}
-
-.badge {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-gray-200);
-  padding: 0.25rem 0.625rem;
-  border-radius: 99px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-}
-
-.sidebar-help {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 1.25rem;
-  border-radius: var(--radius-md, 12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.sidebar-help h3 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-accent, #60a5fa);
+/* Markdown Body Styles para los mensajes del chat de IA */
+:deep(.markdown-body p) {
   margin-bottom: 0.75rem;
 }
-
-.sidebar-help ul {
-  padding-left: 1rem;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+:deep(.markdown-body p:last-child) {
+  margin-bottom: 0;
 }
-
-.sidebar-help li {
-  font-size: 0.75rem;
-  color: var(--color-gray-300, #cbd5e1);
-  line-height: 1.4;
-}
-
-/* --- MAIN PANEL --- */
-.chat-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-gray-50);
-  backdrop-filter: blur(16px);
-}
-
-.chat-header {
-  padding: 1rem 2rem;
-  border-bottom: 1px solid var(--color-gray-200);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: transparent;
-}
-
-.chat-header h2 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin: 0 0 0.125rem 0;
-}
-
-.online-indicator {
-  font-size: 0.75rem;
-  color: var(--color-accent);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--color-gray-200);
-  color: var(--color-gray-800);
-  border-radius: 6px;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.btn-outline:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.header-portfolio-btn {
-  font-size: 0.8125rem !important;
-  padding: 0.4rem 0.875rem !important;
-  font-weight: 600;
-}
-
-.chat-body {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* --- SIDEBAR QUOTE --- */
-.sidebar-quote {
-  font-style: italic;
-  font-size: 0.85rem;
-  color: var(--color-gray-300, #cbd5e1);
-  line-height: 1.5;
-  margin: 0;
-}
-.sidebar-quote footer {
-  margin-top: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-accent, #60a5fa);
-  text-align: right;
-  font-style: normal;
-}
-.sidebar-quote footer::before {
-  content: '— ';
-}
-
-/* --- MESSAGE BUBBLES --- */
-.chat-message-wrapper {
-  display: flex;
-  gap: 1rem;
-  max-width: 85%;
-  align-self: flex-start;
-}
-
-.chat-message-wrapper.user {
-  align-self: flex-end;
-  flex-direction: row-reverse;
-}
-
-.message-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.125rem;
-  flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-}
-
-.chat-message-wrapper.user .message-avatar {
-  background: var(--color-accent);
-  color: var(--color-gray-900);
-  border-color: transparent;
-}
-
-.chat-message {
-  background: var(--color-gray-100);
-  border: 1px solid var(--color-gray-200);
-  color: var(--color-gray-800);
-  padding: 0.875rem 1.25rem;
-  border-radius: 18px;
-  border-top-left-radius: 4px;
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
-.chat-message-wrapper.user .chat-message {
-  background: var(--color-accent);
-  color: var(--color-gray-900);
-  border: none;
-  border-radius: 18px;
-  border-top-right-radius: 4px;
-}
-
-/* Interacciones de Links y Botones de la IA */
-.chat-message :deep(a) {
+:deep(.markdown-body a) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.45rem 1rem;
-  border-radius: var(--radius-sm, 8px);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius);
   font-weight: 600;
   text-decoration: none;
   font-size: 0.8125rem;
   margin: 0.5rem 0.375rem 0.25rem 0;
   transition: all 0.2s ease;
+  background-color: hsla(var(--primary), 0.1);
+  color: hsl(var(--primary));
+  border: 1px solid hsla(var(--primary), 0.2);
 }
-
-/* Enlaces Internos (SI) */
-.chat-message :deep(a[href^="/"]) {
-  background-color: var(--color-accent, #2563eb);
-  color: #ffffff !important;
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
-}
-
-.chat-message :deep(a[href^="/"]):hover {
-  background-color: var(--color-primary-dark, #1d4ed8);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-}
-
-/* Enlaces Inactivos (NO) */
-.chat-message :deep(a[href^="#"]) {
-  background-color: var(--color-gray-200, #e2e8f0);
-  color: var(--color-gray-700, #334155) !important;
-  border: 1px solid var(--color-gray-300, #cbd5e1);
-}
-
-.chat-message :deep(a[href^="#"]):hover {
-  background-color: var(--color-gray-300, #cbd5e1);
+:deep(.markdown-body a:hover) {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   transform: translateY(-1px);
 }
-
-/* Tablas, Listas y Markdown general */
-.chat-message :deep(p) {
-  margin: 0 0 0.75rem 0;
-}
-.chat-message :deep(p:last-child) {
-  margin-bottom: 0;
-}
-.chat-message :deep(strong) {
+:deep(.markdown-body strong) {
   font-weight: 700;
+  color: hsl(var(--foreground));
 }
-.chat-message :deep(ul), .chat-message :deep(ol) {
-  margin: 0.5rem 0;
+:deep(.markdown-body ul) {
+  list-style-type: disc;
   padding-left: 1.5rem;
-}
-.chat-message :deep(li) {
-  margin-bottom: 0.375rem;
-}
-.chat-message :deep(table) {
-  border-collapse: collapse;
-  width: 100%;
-  margin: 1rem 0;
-  font-size: 0.8125rem;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-.chat-message :deep(th), .chat-message :deep(td) {
-  border: 1px solid var(--color-gray-200, #e2e8f0);
-  padding: 0.625rem 0.875rem;
-  text-align: left;
-}
-.chat-message :deep(th) {
-  background-color: var(--color-gray-200, #f1f5f9);
-  font-weight: 700;
-}
-
-/* --- LOADING DOTS --- */
-.loading-bubble {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 1rem 1.5rem;
-}
-
-.loading-bubble .dot {
-  width: 8px;
-  height: 8px;
-  background: var(--color-gray-400, #94a3b8);
-  border-radius: 50%;
-  animation: jump-dots 1.4s infinite both;
-}
-
-.loading-bubble .dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.loading-bubble .dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes jump-dots {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-  40% { transform: scale(1.1) translateY(-4px); opacity: 1; }
-}
-
-
-.chat-footer-area {
-  padding: 1.5rem 2rem 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: transparent;
-}
-
-.chat-form {
-  display: flex;
-  gap: 0.75rem;
-  max-width: 900px;
-  margin: 0 auto 0.75rem;
-}
-
-.chat-input {
-  flex: 1;
-  padding: 0.875rem 1.25rem;
-  background: var(--color-gray-50);
-  border: 1px solid var(--color-gray-200);
-  color: var(--color-gray-900);
-  border-radius: var(--radius-md, 12px);
-  outline: none;
-  font-family: inherit;
-  font-size: 0.9375rem;
-  transition: all 0.2s ease;
-}
-
-.chat-input:focus {
-  border-color: var(--color-accent);
-  background: var(--color-gray-100);
-}
-
-.chat-send-btn {
-  padding: 0 1.5rem;
-  border: none;
-  background: var(--color-accent);
-  color: #fff;
-  border-radius: var(--radius-md, 12px);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.chat-send-btn:hover:not(:disabled) {
-  background: var(--color-primary-dark, #1d4ed8);
-  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
-}
-
-.chat-send-btn:disabled {
-  background: var(--color-gray-300, #cbd5e1);
-  color: var(--color-gray-500, #94a3b8);
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
-.send-icon {
-  font-size: 1rem;
-}
-
-.chat-footer-disclaimer {
-  font-size: 0.75rem;
-  text-align: center;
-  color: var(--color-gray-400, #94a3b8);
-  margin: 0;
-}
-
-.chat-footer-disclaimer a {
-  color: var(--color-accent, #2563eb);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.chat-footer-disclaimer a:hover {
-  text-decoration: underline;
-}
-
-.suggested-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
   margin-bottom: 0.75rem;
-  justify-content: center;
 }
-
-.chip-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--color-gray-300, #cbd5e1);
-  border-radius: 9999px;
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+:deep(.markdown-body ol) {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
 }
-
-.chip-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* --- ANIMACIONES ADICIONALES --- */
-@keyframes wave-effect {
-  0%, 100% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60% { transform: rotate(0deg); }
-}
-
-/* --- RESPONSIVIDAD (MÓVIL) --- */
-@media (max-width: 900px) {
-  .chat-sidebar {
-    display: none; /* Ocultar barra lateral en tablets/móviles */
-  }
-}
-
-@media (max-width: 600px) {
-  .chat-container {
-    height: calc(100vh - 100px);
-    border-radius: 0;
-    border: none;
-  }
-
-  .chat-header {
-    padding: 1rem;
-  }
-
-  .header-portfolio-btn {
-    font-size: 0.75rem !important;
-    padding: 0.35rem 0.75rem !important;
-  }
-
-  .chat-body {
-    padding: 1rem;
-  }
-
-  .chat-message-wrapper {
-    max-width: 92%;
-  }
-
-  .chat-message {
-    font-size: 0.8125rem;
-    padding: 0.75rem 1rem;
-  }
-
-  .chat-footer-area {
-    padding: 1rem;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-  }
-
-  .chat-form {
-    gap: 0.5rem;
-  }
-
-  .chat-input {
-    font-size: 0.875rem;
-    padding: 0.75rem 1rem;
-  }
-
-  .chat-send-btn {
-    padding: 0 1rem;
-  }
-  
-  .chat-send-btn span:first-child {
-    display: none; /* Ocultar texto "Enviar" en móviles */
-  }
+:deep(.markdown-body li) {
+  margin-bottom: 0.25rem;
 }
 </style>

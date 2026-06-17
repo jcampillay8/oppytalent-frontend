@@ -1,30 +1,55 @@
 <template>
-  <div class="container">
+  
     <AdminLayout>
-      <h1 class="page-title">Configuración de Secciones</h1>
-      <p class="page-subtitle">Elige qué secciones se muestran por defecto al abrir la página principal.</p>
+      <div class="mb-8">
+        <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Configuración de Secciones</h1>
+        <p class="text-muted-foreground mt-1">Elige qué secciones se muestran por defecto al abrir tu portafolio público.</p>
+      </div>
 
-      <div class="secciones-list">
-        <div class="card seccion-item" v-for="s in secciones" :key="s.key">
-          <div class="seccion-info">
-            <h3>{{ s.label }}</h3>
-            <span class="seccion-desc">{{ s.desc }}</span>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <GlassCard 
+          v-for="s in secciones" 
+          :key="s.key" 
+          hoverEffect 
+          class="flex items-center justify-between p-5"
+        >
+          <div class="flex items-center gap-4">
+            <div class="p-3 rounded-lg border flex-shrink-0" :class="s.colorClass">
+              <component :is="s.icon" :size="20" />
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-foreground leading-tight mb-1">{{ s.label }}</h3>
+              <p class="text-sm text-muted-foreground">{{ s.desc }}</p>
+            </div>
           </div>
-          <label class="toggle-label">
-            <input type="checkbox" :checked="defaults[s.key]" @change="e => updateToggle(s.key, e.target.checked)" />
-            <span class="toggle-text">{{ defaults[s.key] ? 'Visible' : 'Oculta' }}</span>
-          </label>
-        </div>
+          
+          <div class="flex items-center ml-4 shrink-0">
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                class="sr-only peer" 
+                :checked="defaults[s.key]" 
+                @change="e => updateToggle(s.key, e.target.checked)" 
+              />
+              <div class="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              <span class="ml-3 text-sm font-medium" :class="defaults[s.key] ? 'text-primary' : 'text-muted-foreground'">
+                {{ defaults[s.key] ? 'Visible' : 'Oculta' }}
+              </span>
+            </label>
+          </div>
+        </GlassCard>
       </div>
     </AdminLayout>
-  </div>
+  
 </template>
 
 <script setup>
 import AdminLayout from '../../components/admin/AdminLayout.vue'
+import GlassCard from '../../components/ui/GlassCard.vue'
 import { useSectionConfig } from '../../composables/useSectionConfig'
 import { api } from '../../services/api'
 import { onMounted } from 'vue'
+import { Filter, FolderKanban, Briefcase, GraduationCap } from 'lucide-vue-next'
 
 const { defaults, fetchConfigs } = useSectionConfig()
 
@@ -46,61 +71,9 @@ const updateToggle = async (key, value) => {
 }
 
 const secciones = [
-  { key: 'tags', label: 'Tags / Filtros', desc: 'Barra de filtros por etiquetas' },
-  { key: 'proyectos', label: 'Proyectos', desc: 'Galería de proyectos destacados' },
-  { key: 'experiencia', label: 'Experiencia', desc: 'Lista de experiencia laboral' },
-  { key: 'estudios', label: 'Estudios & Certificaciones', desc: 'Sección de estudios y certificaciones' },
+  { key: 'tags', label: 'Tags / Filtros', desc: 'Barra de filtros por etiquetas', icon: Filter, colorClass: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' },
+  { key: 'proyectos', label: 'Proyectos', desc: 'Galería de proyectos destacados', icon: FolderKanban, colorClass: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+  { key: 'experiencia', label: 'Experiencia', desc: 'Lista de experiencia laboral', icon: Briefcase, colorClass: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+  { key: 'estudios', label: 'Estudios & Certificaciones', desc: 'Sección académica y diplomas', icon: GraduationCap, colorClass: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
 ]
 </script>
-
-<style scoped>
-.page-subtitle {
-  margin-bottom: 2rem;
-}
-
-.secciones-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.seccion-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-}
-
-.seccion-info h3 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-  margin-bottom: 0.25rem;
-}
-
-.seccion-desc {
-  font-size: 0.8125rem;
-  color: var(--color-gray-500);
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.toggle-label input[type="checkbox"] {
-  width: 1.125rem;
-  height: 1.125rem;
-  cursor: pointer;
-}
-
-.toggle-text {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-gray-600);
-  min-width: 3.5rem;
-}
-</style>

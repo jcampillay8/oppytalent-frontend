@@ -1,72 +1,98 @@
 <template>
-  <div class="container">
-    <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
-    <div v-else-if="!translatedProyecto" class="empty-state">Proyecto no encontrado.</div>
-    <article v-else class="detail">
-      <router-link to="/portafolio" class="back-link">&larr; Volver al Portafolio</router-link>
-      <h1 class="detail-title">{{ translatedProyecto.titulo }}</h1>
-      <div class="detail-meta">
-        <time>{{ formatDate(translatedProyecto.fecha_proyecto) }}</time>
-        <span class="detail-date">Actualizado: {{ formatDate(translatedProyecto.updated_at) }}</span>
+  <div class="container py-8 max-w-4xl mx-auto px-4">
+    <div v-if="store.loading" class="flex justify-center py-20"><div class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div></div>
+    <div v-else-if="!translatedProyecto" class="text-center py-20 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">Proyecto no encontrado.</div>
+    
+    <article v-else class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <router-link to="/portafolio" class="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-6 group">
+        <ArrowLeft :size="16" class="transition-transform group-hover:-translate-x-1" /> {{ locale === 'en' ? 'Back to Portfolio' : 'Volver al Portafolio' }}
+      </router-link>
+      
+      <header class="mb-8">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">{{ translatedProyecto.titulo }}</h1>
+        <div class="flex items-center gap-4 text-sm text-muted-foreground mb-6">
+          <span class="flex items-center gap-1.5"><Calendar :size="16" /> {{ formatDate(translatedProyecto.fecha_proyecto) }}</span>
+          <span class="w-1 h-1 rounded-full bg-border"></span>
+          <span>Actualizado: {{ formatDate(translatedProyecto.updated_at) }}</span>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 mb-6">
+          <Badge v-for="tag in translatedProyecto.tags" :key="tag" variant="secondary" class="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">{{ tag }}</Badge>
+          <Badge v-for="tech in translatedProyecto.stack_tecnologico" :key="tech" variant="outline">{{ tech }}</Badge>
+        </div>
+        
+        <div class="flex flex-wrap gap-3">
+          <a v-if="translatedProyecto.link_github" :href="translatedProyecto.link_github" target="_blank" class="outline-none">
+            <NeonButton variant="outline"><template #icon-left><Github :size="18" /></template> GitHub</NeonButton>
+          </a>
+          <a v-if="translatedProyecto.link_demo" :href="translatedProyecto.link_demo" target="_blank" class="outline-none">
+            <NeonButton glow><template #icon-left><ExternalLink :size="18" /></template> Demo</NeonButton>
+          </a>
+        </div>
+      </header>
+
+      <div class="mb-10 rounded-2xl overflow-hidden border border-border/50 shadow-xl bg-secondary" v-if="translatedProyecto.image_url">
+        <img :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" class="w-full max-h-[500px] object-cover transition-transform duration-700 hover:scale-105" />
       </div>
 
-      <img v-if="translatedProyecto.image_url" :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" class="detail-img" />
-
-      <div v-if="getYoutubeEmbed(translatedProyecto.youtube_url)" class="detail-video">
-        <h3 class="section-title">Video Demostrativo</h3>
-        <div class="video-responsive">
+      <GlassCard class="mb-10 p-6 md:p-8" v-if="getYoutubeEmbed(translatedProyecto.youtube_url)">
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><Youtube :size="24" class="text-red-500" /> Video Demostrativo</h3>
+        <div class="relative w-full overflow-hidden pt-[56.25%] rounded-xl border border-border/50 bg-black">
           <iframe 
             :src="getYoutubeEmbed(translatedProyecto.youtube_url)" 
+            class="absolute top-0 left-0 w-full h-full"
             frameborder="0" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowfullscreen>
           </iframe>
         </div>
-      </div>
+      </GlassCard>
 
-      <div class="detail-tags">
-        <span v-for="tag in translatedProyecto.tags" :key="tag" class="tag tag-industry">{{ tag }}</span>
-      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-10">
+          <section>
+            <h3 class="text-xl font-bold mb-4 pb-2 border-b border-border/50 flex items-center gap-2"><FileText :size="20" class="text-primary"/> Descripción</h3>
+            <div class="prose prose-zinc dark:prose-invert max-w-none markdown-body" v-html="renderMarkdown(translatedProyecto.descripcion_detallada)"></div>
+          </section>
+        </div>
+        
+        <div class="space-y-8">
+          <GlassCard class="p-6 bg-primary/5 border-primary/20 shadow-lg shadow-primary/5">
+            <h3 class="text-lg font-bold mb-3 flex items-center gap-2"><Info :size="20" class="text-primary" /> Contexto</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">{{ translatedProyecto.descripcion_corta }}</p>
+          </GlassCard>
 
-      <div class="detail-stack">
-        <span v-for="tech in translatedProyecto.stack_tecnologico" :key="tech" class="tag tag-tech">{{ tech }}</span>
-      </div>
-
-      <div class="detail-links">
-        <a v-if="translatedProyecto.link_github" :href="translatedProyecto.link_github" target="_blank" class="btn btn-outline">GitHub</a>
-        <a v-if="translatedProyecto.link_demo" :href="translatedProyecto.link_demo" target="_blank" class="btn btn-outline">Demo</a>
-      </div>
-
-      <div v-if="translatedProyecto.kpis && Object.keys(translatedProyecto.kpis).length" class="detail-kpis">
-        <h3 class="section-title">KPIs</h3>
-        <div v-for="(val, key) in translatedProyecto.kpis" :key="key" class="kpi-group">
-          <template v-if="isSimple(val)">
-            <div class="kpi-row"><span class="kpi-row-key">{{ key }}</span><span class="kpi-row-val">{{ val }}</span></div>
-          </template>
-          <template v-else>
-            <div class="kpi-group-header" @click="toggleKpi(key)">
-              <span class="kpi-group-chevron">{{ expandedKpis[key] ? '▾' : '▸' }}</span>
-              <span class="kpi-group-title">{{ key }}</span>
-              <span class="kpi-group-count">{{ Object.keys(val).length }}</span>
+          <GlassCard v-if="translatedProyecto.kpis && Object.keys(translatedProyecto.kpis).length" class="p-0 overflow-hidden">
+            <div class="p-5 border-b border-border/50 bg-secondary/50">
+              <h3 class="text-lg font-bold flex items-center gap-2"><TrendingUp :size="20" class="text-emerald-500" /> KPIs & Métricas</h3>
             </div>
-            <div v-if="expandedKpis[key]" class="kpi-sub-list">
-              <div v-for="(subVal, subKey) in val" :key="subKey" class="kpi-row">
-                <span class="kpi-row-key">{{ subKey }}:</span>
-                <span class="kpi-row-val">{{ subVal }}</span>
+            <div class="divide-y divide-border/50">
+              <div v-for="(val, key) in translatedProyecto.kpis" :key="key">
+                <template v-if="isSimple(val)">
+                  <div class="flex justify-between items-center p-4 hover:bg-secondary/30 transition-colors">
+                    <span class="text-sm font-medium text-muted-foreground">{{ key }}</span>
+                    <span class="text-sm font-bold text-foreground">{{ val }}</span>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="flex items-center justify-between p-4 bg-secondary/20 cursor-pointer hover:bg-secondary/40 transition-colors" @click="toggleKpi(key)">
+                    <div class="flex items-center gap-2">
+                      <ChevronRight :size="16" class="text-muted-foreground transition-transform duration-200" :class="{ 'rotate-90': expandedKpis[key] }" />
+                      <span class="text-sm font-bold text-primary">{{ key }}</span>
+                    </div>
+                    <Badge variant="secondary" class="text-xs">{{ Object.keys(val).length }}</Badge>
+                  </div>
+                  <div v-show="expandedKpis[key]" class="bg-background/50 divide-y divide-border/30">
+                    <div v-for="(subVal, subKey) in val" :key="subKey" class="flex justify-between items-center p-3 pl-10 hover:bg-secondary/10 transition-colors">
+                      <span class="text-xs font-medium text-muted-foreground">{{ subKey }}</span>
+                      <span class="text-sm font-semibold text-foreground">{{ subVal }}</span>
+                    </div>
+                  </div>
+                </template>
               </div>
             </div>
-          </template>
+          </GlassCard>
         </div>
-      </div>
-
-      <div class="detail-content">
-        <h3 class="section-title">Descripción</h3>
-        <div class="markdown" v-html="renderMarkdown(translatedProyecto.descripcion_detallada)"></div>
-      </div>
-
-      <div class="detail-pq">
-        <h3 class="section-title">Contexto</h3>
-        <p>{{ translatedProyecto.descripcion_corta }}</p>
       </div>
     </article>
   </div>
@@ -77,9 +103,15 @@ import { reactive, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProyectosStore } from '../../stores/proyectos'
 import { useTranslatedData } from '../../composables/useTranslatedData'
+import { useI18n } from 'vue-i18n'
+import GlassCard from '../../components/ui/GlassCard.vue'
+import NeonButton from '../../components/ui/NeonButton.vue'
+import Badge from '../../components/ui/Badge.vue'
+import { ArrowLeft, Calendar, Github, ExternalLink, Youtube, FileText, Info, TrendingUp, ChevronRight } from 'lucide-vue-next'
 
 const route = useRoute()
 const store = useProyectosStore()
+const { locale } = useI18n()
 
 const translatedProyecto = useTranslatedData(computed(() => store.current))
 
@@ -90,22 +122,23 @@ function toggleKpi(key) {
 }
 
 function formatDate(d) {
-  return new Date(d).toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric' })
+  if (!d) return ''
+  return new Date(d).toLocaleDateString(locale.value === 'en' ? 'en-US' : 'es-CL', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 function renderMarkdown(text) {
   if (!text) return ''
   let html = text
-    .replace(/### (.+)/g, '<h4>$1</h4>')
-    .replace(/## (.+)/g, '<h3>$1</h3>')
-    .replace(/# (.+)/g, '<h2>$1</h2>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/^- (.+)/gm, '<li>$1</li>')
-    .replace(/\n\n/g, '</p><p>')
+    .replace(/### (.+)/g, '<h4 class="text-lg font-bold mt-6 mb-3 text-foreground">$1</h4>')
+    .replace(/## (.+)/g, '<h3 class="text-xl font-bold mt-8 mb-4 text-foreground">$1</h3>')
+    .replace(/# (.+)/g, '<h2 class="text-2xl font-bold mt-8 mb-4 text-foreground border-b border-border/50 pb-2">$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
+    .replace(/`(.+?)`/g, '<code class="bg-secondary px-1.5 py-0.5 rounded text-sm text-primary font-mono">$1</code>')
+    .replace(/^- (.+)/gm, '<li class="mb-1.5 ml-4 list-disc">$1</li>')
+    .replace(/\n\n/g, '</p><p class="mb-4 leading-relaxed">')
     .replace(/\n/g, '<br/>')
-  return '<p>' + html + '</p>'
+  return '<div class="space-y-4 text-muted-foreground"><p class="leading-relaxed">' + html + '</p></div>'
 }
 
 function isSimple(val) {
@@ -127,202 +160,3 @@ watch(() => route.params.id, (newId) => {
 
 onMounted(() => store.fetchOne(route.params.id))
 </script>
-
-<style scoped>
-.detail {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.back-link {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  font-size: 0.875rem;
-}
-
-.detail-img {
-  width: 100%;
-  max-height: 360px;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
-  margin-bottom: 1.5rem;
-}
-
-.detail-video {
-  margin-bottom: 2rem;
-}
-
-.section-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--color-gray-200);
-  padding-bottom: 0.5rem;
-}
-
-.video-responsive {
-  overflow: hidden;
-  padding-bottom: 56.25%;
-  position: relative;
-  height: 0;
-  border-radius: var(--radius-md);
-}
-
-.video-responsive iframe {
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-}
-
-.detail-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin-bottom: 0.75rem;
-}
-
-.detail-meta {
-  display: flex;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: var(--color-gray-500);
-  margin-bottom: 1rem;
-}
-
-.detail-tags,
-.detail-stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.detail-links {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
-}
-
-.detail-kpis {
-  margin-bottom: 2rem;
-}
-
-.kpi-group {
-  border: 1px solid var(--color-gray-200);
-  border-radius: var(--radius-md);
-  margin-bottom: 0.5rem;
-  overflow: hidden;
-}
-
-.kpi-group:last-child {
-  margin-bottom: 0;
-}
-
-.kpi-group-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  background: var(--color-gray-50);
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.15s;
-}
-
-.kpi-group-header:hover {
-  background: var(--color-gray-100);
-}
-
-.kpi-group-chevron {
-  font-size: 0.75rem;
-  color: var(--color-gray-400);
-  flex-shrink: 0;
-}
-
-.kpi-group-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  flex: 1;
-}
-
-.kpi-group-count {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  background: var(--color-gray-100);
-  padding: 0.125rem 0.5rem;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
-.kpi-sub-list {
-  border-top: 1px solid var(--color-gray-200);
-}
-
-.kpi-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--color-gray-100);
-}
-
-.kpi-row:last-child {
-  border-bottom: none;
-}
-
-.kpi-sub-list .kpi-row {
-  padding-left: 3rem;
-}
-
-.kpi-row-key {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-gray-600);
-  white-space: nowrap;
-}
-
-.kpi-row-val {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-}
-
-.detail-content {
-  margin-bottom: 2rem;
-}
-
-.markdown {
-  line-height: 1.8;
-  color: var(--color-gray-700);
-}
-
-.markdown code {
-  background: var(--color-gray-100);
-  padding: 0.125rem 0.375rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-}
-
-.markdown li {
-  margin-left: 1.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.detail-pq {
-  margin-top: 2rem;
-  padding: 1.5rem;
-  background: var(--color-gray-50);
-  border-radius: var(--radius-md);
-  border-left: 4px solid var(--color-accent);
-}
-
-.detail-pq p {
-  color: var(--color-gray-600);
-  line-height: 1.6;
-}
-</style>

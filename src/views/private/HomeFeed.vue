@@ -114,7 +114,7 @@
             </div>
           </div>
           <div v-if="currentUser" style="margin-top: 1rem;">
-            <router-link to="/admin" class="btn btn-primary" style="width: 100%; justify-content: center; background-color: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: white; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            <router-link to="/admin" class="flex items-center justify-center gap-2 p-3 bg-primary/20 text-primary border border-primary rounded-lg font-semibold hover:bg-primary/30 transition-colors text-center w-full">
               ⚙️ Administrar Perfil
             </router-link>
           </div>

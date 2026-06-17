@@ -1,21 +1,29 @@
 <template>
-  <router-link :to="`/experiencia/${experiencia.id}`" class="card experiencia-card">
-    <div v-if="tData.image_url" class="card-img">
-      <img :src="tData.image_url" :alt="tData.empresa" />
-    </div>
-    <div class="card-body">
-      <div class="card-header">
-        <div>
-          <h3 class="card-title">{{ tData.rol }}</h3>
-          <span class="card-company">{{ tData.empresa }}</span>
+  <router-link :to="`/experiencia/${experiencia.id}`" class="block outline-none group h-full">
+    <GlassCard hoverEffect class="h-full flex flex-col transition-all duration-300 group-hover:border-emerald-500/50 overflow-hidden border-border/50">
+      <div v-if="tData.image_url" class="w-full h-48 overflow-hidden relative shrink-0">
+        <div class="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay"></div>
+        <img :src="tData.image_url" :alt="tData.empresa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      </div>
+      
+      <div class="p-5 flex flex-col flex-grow">
+        <div class="flex justify-between items-start gap-4 mb-2">
+          <div>
+            <h3 class="text-lg font-bold text-foreground group-hover:text-emerald-500 transition-colors line-clamp-2">{{ tData.rol }}</h3>
+            <span class="text-sm font-medium text-emerald-500/80 block mt-0.5">{{ tData.empresa }}</span>
+          </div>
+          <span class="text-xs font-medium text-muted-foreground whitespace-nowrap pt-1 bg-secondary px-2 py-0.5 rounded-full border border-border/50">{{ formatPeriod(tData.periodo_inicio, tData.periodo_fin) }}</span>
         </div>
-        <span class="card-date">{{ formatPeriod(tData.periodo_inicio, tData.periodo_fin) }}</span>
+        
+        <p class="text-sm text-muted-foreground mb-4 line-clamp-3">{{ truncate(tData.descripcion_logros, 200) }}</p>
+        
+        <div class="mt-auto pt-3 border-t border-border/50">
+          <div class="flex flex-wrap gap-1.5">
+            <span v-for="tag in tData.tags_industria" :key="tag" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{{ tag }}</span>
+          </div>
+        </div>
       </div>
-      <p class="card-desc">{{ truncate(tData.descripcion_logros, 200) }}</p>
-      <div class="card-tags">
-        <span v-for="tag in tData.tags_industria" :key="tag" class="tag tag-industry">{{ tag }}</span>
-      </div>
-    </div>
+    </GlassCard>
   </router-link>
 </template>
 
@@ -23,6 +31,7 @@
 import { useTranslatedData } from '../../composables/useTranslatedData'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import GlassCard from '../ui/GlassCard.vue'
 
 const props = defineProps({
   experiencia: { type: Object, required: true },
@@ -41,74 +50,7 @@ function formatPeriod(start, end) {
 }
 
 function truncate(text, max) {
+  if (!text) return ''
   return text.length > max ? text.slice(0, max) + '...' : text
 }
 </script>
-
-<style scoped>
-.experiencia-card {
-  display: block;
-  color: inherit;
-}
-
-.experiencia-card:hover {
-  text-decoration: none;
-  color: inherit;
-}
-
-.card-img {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-  gap: 1rem;
-}
-
-.card-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-}
-
-.card-company {
-  font-size: 0.875rem;
-  color: var(--color-accent);
-  font-weight: 500;
-}
-
-.card-date {
-  font-size: 0.8125rem;
-  color: var(--color-gray-400);
-  white-space: nowrap;
-}
-
-.card-desc {
-  font-size: 0.875rem;
-  color: var(--color-gray-600);
-  margin-bottom: 0.75rem;
-  line-height: 1.5;
-}
-
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-}
-</style>

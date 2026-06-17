@@ -242,27 +242,5 @@ export const api = {
       if (!res.ok) throw new Error(data.detail || 'Error uploading file')
       return data
     })
-  },
-  
-  // Cover Letters
-  generateCoverLetter(username, data) {
-    return request(`/cover-letters/generate/${encodeURIComponent(username)}`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-  },
-  sendCoverLetterEmail(letterId, data) {
-    return request(`/cover-letters/${letterId}/send-email`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-  },
-  getCoverLetters() {
-    return request('/cover-letters')
-  },
-  deleteCoverLetter(letterId) {
-    return request(`/cover-letters/${letterId}`, {
-      method: 'DELETE'
-    })
   }
 }

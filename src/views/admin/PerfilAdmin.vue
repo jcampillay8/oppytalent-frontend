@@ -1,44 +1,105 @@
 <template>
-  <div class="container">
+  
     <AdminLayout>
-      <div class="admin-header">
-        <h1 class="page-title">Sobre Mí</h1>
-        <button v-if="!store.items.length" class="btn btn-primary" @click="openForm(null)">+ Agregar</button>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Sobre Mí</h1>
+          <p class="text-muted-foreground mt-1">Administra la información principal de tu portafolio.</p>
+        </div>
+        <NeonButton v-if="!store.items.length" @click="openForm(null)" glow variant="primary">
+          <template #icon-left><Plus :size="18" /></template>
+          Crear Perfil Base
+        </NeonButton>
       </div>
 
-      <PerfilForm
-        v-if="showForm"
-        :perfil="editingPerfil"
-        @save="handleSave"
-        @cancel="showForm = false"
-      />
+      <div v-if="showForm" class="mb-8" v-motion :initial="{ opacity: 0, y: -20 }" :enter="{ opacity: 1, y: 0 }">
+        <GlassCard>
+          <div class="flex items-center justify-between mb-4 border-b border-border/50 pb-4">
+            <h2 class="text-lg font-bold text-foreground">
+              {{ editingPerfil ? 'Editar Perfil' : 'Crear Perfil' }}
+            </h2>
+            <button @click="showForm = false" class="p-2 text-muted-foreground hover:text-destructive transition-colors">
+              <X :size="20" />
+            </button>
+          </div>
+          <PerfilForm
+            :perfil="editingPerfil"
+            @save="handleSave"
+            @cancel="showForm = false"
+          />
+        </GlassCard>
+      </div>
 
-      <div v-if="store.loading" class="loading"><div class="spinner"></div></div>
-      <div v-else-if="!store.items.length" class="empty-state">No hay perfil creado aún.</div>
-      <div v-else class="admin-list">
-        <div v-for="p in store.items" :key="p.id" class="card admin-item">
-          <div class="admin-item-info">
-            <img v-if="p.avatar_url" :src="p.avatar_url" alt="" class="admin-avatar-thumb" />
-            <img v-if="p.image_url" :src="p.image_url" alt="" class="admin-thumb" />
-            <div>
-              <p class="admin-item-preview">{{ truncate(p.descripcion, 120) }}</p>
-              <span class="admin-item-date">Actualizado: {{ formatDate(p.updated_at) }}</span>
+      <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
+        <Loader2 class="h-10 w-10 animate-spin mb-4" />
+        <p class="text-sm font-medium text-muted-foreground">Cargando perfil...</p>
+      </div>
+      
+      <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
+        <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
+          <UserCircle :size="32" />
+        </div>
+        <h3 class="text-xl font-bold text-foreground">Aún no tienes un perfil base</h3>
+        <p class="text-muted-foreground mt-2 max-w-sm text-center">Completa tu información personal, foto y extracto profesional para que los visitantes te conozcan.</p>
+        <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
+          Comenzar
+        </NeonButton>
+      </div>
+
+      <div v-else class="grid grid-cols-1 gap-4">
+        <GlassCard 
+          v-for="p in store.items" 
+          :key="p.id" 
+          hoverEffect 
+          class="flex flex-col sm:flex-row items-start gap-6 p-6"
+        >
+          <!-- Avatares / Imágenes -->
+          <div class="flex items-center gap-4 shrink-0 relative">
+            <div class="relative w-16 h-16 rounded-full border-2 border-primary/20 bg-secondary overflow-hidden shrink-0 shadow-inner">
+              <img v-if="p.avatar_url" :src="p.avatar_url" class="w-full h-full object-cover" />
+              <User v-else :size="32" class="text-muted-foreground absolute inset-0 m-auto" />
+            </div>
+            
+            <div class="relative w-24 h-16 rounded-lg border border-border bg-secondary overflow-hidden shrink-0 shadow-sm hidden sm:block">
+              <img v-if="p.image_url" :src="p.image_url" class="w-full h-full object-cover" />
+              <ImageIcon v-else :size="24" class="text-muted-foreground absolute inset-0 m-auto" />
             </div>
           </div>
-          <div class="admin-item-actions">
-            <button class="btn btn-outline btn-sm" @click="openForm(p)">Editar</button>
-            <button class="btn btn-danger btn-sm" @click="handleDelete(p.id)">Eliminar</button>
+
+          <!-- Información -->
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold text-lg text-foreground mb-2 flex items-center gap-2">
+              Extracto <Badge variant="secondary" class="text-[10px]">Actualizado: {{ formatDate(p.updated_at) }}</Badge>
+            </h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              {{ truncate(p.descripcion, 200) }}
+            </p>
           </div>
-        </div>
+
+          <!-- Acciones -->
+          <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+            <NeonButton variant="outline" @click="openForm(p)">
+              <template #icon-left><Edit2 :size="14" /></template>
+              Editar
+            </NeonButton>
+            <NeonButton variant="destructive" @click="handleDelete(p.id)">
+              <template #icon-left><Trash2 :size="14" /></template>
+            </NeonButton>
+          </div>
+        </GlassCard>
       </div>
     </AdminLayout>
-  </div>
+  
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import PerfilForm from '../../components/admin/PerfilForm.vue'
+import GlassCard from '../../components/ui/GlassCard.vue'
+import NeonButton from '../../components/ui/NeonButton.vue'
+import Badge from '../../components/ui/Badge.vue'
+import { Plus, X, Loader2, UserCircle, User, Image as ImageIcon, Edit2, Trash2 } from 'lucide-vue-next'
 import { usePerfilStore } from '../../stores/perfil'
 
 const store = usePerfilStore()
@@ -46,6 +107,7 @@ const showForm = ref(false)
 const editingPerfil = ref(null)
 
 function formatDate(d) {
+  if (!d) return ''
   return new Date(d).toLocaleDateString('es-CL', { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
@@ -56,6 +118,7 @@ function truncate(text, max) {
 function openForm(perfil) {
   editingPerfil.value = perfil ? { ...perfil } : null
   showForm.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 async function handleSave(data) {
@@ -68,77 +131,10 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Eliminar este perfil?')) {
+  if (confirm('¿Estás seguro de que deseas eliminar tu perfil base?')) {
     await store.remove(id)
   }
 }
 
 onMounted(() => store.fetchAll())
 </script>
-
-<style scoped>
-.admin-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.admin-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.admin-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-}
-
-.admin-item-info {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.admin-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.admin-avatar-thumb {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 2px solid var(--color-gray-200);
-}
-
-.admin-item-preview {
-  font-size: 0.875rem;
-  color: var(--color-gray-700);
-  line-height: 1.4;
-}
-
-.admin-item-date {
-  font-size: 0.75rem;
-  color: var(--color-gray-500);
-}
-
-.admin-item-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-sm {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-}
-</style>

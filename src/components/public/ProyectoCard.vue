@@ -1,34 +1,45 @@
 <template>
-  <router-link :to="`/proyecto/${proyecto.id}`" class="card proyecto-card">
-    <div v-if="translatedProyecto.image_url" class="card-img">
-      <img :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" />
-    </div>
-    <div class="card-body">
-      <div class="card-header">
-        <h3 class="card-title">{{ translatedProyecto.titulo }}</h3>
-        <span class="card-date">{{ formatDate(proyecto.fecha_proyecto) }}</span>
+  <router-link :to="`/proyecto/${proyecto.id}`" class="block outline-none group h-full">
+    <GlassCard hoverEffect class="h-full flex flex-col transition-all duration-300 group-hover:border-primary/50 overflow-hidden border-border/50">
+      <div v-if="translatedProyecto.image_url" class="w-full h-48 overflow-hidden relative shrink-0">
+        <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay"></div>
+        <img :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       </div>
-      <p class="card-desc">{{ translatedProyecto.descripcion_corta }}</p>
-      <div class="card-tags">
-        <span v-for="tag in translatedProyecto.tags" :key="tag" class="tag tag-industry">{{ tag }}</span>
-      </div>
-      <div class="card-stack">
-        <span v-for="tech in (translatedProyecto.stack_tecnologico || []).slice(0, 5)" :key="tech" class="tag tag-tech">{{ tech }}</span>
-        <span v-if="translatedProyecto.stack_tecnologico?.length > 5" class="tag">+{{ translatedProyecto.stack_tecnologico.length - 5 }}</span>
-      </div>
-      <div v-if="translatedProyecto.kpis && Object.keys(translatedProyecto.kpis).length" class="card-kpis">
-        <span class="kpis-label">KPIs</span>
-        <div class="kpis-chips">
-          <span v-for="(val, key) in translatedProyecto.kpis" :key="key" class="kpi-chip">{{ key }}</span>
+      
+      <div class="p-5 flex flex-col flex-grow">
+        <div class="flex justify-between items-start gap-4 mb-2">
+          <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">{{ translatedProyecto.titulo }}</h3>
+          <span class="text-xs font-medium text-muted-foreground whitespace-nowrap pt-1 bg-secondary px-2 py-0.5 rounded-full border border-border/50">{{ formatDate(proyecto.fecha_proyecto) }}</span>
+        </div>
+        
+        <p class="text-sm text-muted-foreground mb-4 line-clamp-3">{{ translatedProyecto.descripcion_corta }}</p>
+        
+        <div class="mt-auto space-y-3">
+          <div class="flex flex-wrap gap-1.5">
+            <span v-for="tag in translatedProyecto.tags" :key="tag" class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">{{ tag }}</span>
+          </div>
+          
+          <div class="flex flex-wrap gap-1.5">
+            <span v-for="tech in (translatedProyecto.stack_tecnologico || []).slice(0, 5)" :key="tech" class="px-2 py-0.5 text-xs font-medium rounded-md bg-secondary border border-border/50 text-muted-foreground">{{ tech }}</span>
+            <span v-if="translatedProyecto.stack_tecnologico?.length > 5" class="px-2 py-0.5 text-xs font-medium rounded-md bg-secondary border border-border/50 text-muted-foreground">+{{ translatedProyecto.stack_tecnologico.length - 5 }}</span>
+          </div>
+          
+          <div v-if="translatedProyecto.kpis && Object.keys(translatedProyecto.kpis).length" class="pt-3 border-t border-border/50">
+            <span class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-2">KPIs</span>
+            <div class="flex flex-wrap gap-1.5">
+              <span v-for="(val, key) in translatedProyecto.kpis" :key="key" class="text-xs font-medium px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{{ key }}</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   </router-link>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useTranslatedData } from '../../composables/useTranslatedData'
+import GlassCard from '../ui/GlassCard.vue'
 
 const props = defineProps({
   proyecto: { type: Object, required: true },
@@ -37,107 +48,7 @@ const props = defineProps({
 const translatedProyecto = useTranslatedData(computed(() => props.proyecto))
 
 function formatDate(d) {
+  if (!d) return ''
   return new Date(d).toLocaleDateString('es-CL', { year: 'numeric', month: 'short' })
 }
 </script>
-
-<style scoped>
-.proyecto-card {
-  display: block;
-  color: inherit;
-}
-
-.proyecto-card:hover {
-  text-decoration: none;
-  color: inherit;
-}
-
-.card-img {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-}
-
-.card-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.75rem;
-  gap: 1rem;
-}
-
-.card-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-gray-900);
-}
-
-.card-date {
-  font-size: 0.8125rem;
-  color: var(--color-gray-400);
-  white-space: nowrap;
-}
-
-.card-desc {
-  font-size: 0.875rem;
-  color: var(--color-gray-600);
-  margin-bottom: 1rem;
-  line-height: 1.5;
-}
-
-.card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  margin-bottom: 0.75rem;
-}
-
-.card-stack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-}
-
-.card-kpis {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--color-gray-100);
-}
-
-.kpis-label {
-  font-size: 0.625rem;
-  font-weight: 700;
-  color: var(--color-gray-400);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  display: block;
-  margin-bottom: 0.375rem;
-}
-
-.kpis-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-}
-
-.kpi-chip {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--color-accent);
-  background: var(--color-gray-50);
-  border: 1px solid var(--color-gray-200);
-  padding: 0.125rem 0.5rem;
-  border-radius: 4px;
-}
-</style>

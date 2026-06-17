@@ -1,42 +1,59 @@
 <template>
-  <div class="image-uploader">
-    <div class="upload-area" @click="triggerFileInput" :class="{ dragging: isDragging, 'has-image': modelValue }" @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop">
+  <div class="flex flex-col gap-4">
+    <div 
+      class="relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 min-h-[160px] flex items-center justify-center overflow-hidden"
+      :class="[
+        isDragging ? 'border-primary bg-primary/10' : 'border-border/50 bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50',
+        modelValue && !uploading ? 'p-0 border-solid border-border/50' : ''
+      ]"
+      @click="triggerFileInput" 
+      @dragover.prevent="isDragging = true" 
+      @dragleave.prevent="isDragging = false" 
+      @drop.prevent="handleDrop"
+    >
       
-      <input type="file" ref="fileInput" class="hidden-input" accept="image/*" @change="handleFileChange" />
+      <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileChange" />
       
       <!-- Si ya hay una imagen -->
-      <div v-if="modelValue && !uploading" class="preview-container">
-        <img :src="parsedImageUrl" alt="Preview" class="image-preview" />
-        <div class="overlay">
-          <span class="icon">🔄</span>
-          <p>Haz clic para cambiar la imagen</p>
+      <div v-if="modelValue && !uploading" class="w-full h-[160px] relative group">
+        <img :src="parsedImageUrl" alt="Preview" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white">
+          <span class="text-3xl mb-2">🔄</span>
+          <p class="text-sm font-medium">Haz clic para cambiar la imagen</p>
         </div>
       </div>
       
       <!-- Estado de carga -->
-      <div v-else-if="uploading" class="loading-state">
-        <span class="spinner"></span>
-        <p>Subiendo imagen...</p>
+      <div v-else-if="uploading" class="flex flex-col items-center text-muted-foreground">
+        <div class="w-8 h-8 border-4 border-white/10 border-t-primary rounded-full animate-spin mb-4"></div>
+        <p class="text-sm font-medium">Subiendo imagen...</p>
       </div>
       
       <!-- Estado vacío -->
-      <div v-else class="empty-state">
-        <span class="icon">☁️</span>
-        <p>Arrastra tu imagen o haz clic para subir</p>
-        <small v-if="authStore.user?.is_premium">Premium Activo: Cloudflare R2</small>
-        <small v-else-if="authStore.user?.google_refresh_token">Subiendo a Google Drive</small>
-        <small v-else class="text-warning">⚠️ Configura tu almacenamiento primero</small>
+      <div v-else class="flex flex-col items-center text-muted-foreground">
+        <span class="text-4xl mb-2">☁️</span>
+        <p class="font-medium mb-2 text-foreground">Arrastra tu imagen o haz clic para subir</p>
+        <small v-if="authStore.user?.is_premium" class="text-xs text-primary">Premium Activo: Cloudflare R2</small>
+        <small v-else-if="authStore.user?.google_refresh_token" class="text-xs">Subiendo a Google Drive</small>
+        <small v-else class="text-xs text-amber-500 font-medium">⚠️ Configura tu almacenamiento primero</small>
       </div>
     </div>
     
     <!-- Opción manual -->
-    <div class="manual-input">
-      <p class="separator"><span>o pega una URL manualmente</span></p>
+    <div class="flex flex-col gap-2">
+      <div class="relative text-center">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-border/50"></div>
+        </div>
+        <div class="relative flex justify-center text-xs">
+          <span class="bg-card px-2 text-muted-foreground">o pega una URL manualmente</span>
+        </div>
+      </div>
       <input 
         type="text" 
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        class="form-input" 
+        class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" 
         placeholder="https://ejemplo.com/imagen.png"
       />
     </div>
@@ -104,131 +121,3 @@ const uploadFile = async (file) => {
   }
 }
 </script>
-
-<style scoped>
-.image-uploader {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.upload-area {
-  position: relative;
-  border: 2px dashed rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-md);
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  background: rgba(24, 24, 27, 0.5);
-  min-height: 160px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.upload-area:hover, .upload-area.dragging {
-  border-color: var(--color-primary);
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.upload-area.has-image {
-  padding: 0;
-  border-style: solid;
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.hidden-input {
-  display: none;
-}
-
-.preview-container {
-  width: 100%;
-  height: 160px;
-  position: relative;
-}
-
-.image-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.overlay {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-  color: white;
-}
-
-.preview-container:hover .overlay {
-  opacity: 1;
-}
-
-.overlay .icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.empty-state, .loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--color-gray-400);
-}
-
-.empty-state .icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-  margin: 0 0 0.5rem 0;
-  font-weight: 500;
-}
-
-.text-warning {
-  color: #f59e0b;
-}
-
-.separator {
-  text-align: center;
-  position: relative;
-  margin: 0;
-  color: var(--color-gray-500);
-  font-size: 0.8rem;
-}
-
-.separator::before, .separator::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  width: calc(50% - 80px);
-  height: 1px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.separator::before { left: 0; }
-.separator::after { right: 0; }
-
-.spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid rgba(255,255,255,0.1);
-  border-radius: 50%;
-  border-top-color: var(--color-primary);
-  animation: spin 1s ease-in-out infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-</style>

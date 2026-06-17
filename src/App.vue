@@ -1,95 +1,117 @@
 <template>
   <div class="app">
-    <header class="navbar glass-panel" v-if="!isAppLayout">
-      <div class="navbar-brand">
-        <router-link to="/home" class="logo">Oppy<span>Talent</span></router-link>
-      </div>
-      
-      <div class="navbar-search-container">
-        <div class="navbar-search">
-          <input 
-            type="text" 
-            v-model="searchQuery" 
-            @input="onSearch" 
-            @focus="showResults = true"
-            @blur="hideResultsDelay"
-            placeholder="Buscar talento..." 
-            class="search-input" 
-          />
-          <div class="search-results-wrapper">
-            <div v-if="showResults && searchResults.length > 0" class="search-results glass-panel">
-              <router-link 
-                v-for="user in searchResults" 
-                :key="user.id" 
-                :to="`/${user.username.split('@')[0]}`" 
-                class="search-result-item"
-              >
-                <div class="search-avatar">
-                  <img v-if="user.userImage" :src="user.userImage" alt="Avatar" />
-                  <span v-else>{{ (user.firstName || user.username || 'U').charAt(0) }}{{ (user.lastName || '').charAt(0) }}</span>
-                </div>
-                <div class="search-info">
-                  <strong>{{ user.firstName || user.username }} {{ user.lastName || '' }}</strong>
-                  <span>{{ user.occupation || 'Talento OppyTalent' }}</span>
-                </div>
-              </router-link>
-            </div>
-            <div v-else-if="showResults && searchQuery && searchResults.length === 0 && !isSearching" class="search-results glass-panel empty">
-              <p>No se encontraron talentos con "{{ searchQuery }}"</p>
-            </div>
+    <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl" v-if="!isAppLayout">
+      <div class="container flex h-16 max-w-[1536px] items-center justify-between">
+        
+        <!-- Logo -->
+        <router-link to="/home" class="flex items-center gap-2 font-bold text-xl tracking-tight transition-colors hover:text-primary">
+          <div class="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+            <Zap :size="18" />
           </div>
+          <span class="text-foreground">Oppy<span class="text-primary">Talent</span></span>
+        </router-link>
+      
+        <!-- Search Spotlight -->
+        <div class="hidden md:flex flex-1 items-center justify-center px-6">
+          <SearchSpotlight 
+            v-model="searchQuery"
+            :results="searchResults"
+            :is-loading="isSearching"
+            @focus="showResults = true"
+            @close="showResults = false"
+            @update:modelValue="onSearch"
+          />
         </div>
-      </div>
 
-      <div class="navbar-right-container">
-        <div class="navbar-menu">
-          <nav class="nav" :class="{ 'nav-open': isMenuOpen }">
-            <router-link :to="chatLink" class="nav-link" @click="closeMenu"><i class="icon-chat"></i> {{ $t('nav.chat') }}</router-link>
-            <router-link to="/portafolio" class="nav-link" @click="closeMenu">{{ $t('nav.portafolio') }}</router-link>
-            <router-link to="/contactame" class="nav-link" @click="closeMenu">{{ $t('nav.contact') }}</router-link>
-            <router-link to="/sobre-mi" class="nav-link nav-link-avatar" @click="closeMenu">
-              <img v-if="avatarUrl" :src="avatarUrl" alt="" class="nav-avatar" />
-              <span v-else class="nav-avatar-placeholder">👤</span>
+        <!-- Right Side Nav -->
+        <div class="flex items-center gap-4">
+          <!-- Desktop Nav -->
+          <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+            <router-link :to="chatLink" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <MessageSquare :size="16" /> {{ $t('nav.chat') }}
+            </router-link>
+            <router-link to="/portafolio" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Briefcase :size="16" /> {{ $t('nav.portafolio') }}
+            </router-link>
+            <router-link to="/contactame" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Mail :size="16" /> {{ $t('nav.contact') }}
+            </router-link>
+            <router-link to="/sobre-mi" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <img v-if="avatarUrl" :src="avatarUrl" alt="" class="h-6 w-6 rounded-full border border-border object-cover" />
+              <User v-else :size="16" />
               {{ $t('nav.about', { name: portfolioOwnerName }) }}
             </router-link>
           </nav>
-        </div>
 
-        <div class="navbar-user">
-          <div class="user-dropdown-container" v-if="authStore.token" @click.stop="isDropdownOpen = !isDropdownOpen">
-            <button class="dropdown-trigger btn-outline-glass">
-              <img v-if="authUserAvatar" :src="authUserAvatar" class="dropdown-avatar" />
-              <span v-else class="dropdown-avatar-placeholder">{{ authUserInitials }}</span>
-              <span class="dropdown-arrow">▼</span>
+          <!-- User Menu & Lang -->
+          <div class="flex items-center gap-2">
+            <button @click="toggleLanguage" class="h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
+              {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
             </button>
-            
-            <div class="user-dropdown-menu glass-panel" v-if="isDropdownOpen" @click.stop>
-              <router-link to="/admin" class="dropdown-item" @click="isDropdownOpen = false">
-                <span class="icon">👤</span> {{ $t('nav.admin') }}
-              </router-link>
-              <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="dropdown-item" @click="isDropdownOpen = false">
-                <span class="icon">🤖</span> Mi Chat IA
-              </router-link>
-              <button class="dropdown-item" @click="goToMyPortfolio">
-                <span class="icon">💼</span> Mi Portafolio
-              </button>
-              <div class="dropdown-divider"></div>
-              <button class="dropdown-item text-danger" @click="handleLogout">
-                <span class="icon">🚪</span> Cerrar Sesión
-              </button>
-            </div>
+
+            <!-- User Dropdown via AnimatedDropdown Component -->
+            <AnimatedDropdown v-if="authStore.token" align="right">
+              <template #trigger>
+                <div class="h-9 w-9 rounded-full bg-secondary border border-border flex items-center justify-center overflow-hidden hover:ring-2 hover:ring-primary/20 transition-all cursor-pointer">
+                  <img v-if="authUserAvatar" :src="authUserAvatar" class="h-full w-full object-cover" />
+                  <span v-else class="text-xs font-bold text-muted-foreground">{{ authUserInitials }}</span>
+                </div>
+              </template>
+              <template #content="{ close }">
+                <div class="flex flex-col space-y-1 p-1">
+                  <router-link to="/admin" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                    <LayoutDashboard :size="16" /> {{ $t('nav.admin') }}
+                  </router-link>
+                  <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                    <Bot :size="16" /> Mi Chat IA
+                  </router-link>
+                  <button @click="goToMyPortfolio(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                    <Briefcase :size="16" /> Mi Portafolio
+                  </button>
+                  <div class="h-px bg-border my-1"></div>
+                  <button @click="handleLogout(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg text-destructive hover:bg-destructive/10 transition-colors">
+                    <LogOut :size="16" /> Cerrar Sesión
+                  </button>
+                </div>
+              </template>
+            </AnimatedDropdown>
+
+            <button class="md:hidden p-2 text-foreground hover:text-primary transition-colors" @click="isMenuOpen = !isMenuOpen">
+              <Menu :size="24" />
+            </button>
           </div>
-          <button class="lang-btn btn-outline-glass" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
-            {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
-          </button>
-          
-          <button class="mobile-menu-btn" @click="isMenuOpen = !isMenuOpen">
-            <span class="hamburger" :class="{ 'is-active': isMenuOpen }"></span>
-          </button>
         </div>
       </div>
+
+      <!-- Mobile Menu -->
+      <div v-if="isMenuOpen" class="md:hidden border-t border-border bg-card/95 backdrop-blur-lg">
+        <nav class="flex flex-col p-4 space-y-4">
+          <div class="px-2">
+            <SearchSpotlight 
+              v-model="searchQuery"
+              :results="searchResults"
+              :is-loading="isSearching"
+              @focus="showResults = true"
+              @close="showResults = false; isMenuOpen = false"
+              @update:modelValue="onSearch"
+            />
+          </div>
+          <router-link :to="chatLink" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+            <MessageSquare :size="20" /> {{ $t('nav.chat') }}
+          </router-link>
+          <router-link to="/portafolio" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+            <Briefcase :size="20" /> {{ $t('nav.portafolio') }}
+          </router-link>
+          <router-link to="/contactame" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+            <Mail :size="20" /> {{ $t('nav.contact') }}
+          </router-link>
+          <router-link to="/sobre-mi" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+            <User :size="20" /> {{ $t('nav.about', { name: portfolioOwnerName }) }}
+          </router-link>
+        </nav>
+      </div>
     </header>
-    <main :class="['main', { 'no-padding': isAppLayout }]">
+    <main :class="['main', { 'no-padding': isAppLayout || isAdminRoute || isFullHeightRoute }]">
       <router-view />
     </main>
     <footer class="footer" v-if="!isAppLayout">
@@ -107,8 +129,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePerfilStore } from './stores/perfil'
 import { useAuthStore } from './stores/auth'
+import { useThemeStore } from './stores/useThemeStore'
 import ChatWidget from './components/public/ChatWidget.vue'
+import AnimatedDropdown from './components/ui/AnimatedDropdown.vue'
+import SearchSpotlight from './components/ui/SearchSpotlight.vue'
 import { api } from './services/api'
+import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu } from 'lucide-vue-next'
 
 const { locale } = useI18n()
 
@@ -129,6 +155,10 @@ const authUserInitials = computed(() => {
 })
 
 onMounted(async () => {
+  // Inicializar el sistema de temas (OppyTec Style)
+  const themeStore = useThemeStore()
+  themeStore.initTheme()
+
   document.addEventListener('click', () => { isDropdownOpen.value = false })
   
   if (authStore.token && !authStore.user) {
@@ -154,6 +184,16 @@ watch(() => route.path, async () => {
 
 const appRoutes = ['Landing', 'LoginUser', 'RegisterUser', 'HomeFeed', 'AuthCallback']
 const isAppLayout = computed(() => appRoutes.includes(route.name))
+
+const adminRoutes = [
+  'Dashboard', 'CVWizard', 'ProyectosAdmin', 'ExperienciasAdmin', 
+  'EstudiosAdmin', 'PerfilAdmin', 'SeccionesAdmin', 'FrasesAdmin', 
+  'ChatLogsAdmin', 'ChatConfigAdmin', 'ThemeConfigAdmin', 'StorageConfigAdmin'
+]
+const isAdminRoute = computed(() => adminRoutes.includes(route.name))
+
+const fullHeightRoutes = ['UserPortfolio', 'AI Assistant']
+const isFullHeightRoute = computed(() => fullHeightRoutes.includes(route.name))
 
 const searchQuery = ref('')
 const searchResults = ref([])
@@ -244,13 +284,11 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 4rem;
-  display: grid;
-  grid-template-columns: 1fr minmax(auto, 400px) 1fr;
-  align-items: center;
-  padding: 0 2rem;
   z-index: 100;
   border-radius: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(24, 24, 27, 0.8);
+  backdrop-filter: blur(12px);
 }
 
 .glass-panel {

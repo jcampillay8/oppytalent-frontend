@@ -1,159 +1,190 @@
 <template>
-  <div class="container">
+  
     <AdminLayout>
-      <div class="header-actions">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
         <div>
-          <h1 class="page-title">Registros del Chat de IA</h1>
-          <p class="subtitle">Monitorea y analiza las interacciones de los visitantes con la inteligencia artificial.</p>
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Registros de la IA</h1>
+          <p class="text-muted-foreground mt-1">Monitorea las interacciones de los visitantes con tu inteligencia artificial.</p>
         </div>
         
-        <div class="action-buttons">
-          <!-- Column Toggle Dropdown -->
-          <div class="dropdown-container">
-            <button class="btn btn-secondary" @click="showColumnMenu = !showColumnMenu">
-              <span class="icon">⚙️</span> Columnas
-            </button>
-            <div v-if="showColumnMenu" class="dropdown-menu">
-              <label v-for="col in columns" :key="col.key" class="dropdown-item">
-                <input type="checkbox" v-model="col.visible" />
-                <span>{{ col.label }}</span>
-              </label>
-            </div>
-          </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+          <!-- Column Toggle via AnimatedDropdown -->
+          <AnimatedDropdown align="right">
+            <template #trigger>
+              <NeonButton variant="outline">
+                <template #icon-left><Settings2 :size="16" /></template>
+                Columnas
+              </NeonButton>
+            </template>
+            <template #content="{ close }">
+              <div class="p-2 space-y-1 w-48">
+                <label v-for="col in columns" :key="col.key" class="flex items-center gap-2 p-2 hover:bg-secondary rounded-lg cursor-pointer transition-colors">
+                  <input type="checkbox" v-model="col.visible" class="rounded border-border bg-card text-primary focus:ring-primary/20" />
+                  <span class="text-sm font-medium">{{ col.label }}</span>
+                </label>
+              </div>
+            </template>
+          </AnimatedDropdown>
           
-          <button class="btn btn-primary" @click="refreshData" :disabled="chatLogsStore.loading">
-            <span class="icon">↻</span> {{ chatLogsStore.loading ? 'Actualizando...' : 'Actualizar' }}
-          </button>
+          <NeonButton @click="refreshData" :disabled="chatLogsStore.loading" glow>
+            <template #icon-left>
+              <RefreshCw :size="16" :class="{ 'animate-spin': chatLogsStore.loading }" />
+            </template>
+            {{ chatLogsStore.loading ? 'Actualizando...' : 'Actualizar' }}
+          </NeonButton>
         </div>
       </div>
 
-      <div v-if="chatLogsStore.error" class="alert alert-error">
+      <div v-if="chatLogsStore.error" class="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl mb-6">
         {{ chatLogsStore.error }}
       </div>
 
-      <div class="card table-container">
-        <table class="table">
-          <thead>
+      <GlassCard class="p-0 overflow-x-auto custom-scrollbar">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead class="text-xs text-muted-foreground uppercase bg-secondary/50 border-b border-border/50">
             <tr>
-              <th v-for="col in visibleColumns" :key="col.key">
+              <th v-for="col in visibleColumns" :key="col.key" class="px-4 py-4 font-semibold whitespace-nowrap">
                 {{ col.label }}
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-border/50">
             <tr 
               v-for="log in paginatedItems" 
               :key="log.id"
-              class="interactive-row"
+              class="hover:bg-primary/5 transition-colors cursor-pointer group"
               @click="openModal(log)"
             >
-              <td v-if="isColVisible('created_at')" class="whitespace-nowrap date-cell">
+              <td v-if="isColVisible('created_at')" class="px-4 py-3 whitespace-nowrap text-muted-foreground">
                 {{ formatDate(log.created_at) }}
               </td>
-              <td v-if="isColVisible('ip_address')" class="font-mono text-sm">
-                <span class="badge badge-ip">{{ log.ip_address || 'Desconocida' }}</span>
+              <td v-if="isColVisible('ip_address')" class="px-4 py-3 font-mono text-xs text-primary/80">
+                {{ log.ip_address || 'Desconocida' }}
               </td>
-              <td v-if="isColVisible('city')">{{ log.city || '-' }}</td>
-              <td v-if="isColVisible('region')">{{ log.region || '-' }}</td>
-              <td v-if="isColVisible('country')">
-                <span v-if="log.country" class="badge badge-country">{{ log.country }}</span>
-                <span v-else>-</span>
+              <td v-if="isColVisible('city')" class="px-4 py-3 text-muted-foreground">
+                {{ log.city || '-' }}
               </td>
-              <td v-if="isColVisible('user_message')" class="message-cell">
-                <div class="truncate-text">{{ log.user_message }}</div>
+              <td v-if="isColVisible('region')" class="px-4 py-3 text-muted-foreground">
+                {{ log.region || '-' }}
               </td>
-              <td v-if="isColVisible('ai_response')" class="message-cell">
-                <div class="truncate-text text-muted">{{ log.ai_response }}</div>
+              <td v-if="isColVisible('country')" class="px-4 py-3">
+                <Badge v-if="log.country" variant="secondary">{{ log.country }}</Badge>
+                <span v-else class="text-muted-foreground">-</span>
               </td>
-              <td v-if="isColVisible('clicked_link')">
-                <span v-if="log.clicked_link" class="badge badge-action truncate-text" style="max-width: 150px;">{{ log.clicked_link }}</span>
-                <span v-else>-</span>
+              <td v-if="isColVisible('user_message')" class="px-4 py-3 max-w-[200px] truncate">
+                {{ log.user_message }}
+              </td>
+              <td v-if="isColVisible('ai_response')" class="px-4 py-3 max-w-[200px] truncate text-muted-foreground">
+                {{ log.ai_response }}
+              </td>
+              <td v-if="isColVisible('clicked_link')" class="px-4 py-3">
+                <Badge v-if="log.clicked_link" variant="outline" class="max-w-[150px] truncate">{{ log.clicked_link }}</Badge>
+                <span v-else class="text-muted-foreground">-</span>
               </td>
             </tr>
             <tr v-if="chatLogsStore.items.length === 0 && !chatLogsStore.loading">
-              <td :colspan="visibleColumns.length" class="empty-state">
-                <div class="empty-state-content">
-                  <span class="empty-icon">💬</span>
+              <td :colspan="visibleColumns.length" class="px-4 py-16 text-center text-muted-foreground">
+                <div class="flex flex-col items-center gap-3">
+                  <div class="p-4 bg-secondary rounded-full"><MessageSquare :size="32" /></div>
                   <p>No hay registros de chat aún.</p>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
-      </div>
+      </GlassCard>
 
       <!-- Pagination Controls -->
-      <div class="pagination-controls" v-if="chatLogsStore.items.length > 0">
-        <div class="per-page-selector">
-          <label>Mostrar:</label>
-          <select v-model="itemsPerPage" @change="currentPage = 1" class="per-page-select">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6" v-if="chatLogsStore.items.length > 0">
+        <div class="flex items-center gap-3 text-sm text-muted-foreground">
+          <span>Mostrar:</span>
+          <select v-model="itemsPerPage" @change="currentPage = 1" class="bg-secondary border border-border rounded-lg px-2 py-1 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50">
             <option :value="10">10</option>
             <option :value="20">20</option>
             <option :value="50">50</option>
           </select>
-          <span class="total-items">Total: {{ chatLogsStore.items.length }} registros</span>
+          <span>de {{ chatLogsStore.items.length }} registros</span>
         </div>
         
-        <div class="page-navigation">
-          <button class="btn btn-secondary btn-sm" @click="prevPage" :disabled="currentPage === 1">&laquo; Anterior</button>
-          <span class="page-info">Página {{ currentPage }} de {{ totalPages || 1 }}</span>
-          <button class="btn btn-secondary btn-sm" @click="nextPage" :disabled="currentPage === totalPages || totalPages === 0">Siguiente &raquo;</button>
+        <div class="flex items-center gap-4 text-sm">
+          <button @click="prevPage" :disabled="currentPage === 1" class="text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none transition-colors">
+            &laquo; Anterior
+          </button>
+          <span class="font-medium bg-secondary px-3 py-1 rounded-lg">Página {{ currentPage }} de {{ totalPages || 1 }}</span>
+          <button @click="nextPage" :disabled="currentPage === totalPages || totalPages === 0" class="text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none transition-colors">
+            Siguiente &raquo;
+          </button>
         </div>
       </div>
     </AdminLayout>
 
     <!-- Detail Modal -->
     <Teleport to="body">
-      <div v-if="selectedLog" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Detalle de Conversación</h2>
-            <button class="close-btn" @click="closeModal">&times;</button>
-          </div>
-          
-          <div class="modal-body">
-            <div class="meta-info">
-              <div class="meta-item">
-                <span class="meta-label">Fecha y Hora</span>
-                <span class="meta-value">{{ formatDate(selectedLog.created_at) }}</span>
-              </div>
-              <div class="meta-item">
-                <span class="meta-label">IP Cliente</span>
-                <span class="meta-value font-mono">{{ selectedLog.ip_address || 'Desconocida' }}</span>
-              </div>
-              <div class="meta-item" v-if="selectedLog.city || selectedLog.country">
-                <span class="meta-label">Ubicación</span>
-                <span class="meta-value">
-                  {{ [selectedLog.city, selectedLog.region, selectedLog.country].filter(Boolean).join(', ') }}
-                </span>
-              </div>
-              <div class="meta-item" v-if="selectedLog.clicked_link">
-                <span class="meta-label">Acción (Link Clickeado)</span>
-                <span class="meta-value badge badge-action">{{ selectedLog.clicked_link }}</span>
-              </div>
+      <div v-if="selectedLog" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" @click.self="closeModal">
+        <div 
+          v-motion
+          :initial="{ opacity: 0, scale: 0.95, y: 20 }"
+          :enter="{ opacity: 1, scale: 1, y: 0 }"
+          class="w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        >
+          <GlassCard class="flex flex-col h-full max-h-[90vh] p-0 overflow-hidden border-primary/20 shadow-2xl">
+            <div class="flex items-center justify-between p-4 border-b border-border/50 bg-secondary/50">
+              <h2 class="text-lg font-bold flex items-center gap-2"><MessageSquare :size="18" class="text-primary"/> Detalle de Conversación</h2>
+              <button class="text-muted-foreground hover:text-destructive transition-colors" @click="closeModal"><X :size="20" /></button>
             </div>
+            
+            <div class="flex-1 overflow-y-auto p-4 custom-scrollbar">
+              <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                <div class="bg-secondary/50 p-3 rounded-lg border border-border">
+                  <span class="block text-xs text-muted-foreground mb-1 uppercase tracking-wider">Fecha y Hora</span>
+                  <span class="font-medium">{{ formatDate(selectedLog.created_at) }}</span>
+                </div>
+                <div class="bg-secondary/50 p-3 rounded-lg border border-border">
+                  <span class="block text-xs text-muted-foreground mb-1 uppercase tracking-wider">IP Cliente</span>
+                  <span class="font-mono text-primary/80">{{ selectedLog.ip_address || 'Desconocida' }}</span>
+                </div>
+                <div class="bg-secondary/50 p-3 rounded-lg border border-border col-span-2 sm:col-span-1" v-if="selectedLog.city || selectedLog.country">
+                  <span class="block text-xs text-muted-foreground mb-1 uppercase tracking-wider">Ubicación</span>
+                  <span class="font-medium">
+                    {{ [selectedLog.city, selectedLog.region, selectedLog.country].filter(Boolean).join(', ') }}
+                  </span>
+                </div>
+                <div class="bg-secondary/50 p-3 rounded-lg border border-border col-span-2 sm:col-span-1" v-if="selectedLog.clicked_link">
+                  <span class="block text-xs text-muted-foreground mb-1 uppercase tracking-wider">Link Clickeado</span>
+                  <Badge variant="outline">{{ selectedLog.clicked_link }}</Badge>
+                </div>
+              </div>
 
-            <div class="chat-bubbles">
-              <div class="bubble user-bubble">
-                <div class="bubble-header">👤 Usuario</div>
-                <div class="bubble-text">{{ selectedLog.user_message }}</div>
-              </div>
-              
-              <div class="bubble ai-bubble">
-                <div class="bubble-header">🤖 Inteligencia Artificial</div>
-                <div class="bubble-text markdown-body">{{ selectedLog.ai_response }}</div>
+              <div class="space-y-4">
+                <div class="flex flex-col items-end gap-1">
+                  <div class="text-xs text-muted-foreground mr-1 flex items-center gap-1"><User :size="12" /> Usuario</div>
+                  <div class="bg-primary text-primary-foreground p-3 rounded-2xl rounded-tr-sm max-w-[85%] shadow-sm">
+                    {{ selectedLog.user_message }}
+                  </div>
+                </div>
+                
+                <div class="flex flex-col items-start gap-1">
+                  <div class="text-xs text-muted-foreground ml-1 flex items-center gap-1"><Bot :size="12" /> IA</div>
+                  <div class="bg-secondary border border-border/50 text-foreground p-3 rounded-2xl rounded-tl-sm max-w-[95%] shadow-sm whitespace-pre-wrap text-sm leading-relaxed">
+                    {{ selectedLog.ai_response }}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          </GlassCard>
         </div>
       </div>
     </Teleport>
-  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
+import GlassCard from '../../components/ui/GlassCard.vue'
+import NeonButton from '../../components/ui/NeonButton.vue'
+import AnimatedDropdown from '../../components/ui/AnimatedDropdown.vue'
+import Badge from '../../components/ui/Badge.vue'
+import { Settings2, RefreshCw, MessageSquare, X, User, Bot } from 'lucide-vue-next'
 import { useChatLogsStore } from '../../stores/chatLogs'
 
 const chatLogsStore = useChatLogsStore()
@@ -188,11 +219,10 @@ const columns = ref([
   { key: 'city', label: 'Ciudad', visible: false },
   { key: 'region', label: 'Región', visible: false },
   { key: 'country', label: 'País', visible: true },
-  { key: 'user_message', label: 'Mensaje del Usuario', visible: true },
+  { key: 'user_message', label: 'Mensaje Usuario', visible: true },
   { key: 'ai_response', label: 'Respuesta IA', visible: true },
-  { key: 'clicked_link', label: 'Link Clickeado', visible: false },
+  { key: 'clicked_link', label: 'Link', visible: false },
 ])
-const showColumnMenu = ref(false)
 
 const visibleColumns = computed(() => columns.value.filter(c => c.visible))
 
@@ -200,20 +230,8 @@ function isColVisible(key) {
   return columns.value.find(c => c.key === key)?.visible
 }
 
-// Click outside dropdown to close
-const closeDropdown = (e) => {
-  if (!e.target.closest('.dropdown-container')) {
-    showColumnMenu.value = false
-  }
-}
-
 onMounted(() => {
   chatLogsStore.fetchAll()
-  document.addEventListener('click', closeDropdown)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown)
 })
 
 function refreshData() {
@@ -223,7 +241,7 @@ function refreshData() {
 
 function openModal(log) {
   selectedLog.value = log
-  document.body.style.overflow = 'hidden' // Prevent background scrolling
+  document.body.style.overflow = 'hidden'
 }
 
 function closeModal() {
@@ -242,439 +260,18 @@ function formatDate(dateString) {
 </script>
 
 <style scoped>
-/* Typography & Layout */
-.header-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-.page-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-gray-900);
-  margin-bottom: 0.25rem;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-.subtitle {
-  color: var(--color-gray-500);
-  font-size: 0.9rem;
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsla(var(--primary), 0.3);
+  border-radius: 3px;
 }
-
-.action-buttons {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.icon {
-  margin-right: 0.25rem;
-}
-
-/* Dropdown */
-.dropdown-container {
-  position: relative;
-}
-
-.btn-secondary {
-  background-color: var(--color-gray-100);
-  color: var(--color-gray-800);
-  border: 1px solid var(--color-gray-200);
-}
-
-.btn-secondary:hover {
-  background-color: var(--color-gray-200);
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  background: var(--color-gray-100);
-  border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--color-gray-100);
-  padding: 0.5rem;
-  min-width: 200px;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 0.9rem;
-  color: var(--color-gray-700);
-}
-
-.dropdown-item:hover {
-  background-color: var(--color-gray-50);
-}
-
-.dropdown-item input {
-  margin-right: 0.75rem;
-  accent-color: var(--color-primary);
-}
-
-/* Table Card */
-.card {
-  background: var(--color-gray-100);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--color-gray-200);
-}
-
-.table-container {
-  width: 100%;
-  overflow-x: auto; /* Limit horizontal scroll to this container */
-  /* Hide scrollbar for cleaner look but allow scrolling */
-  scrollbar-width: thin;
-}
-
-.table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  text-align: left;
-  min-width: 800px;
-}
-
-.table th {
-  background-color: var(--color-gray-50);
-  font-weight: 600;
-  color: var(--color-gray-500);
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-gray-200);
-  position: sticky;
-  top: 0;
-}
-
-.table td {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-gray-200);
-  color: var(--color-gray-800);
-  font-size: 0.9rem;
-  vertical-align: middle;
-}
-
-.interactive-row {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.interactive-row:hover {
-  background-color: var(--color-gray-200);
-  transform: translateY(-1px);
-}
-
-.interactive-row:last-child td {
-  border-bottom: none;
-}
-
-/* Cells */
-.date-cell {
-  color: var(--color-gray-500);
-}
-
-.font-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-.text-sm {
-  font-size: 0.85rem;
-}
-
-.text-muted {
-  color: var(--color-gray-500);
-}
-
-.message-cell {
-  max-width: 250px;
-}
-
-.truncate-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.whitespace-nowrap {
-  white-space: nowrap;
-}
-
-/* Badges */
-.badge {
-  padding: 0.25rem 0.6rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: inline-block;
-}
-
-.badge-ip {
-  background-color: rgba(2, 132, 199, 0.2);
-  color: #38bdf8;
-}
-
-.badge-country {
-  background-color: var(--color-gray-200);
-  color: var(--color-gray-800);
-  border: 1px solid var(--color-gray-300);
-}
-
-.badge-action {
-  background-color: rgba(180, 83, 9, 0.2);
-  color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  display: inline-flex;
-  max-width: 100%;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-}
-
-.empty-state-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  color: var(--color-gray-500);
-}
-
-.empty-icon {
-  font-size: 2.5rem;
-  opacity: 0.5;
-}
-
-/* Pagination */
-.pagination-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: var(--color-gray-100);
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--color-gray-200);
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.per-page-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.9rem;
-  color: var(--color-gray-700);
-}
-
-.per-page-select {
-  padding: 0.35rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid var(--color-gray-300);
-  background-color: var(--color-gray-50);
-  color: var(--color-gray-800);
-  outline: none;
-  font-family: inherit;
-  font-size: 0.9rem;
-}
-
-.total-items {
-  margin-left: 1rem;
-  color: var(--color-gray-500);
-  font-size: 0.85rem;
-}
-
-.page-navigation {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.page-info {
-  font-size: 0.9rem;
-  color: var(--color-gray-700);
-  font-weight: 500;
-}
-
-.btn-sm {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 1.5rem;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.modal-content {
-  background: var(--color-gray-100);
-  width: 100%;
-  max-width: 700px;
-  max-height: 90vh;
-  border-radius: 16px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  animation: slideUp 0.3s ease-out;
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--color-gray-100);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--color-gray-50);
-}
-
-.modal-header h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  color: var(--color-gray-900);
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  line-height: 1;
-  color: var(--color-gray-400);
-  cursor: pointer;
-  transition: color 0.2s;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-
-.close-btn:hover {
-  color: var(--color-gray-800);
-  background-color: var(--color-gray-200);
-}
-
-.modal-body {
-  padding: 2rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.meta-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  background-color: var(--color-gray-50);
-  padding: 1.25rem;
-  border-radius: 8px;
-  border: 1px solid var(--color-gray-200);
-}
-
-.meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.meta-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--color-gray-500);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-.meta-value {
-  font-size: 0.95rem;
-  color: var(--color-gray-900);
-}
-
-.chat-bubbles {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.bubble {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.bubble-header {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-gray-500);
-}
-
-.bubble-text {
-  padding: 1.25rem;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--color-gray-800);
-  white-space: pre-wrap;
-}
-
-.user-bubble .bubble-text {
-  background-color: rgba(3, 105, 161, 0.2);
-  border: 1px solid rgba(3, 105, 161, 0.4);
-  color: #38bdf8;
-  border-top-left-radius: 0;
-}
-
-.ai-bubble .bubble-text {
-  background-color: var(--color-gray-50);
-  border: 1px solid var(--color-gray-200);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  border-top-right-radius: 0;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Markdown adjustments for AI response */
-.markdown-body :deep(p:last-child) {
-  margin-bottom: 0;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsla(var(--primary), 0.5);
 }
 </style>
-

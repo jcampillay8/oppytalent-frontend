@@ -45,47 +45,77 @@
               </button>
             </div>
 
-            <div v-if="cvWizardStore.pendingProyectos.length > 0">
+            <div 
+              @dragover.prevent 
+              @dragenter.prevent="onDragEnter('proyecto')" 
+              @dragleave.prevent="onDragLeave('proyecto')" 
+              @drop.prevent="onDrop($event, 'proyecto')"
+              class="transition-colors rounded-lg p-2 -mx-2"
+              :class="{ 'bg-primary/5 border border-primary/20': dragTarget === 'proyecto' }"
+            >
               <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Proyectos ({{ cvWizardStore.pendingProyectos.length }})</h4>
-              <div class="space-y-2">
+              <div class="space-y-2 min-h-[40px] rounded-lg" :class="{ 'bg-secondary/30 border border-dashed border-border/50 flex items-center justify-center': cvWizardStore.pendingProyectos.length === 0 }">
+                <span v-if="cvWizardStore.pendingProyectos.length === 0" class="text-xs text-muted-foreground">Arrastra elementos aquí</span>
                 <button 
                   v-for="(p, idx) in cvWizardStore.pendingProyectos" 
                   :key="idx"
-                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate"
+                  draggable="true"
+                  @dragstart="onDragStart($event, 'proyecto', idx)"
+                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate cursor-grab active:cursor-grabbing"
                   :class="(currentItemType === 'proyecto' && currentIndex === idx) ? 'bg-primary/10 border-primary text-foreground font-medium' : 'bg-secondary/50 border-transparent hover:bg-secondary text-muted-foreground'"
                   @click="selectItem('proyecto', idx)"
                 >
-                  {{ p.titulo || 'Proyecto sin título' }}
+                  {{ p.titulo || p.empresa || p.institucion || 'Proyecto sin título' }}
                 </button>
               </div>
             </div>
 
-            <div v-if="cvWizardStore.pendingExperiencias.length > 0">
+            <div 
+              @dragover.prevent 
+              @dragenter.prevent="onDragEnter('experiencia')" 
+              @dragleave.prevent="onDragLeave('experiencia')" 
+              @drop.prevent="onDrop($event, 'experiencia')"
+              class="transition-colors rounded-lg p-2 -mx-2"
+              :class="{ 'bg-primary/5 border border-primary/20': dragTarget === 'experiencia' }"
+            >
               <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Experiencia ({{ cvWizardStore.pendingExperiencias.length }})</h4>
-              <div class="space-y-2">
+              <div class="space-y-2 min-h-[40px] rounded-lg" :class="{ 'bg-secondary/30 border border-dashed border-border/50 flex items-center justify-center': cvWizardStore.pendingExperiencias.length === 0 }">
+                <span v-if="cvWizardStore.pendingExperiencias.length === 0" class="text-xs text-muted-foreground">Arrastra elementos aquí</span>
                 <button 
                   v-for="(e, idx) in cvWizardStore.pendingExperiencias" 
                   :key="idx"
-                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate"
+                  draggable="true"
+                  @dragstart="onDragStart($event, 'experiencia', idx)"
+                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate cursor-grab active:cursor-grabbing"
                   :class="(currentItemType === 'experiencia' && currentIndex === idx) ? 'bg-primary/10 border-primary text-foreground font-medium' : 'bg-secondary/50 border-transparent hover:bg-secondary text-muted-foreground'"
                   @click="selectItem('experiencia', idx)"
                 >
-                  {{ e.empresa || 'Empresa' }} - {{ e.cargo || 'Cargo' }}
+                  {{ e.empresa || e.titulo || e.institucion || 'Empresa' }} - {{ e.cargo || 'Cargo' }}
                 </button>
               </div>
             </div>
 
-            <div v-if="cvWizardStore.pendingEstudios.length > 0">
+            <div 
+              @dragover.prevent 
+              @dragenter.prevent="onDragEnter('estudio')" 
+              @dragleave.prevent="onDragLeave('estudio')" 
+              @drop.prevent="onDrop($event, 'estudio')"
+              class="transition-colors rounded-lg p-2 -mx-2"
+              :class="{ 'bg-primary/5 border border-primary/20': dragTarget === 'estudio' }"
+            >
               <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Estudios ({{ cvWizardStore.pendingEstudios.length }})</h4>
-              <div class="space-y-2">
+              <div class="space-y-2 min-h-[40px] rounded-lg" :class="{ 'bg-secondary/30 border border-dashed border-border/50 flex items-center justify-center': cvWizardStore.pendingEstudios.length === 0 }">
+                <span v-if="cvWizardStore.pendingEstudios.length === 0" class="text-xs text-muted-foreground">Arrastra elementos aquí</span>
                 <button 
                   v-for="(e, idx) in cvWizardStore.pendingEstudios" 
                   :key="idx"
-                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate"
+                  draggable="true"
+                  @dragstart="onDragStart($event, 'estudio', idx)"
+                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate cursor-grab active:cursor-grabbing"
                   :class="(currentItemType === 'estudio' && currentIndex === idx) ? 'bg-primary/10 border-primary text-foreground font-medium' : 'bg-secondary/50 border-transparent hover:bg-secondary text-muted-foreground'"
                   @click="selectItem('estudio', idx)"
                 >
-                  {{ e.institucion || 'Institución' }} - {{ e.titulo || 'Título' }}
+                  {{ e.institucion || e.empresa || e.titulo || 'Institución' }} - {{ e.titulo || e.cargo || 'Título' }}
                 </button>
               </div>
             </div>
@@ -114,12 +144,28 @@
               <!-- Render dinámico basado en el tipo -->
               <template v-if="currentItemType === 'contacto'">
                 <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Nombre</label>
+                  <input type="text" v-model="formData.nombre" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
                   <label class="text-sm font-medium text-foreground">Ocupación Extraída</label>
                   <input type="text" v-model="formData.ocupacion" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
                 </div>
                 <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Email</label>
+                  <input type="email" v-model="formData.email" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
                   <label class="text-sm font-medium text-foreground">Teléfono</label>
                   <input type="text" v-model="formData.telefono" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Ubicación</label>
+                  <input type="text" v-model="formData.ubicacion" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">LinkedIn</label>
+                  <input type="url" v-model="formData.linkedin" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
                 </div>
                 <div class="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm text-primary/80 flex gap-3 mt-6">
                   <Info :size="20" class="shrink-0 mt-0.5" />
@@ -218,6 +264,55 @@ const currentItemType = ref(null)
 const currentIndex = ref(-1)
 const formData = ref({})
 const saving = ref(false)
+
+const dragTarget = ref(null)
+const draggedItem = ref(null)
+
+function onDragStart(event, type, index) {
+  draggedItem.value = { type, index }
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.setData('text/plain', `${type}-${index}`)
+}
+
+function onDragEnter(type) {
+  dragTarget.value = type
+}
+
+function onDragLeave(type) {
+  if (dragTarget.value === type) {
+    dragTarget.value = null
+  }
+}
+
+function onDrop(event, type) {
+  dragTarget.value = null
+  
+  const data = event.dataTransfer.getData('text/plain')
+  if (!data) return
+  
+  const [fromType, fromIndexStr] = data.split('-')
+  const fromIndex = parseInt(fromIndexStr, 10)
+  
+  if (fromType && fromType !== type && type !== 'contacto') {
+    const isCurrentlySelected = currentItemType.value === fromType && currentIndex.value === fromIndex
+    
+    cvWizardStore.moveItem(fromType, fromIndex, type)
+    
+    if (isCurrentlySelected) {
+      let newIndex = 0
+      if (type === 'proyecto') newIndex = cvWizardStore.pendingProyectos.length - 1
+      else if (type === 'experiencia') newIndex = cvWizardStore.pendingExperiencias.length - 1
+      else if (type === 'estudio') newIndex = cvWizardStore.pendingEstudios.length - 1
+      
+      selectItem(type, newIndex)
+    } else {
+      if (currentItemType.value === fromType && fromIndex < currentIndex.value) {
+        currentIndex.value -= 1
+      }
+    }
+  }
+  draggedItem.value = null
+}
 
 onMounted(() => {
   if (cvWizardStore.hasPendingItems) {

@@ -25,6 +25,28 @@ export const useCVWizardStore = defineStore('cvWizard', {
     removeEstudio(index) {
       this.pendingEstudios.splice(index, 1)
     },
+    moveItem(fromType, fromIndex, toType) {
+      if (fromType === toType) return;
+      
+      let item;
+      if (fromType === 'proyecto') {
+        item = this.pendingProyectos.splice(fromIndex, 1)[0];
+      } else if (fromType === 'experiencia') {
+        item = this.pendingExperiencias.splice(fromIndex, 1)[0];
+      } else if (fromType === 'estudio') {
+        item = this.pendingEstudios.splice(fromIndex, 1)[0];
+      }
+      
+      if (!item) return;
+
+      if (toType === 'proyecto') {
+        this.pendingProyectos.push(item);
+      } else if (toType === 'experiencia') {
+        this.pendingExperiencias.push(item);
+      } else if (toType === 'estudio') {
+        this.pendingEstudios.push(item);
+      }
+    },
     clearContacto() {
       this.datosContacto = null
     },

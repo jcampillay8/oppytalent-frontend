@@ -53,9 +53,12 @@
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
-        <div v-for="item in menuItems" :key="item.path" class="relative group">
+      <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2 space-y-1 sidebar-scrollbar">
+        <div v-for="item in menuItems" :key="item.path || item.label" class="relative group">
+          
+          <!-- Normal Link -->
           <router-link
+            v-if="!item.children"
             :to="item.path"
             class="flex items-center gap-4 px-3 h-11 rounded-xl transition-all duration-200 cursor-pointer outline-none"
             :style="{ '--item-color': item.color, '--item-rgb': item.rgb }"
@@ -88,6 +91,62 @@
               {{ item.label }}
             </span>
           </router-link>
+
+          <!-- Dropdown Group -->
+          <div v-else class="flex flex-col">
+            <button
+              @click="toggleMenu(item.id)"
+              class="flex items-center justify-between px-3 h-11 rounded-xl transition-all duration-200 cursor-pointer outline-none text-muted-foreground hover:bg-secondary w-full"
+            >
+              <div class="flex items-center gap-4">
+                <div class="relative shrink-0 w-8 flex justify-center">
+                  <component :is="item.icon" :size="20" class="text-zinc-400" />
+                </div>
+                <span
+                  class="font-medium text-sm whitespace-nowrap transition-all duration-300"
+                  :class="isCollapsed && !isOpenMobile ? 'opacity-0 w-0' : 'opacity-100'"
+                >
+                  {{ item.label }}
+                </span>
+              </div>
+              <ChevronDown 
+                v-if="!isCollapsed || isOpenMobile" 
+                :size="16" 
+                class="transition-transform duration-300" 
+                :class="{ 'rotate-180': openMenus.includes(item.id) }" 
+              />
+            </button>
+            
+            <!-- Children Links (Animated) -->
+            <div 
+              class="grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              :class="openMenus.includes(item.id) && (!isCollapsed || isOpenMobile) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+            >
+              <div class="overflow-hidden flex flex-col gap-1 pl-4 border-l-2 border-border ml-6 mt-1">
+                <router-link
+                  v-for="child in item.children"
+                  :key="child.path"
+                  :to="child.path"
+                  class="flex items-center gap-3 px-3 h-10 rounded-xl transition-all duration-200 cursor-pointer outline-none"
+                  :style="{ '--item-color': child.color, '--item-rgb': child.rgb }"
+                  :class="[
+                    isActive(child.path)
+                      ? 'text-[var(--item-color)] bg-[rgba(var(--item-rgb),0.1)] font-semibold'
+                      : 'text-muted-foreground hover:text-[var(--item-color)] hover:bg-[rgba(var(--item-rgb),0.1)]'
+                  ]"
+                  @click="isOpenMobile = false"
+                >
+                  <component
+                    :is="child.icon"
+                    :size="16"
+                    class="transition-colors"
+                    :class="isActive(child.path) ? 'text-[var(--item-color)]' : 'text-zinc-400'"
+                  />
+                  <span class="text-xs">{{ child.label }}</span>
+                </router-link>
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
 
@@ -133,12 +192,22 @@ import { useRoute } from 'vue-router'
 import { 
   LayoutDashboard, FolderKanban, Briefcase, GraduationCap, 
   User, Layers, MessageSquare, LineChart, Settings, 
-  Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu
+  Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu, Award, ShieldCheck, ChevronDown
 } from 'lucide-vue-next'
 
 const route = useRoute()
 const isCollapsed = ref(false)
 const isOpenMobile = ref(false)
+
+const openMenus = ref(['trayectoria']) // Open by default
+
+function toggleMenu(id) {
+  if (openMenus.value.includes(id)) {
+    openMenus.value = openMenus.value.filter(m => m !== id)
+  } else {
+    openMenus.value.push(id)
+  }
+}
 
 const isActive = (path) => route.path === path || route.path.startsWith(path + '/')
 
@@ -146,12 +215,21 @@ const menuItems = computed(() => {
   const base = `/${route.params.username || 'admin'}`
   return [
     { path: `${base}/dashboard`, label: 'Dashboard', icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
-    { path: `${base}/proyectos`, label: 'Proyectos', icon: FolderKanban, color: '#8b5cf6', rgb: '139,92,246' },
-    { path: `${base}/experiencias`, label: 'Experiencia', icon: Briefcase, color: '#10b981', rgb: '16,185,129' },
-    { path: `${base}/estudios`, label: 'Estudios', icon: GraduationCap, color: '#f59e0b', rgb: '245,158,11' },
     { path: `${base}/perfil`, label: 'Sobre Mí', icon: User, color: '#06b6d4', rgb: '6,182,212' },
-    { path: `${base}/secciones`, label: 'Secciones', icon: Layers, color: '#ec4899', rgb: '236,72,153' },
-    { path: `${base}/frases`, label: 'Frases', icon: MessageSquare, color: '#6366f1', rgb: '99,102,241' },
+    {
+      label: 'Mi Trayectoria',
+      icon: Briefcase,
+      id: 'trayectoria',
+      children: [
+        { path: `${base}/proyectos`, label: 'Proyectos', icon: FolderKanban, color: '#8b5cf6', rgb: '139,92,246' },
+        { path: `${base}/experiencias`, label: 'Experiencia', icon: Briefcase, color: '#10b981', rgb: '16,185,129' },
+        { path: `${base}/estudios`, label: 'Estudios', icon: GraduationCap, color: '#f59e0b', rgb: '245,158,11' },
+        { path: `${base}/reconocimientos`, label: 'Reconocimientos', icon: Award, color: '#ec4899', rgb: '236,72,153' },
+        { path: `${base}/habilitaciones`, label: 'Habilitaciones', icon: ShieldCheck, color: '#6366f1', rgb: '99,102,241' },
+      ]
+    },
+    { path: `${base}/secciones`, label: 'Secciones', icon: Layers, color: '#f43f5e', rgb: '244,63,94' },
+    { path: `${base}/frases`, label: 'Frases', icon: MessageSquare, color: '#8b5cf6', rgb: '139,92,246' },
     { path: `${base}/chat-logs`, label: 'Chat Logs', icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
     { path: `${base}/chat-config`, label: 'Config. IA', icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
     { path: `${base}/theme-config`, label: 'Apariencia', icon: Palette, color: '#f43f5e', rgb: '244,63,94' },
@@ -175,5 +253,14 @@ const menuItems = computed(() => {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsla(var(--primary), 0.5);
+}
+
+/* Invisible scrollbar for sidebar */
+.sidebar-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.sidebar-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 </style>

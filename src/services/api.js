@@ -242,5 +242,42 @@ export const api = {
       if (!res.ok) throw new Error(data.detail || 'Error uploading file')
       return data
     })
-  }
+  },
+  // Reconocimientos
+  getReconocimientos(params = '') {
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/reconocimientos/${query}`)
+  },
+  getReconocimiento(id) {
+    return request(`/reconocimientos/${id}`)
+  },
+  createReconocimiento(data) {
+    return request('/reconocimientos/', { method: 'POST', body: JSON.stringify(data) })
+  },
+  updateReconocimiento(id, data) {
+    return request(`/reconocimientos/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  },
+  deleteReconocimiento(id) {
+    return request(`/reconocimientos/${id}`, { method: 'DELETE' })
+  },
+
+  // Habilitaciones
+  getHabilitaciones(params = '') {
+    const user = localStorage.getItem('currentPortfolioUser');
+    const query = user ? `?username=${user}` : '';
+    return request(`/habilitaciones/${query}`)
+  },
+  getHabilitacion(id) {
+    return request(`/habilitaciones/${id}`)
+  },
+  createHabilitacion(data) {
+    return request('/habilitaciones/', { method: 'POST', body: JSON.stringify(data) })
+  },
+  updateHabilitacion(id, data) {
+    return request(`/habilitaciones/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  },
+  deleteHabilitacion(id) {
+    return request(`/habilitaciones/${id}`, { method: 'DELETE' })
+  },
 }

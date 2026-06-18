@@ -8,13 +8,13 @@
 
       <!-- ESTADO ACTIVO: Dashboard Normal -->
       <template v-if="!isPortfolioEmpty && !isLoading">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="flex flex-col gap-6">
           
           <!-- Cuadrícula de Estadísticas -->
-          <div class="lg:col-span-2 flex flex-col gap-4">
+          <div class="flex flex-col gap-4">
             <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Estadísticas Principales</h2>
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <!-- Proyectos -->
               <router-link to="/admin/proyectos" class="block outline-none">
                 <GlassCard hoverEffect class="h-full cursor-pointer group">
@@ -70,33 +70,35 @@
                   <div class="text-xs text-muted-foreground">Completitud &rarr;</div>
                 </GlassCard>
               </router-link>
+              <!-- Reconocimientos -->
+              <router-link to="/admin/reconocimientos" class="block outline-none">
+                <GlassCard hoverEffect class="h-full cursor-pointer group">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 rounded-lg bg-pink-500/10 text-pink-500 border border-pink-500/20">
+                      <Award :size="20" />
+                    </div>
+                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Reconocimientos</span>
+                  </div>
+                  <div class="text-4xl font-extrabold text-foreground mb-1">{{ reconocimientosStore.items.length }}</div>
+                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                </GlassCard>
+              </router-link>
+
+              <!-- Habilitaciones -->
+              <router-link to="/admin/habilitaciones" class="block outline-none">
+                <GlassCard hoverEffect class="h-full cursor-pointer group">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                      <ShieldCheck :size="20" />
+                    </div>
+                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Habilitaciones</span>
+                  </div>
+                  <div class="text-4xl font-extrabold text-foreground mb-1">{{ habilitacionesStore.items.length }}</div>
+                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                </GlassCard>
+              </router-link>
             </div>
           </div>
-
-          <!-- Acciones Rápidas -->
-          <div class="flex flex-col gap-4">
-            <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Acciones Rápidas</h2>
-            
-            <GlassCard class="flex-1 flex flex-col gap-3">
-              <router-link :to="`/${route.params.username}`" class="block">
-                <NeonButton variant="outline" fullWidth class="justify-start">
-                  <template #icon-left><Rocket :size="18" /></template>
-                  Gestionar Portafolio
-                </NeonButton>
-              </router-link>
-              <router-link to="/admin/chat-logs" class="block">
-                <NeonButton variant="outline" fullWidth class="justify-start">
-                  <template #icon-left><MessageSquare :size="18" /></template>
-                  Ver Logs de IA
-                </NeonButton>
-              </router-link>
-              <NeonButton variant="secondary" fullWidth class="justify-start" @click="showCVUpload = true">
-                <template #icon-left><FileText :size="18" /></template>
-                Actualizar CV (IA)
-              </NeonButton>
-            </GlassCard>
-          </div>
-        </div>
 
         <!-- Chart Panel -->
         <div class="mt-8">
@@ -134,6 +136,7 @@
             <template #icon-left><LogOut :size="18" /></template>
             Cerrar Sesión
           </NeonButton>
+        </div>
         </div>
       </template>
 
@@ -247,7 +250,7 @@ import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import { 
   FolderKanban, Briefcase, GraduationCap, User, Rocket, 
-  MessageSquare, FileText, UploadCloud, LogOut, CheckCircle2 
+  MessageSquare, FileText, UploadCloud, LogOut, CheckCircle2, Award, ShieldCheck
 } from 'lucide-vue-next'
 
 import { useAuthStore } from '../../stores/auth'
@@ -257,6 +260,8 @@ import { useExperienciasStore } from '../../stores/experiencias'
 import { useEstudiosStore } from '../../stores/estudios'
 import { usePerfilStore } from '../../stores/perfil'
 import { useChatLogsStore } from '../../stores/chatLogs'
+import { useReconocimientosStore } from '../../stores/reconocimientos'
+import { useHabilitacionesStore } from '../../stores/habilitaciones'
 
 const router = useRouter()
 const route = useRoute()
@@ -267,16 +272,20 @@ const experienciasStore = useExperienciasStore()
 const estudiosStore = useEstudiosStore()
 const perfilStore = usePerfilStore()
 const chatLogsStore = useChatLogsStore()
+const reconocimientosStore = useReconocimientosStore()
+const habilitacionesStore = useHabilitacionesStore()
 
 const isLoading = computed(() => {
-  return proyectosStore.loading || experienciasStore.loading || estudiosStore.loading || perfilStore.loading
+  return proyectosStore.loading || experienciasStore.loading || estudiosStore.loading || perfilStore.loading || reconocimientosStore.loading || habilitacionesStore.loading
 })
 
 const isPortfolioEmpty = computed(() => {
   return proyectosStore.items.length === 0 &&
          experienciasStore.items.length === 0 &&
          estudiosStore.items.length === 0 &&
-         perfilStore.items.length === 0
+         perfilStore.items.length === 0 &&
+         reconocimientosStore.items.length === 0 &&
+         habilitacionesStore.items.length === 0
 })
 
 const maxStatCount = computed(() => {
@@ -360,6 +369,8 @@ onMounted(async () => {
     if (!experienciasStore.items.length && !experienciasStore.loading) experienciasStore.fetchAll()
     if (!estudiosStore.items.length && !estudiosStore.loading) estudiosStore.fetchAll()
     if (!perfilStore.items.length && !perfilStore.loading) perfilStore.fetchAll()
+    if (!reconocimientosStore.items.length && !reconocimientosStore.loading) reconocimientosStore.fetchAll()
+    if (!habilitacionesStore.items.length && !habilitacionesStore.loading) habilitacionesStore.fetchAll()
 
     await chatLogsStore.fetchStats()
   } catch (error) {

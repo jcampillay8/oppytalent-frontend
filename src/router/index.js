@@ -102,6 +102,18 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/:username/reconocimientos',
+    name: 'ReconocimientosAdmin',
+    component: () => import('../views/admin/ReconocimientosAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/:username/habilitaciones',
+    name: 'HabilitacionesAdmin',
+    component: () => import('../views/admin/HabilitacionesAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:username/perfil',
     name: 'PerfilAdmin',
     component: () => import('../views/admin/PerfilAdmin.vue'),

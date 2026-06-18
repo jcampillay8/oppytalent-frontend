@@ -15,9 +15,6 @@
       <p class="text-lg md:text-xl text-primary font-medium mb-6">
         {{ perfil?.ocupacion || 'Ingeniero Civil Industrial • Magíster • Senior Software/Data Engineer' }}
       </p>
-      <p class="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-        {{ perfil?.descripcion || 'Arquitecto de soluciones escalables. Especializado en sistemas distribuidos, pipelines de datos y arquitecturas cloud-native con enfoque en minería, banca e IA.' }}
-      </p>
     </section>
       
     <!-- Tags / Filters -->

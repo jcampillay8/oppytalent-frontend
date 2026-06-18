@@ -119,7 +119,7 @@
         <p>&copy; {{ new Date().getFullYear() }} OppyTalent - jcampillay.com</p>
       </div>
     </footer>
-    <ChatWidget v-if="!isAppLayout && route.path !== '/assistant'" />
+    <ChatWidget v-if="!isAppLayout && !isAdminRoute && !isFullHeightRoute" />
   </div>
 </template>
 

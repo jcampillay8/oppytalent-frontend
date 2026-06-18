@@ -146,15 +146,18 @@
             </button>
           </div>
           
-          <form class="flex gap-2 max-w-4xl mx-auto" @submit.prevent="send">
-            <input
+          <form class="flex gap-2 max-w-4xl mx-auto items-end" @submit.prevent="send">
+            <textarea
+              ref="chatInputRef"
               v-model="input"
-              type="text"
-              class="flex-1 px-5 py-3.5 bg-secondary border border-border/50 text-foreground rounded-xl outline-none focus:ring-2 focus:ring-primary/50 transition-all text-[15px] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              rows="1"
+              class="flex-1 px-5 py-3.5 bg-secondary border border-border/50 text-foreground rounded-xl outline-none focus:ring-2 focus:ring-primary/50 transition-all text-[15px] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed resize-none overflow-y-auto max-h-32 custom-scrollbar"
               :placeholder="isPortfolioEmpty ? 'El chat está deshabilitado temporalmente...' : $t('home.placeholder')"
               :disabled="loading || isPortfolioEmpty"
-            />
-            <NeonButton type="submit" :disabled="loading || !input.trim() || isPortfolioEmpty" glow class="px-6 h-[52px]">
+              @keydown.enter.exact.prevent="send"
+              @input="adjustHeight"
+            ></textarea>
+            <NeonButton type="submit" :disabled="loading || !input.trim() || isPortfolioEmpty" glow class="px-6 h-[52px] shrink-0">
               <span class="hidden sm:inline mr-2">{{ $t('contact.enviar') }}</span>
               <Send :size="18" class="sm:ml-1" />
             </NeonButton>
@@ -225,8 +228,16 @@ const tFrase = computed(() => randomFrase.value ? getTranslated(randomFrase.valu
 const input = ref('')
 const loading = ref(false)
 const chatBody = ref(null)
+const chatInputRef = ref(null)
 
 const { messages } = storeToRefs(chatStore)
+
+function adjustHeight() {
+  if (chatInputRef.value) {
+    chatInputRef.value.style.height = 'auto'
+    chatInputRef.value.style.height = `${chatInputRef.value.scrollHeight}px`
+  }
+}
 
 function renderMarkdown(text) {
   if (!text) return ''
@@ -267,6 +278,10 @@ async function send() {
 
   messages.value.push({ role: 'user', content: text })
   input.value = ''
+  
+  await nextTick()
+  adjustHeight()
+  
   loading.value = true
 
   try {

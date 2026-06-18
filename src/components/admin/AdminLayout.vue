@@ -110,8 +110,7 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative transition-all duration-300">
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative transition-all duration-300">
       
       <!-- Mobile Header (Visible only on mobile) -->
       <header class="md:hidden flex items-center h-16 px-4 border-b border-border bg-card/50 backdrop-blur-md z-10 sticky top-0">

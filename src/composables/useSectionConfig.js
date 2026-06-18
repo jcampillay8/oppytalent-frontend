@@ -11,10 +11,10 @@ const defaults = reactive({
 let loaded = false
 
 export function useSectionConfig() {
-  const fetchConfigs = async () => {
+  const fetchConfigs = async (username) => {
     if (loaded) return
     try {
-      const response = await api.getSeccionConfigs()
+      const response = await api.getSeccionConfigs(username)
       response.forEach(config => {
         if (defaults.hasOwnProperty(config.seccion)) {
           defaults[config.seccion] = config.is_expanded

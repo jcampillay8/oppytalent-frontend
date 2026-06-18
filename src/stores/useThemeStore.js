@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { api } from '../services/api';
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
@@ -6,6 +7,7 @@ export const useThemeStore = defineStore('theme', {
     theme: localStorage.getItem('oppy_theme') || 'dark',
     // Custom primary color (HSL) chosen by the user in theme-config
     customPrimaryHsl: localStorage.getItem('oppy_custom_primary_hsl') || null,
+    currentLayout: 'tabs',
   }),
 
   actions: {
@@ -17,9 +19,27 @@ export const useThemeStore = defineStore('theme', {
     },
 
     setTheme(newTheme) {
+      if (!newTheme) return;
       this.theme = newTheme;
       localStorage.setItem('oppy_theme', newTheme);
       this.applyTheme(newTheme);
+    },
+
+    setLayout(layoutName) {
+      this.currentLayout = layoutName || 'tabs';
+    },
+
+    async fetchThemeForUser(username) {
+      if (!username) return;
+      try {
+        const user = await api.getUserByUsername(username);
+        if (user) {
+          if (user.portfolio_theme) this.setTheme(user.portfolio_theme);
+          if (user.portfolio_layout) this.setLayout(user.portfolio_layout);
+        }
+      } catch (err) {
+        console.warn('Could not fetch theme for user:', err);
+      }
     },
 
     setCustomColor(hslString) {

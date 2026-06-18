@@ -195,7 +195,7 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-import { useThemeStore } from '../stores/theme'
+import { useThemeStore } from '../stores/useThemeStore'
 
 router.afterEach(async (to, from) => {
   const themeStore = useThemeStore()

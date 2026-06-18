@@ -184,10 +184,10 @@ export const api = {
   },
 
   // Seccion Configs
-  getSeccionConfigs(params = '') {
-    const user = localStorage.getItem('currentPortfolioUser');
+  getSeccionConfigs(username = '') {
+    const user = username || localStorage.getItem('currentPortfolioUser');
     const query = user ? `?username=${user}` : '';
-    return request(`/secciones/${query}`)
+    return request(`/seccion_config/${query}`)
   },
   updateSeccionConfig(seccion, data) {
     return request(`/seccion_config/${seccion}`, { method: 'PUT', body: JSON.stringify(data) })

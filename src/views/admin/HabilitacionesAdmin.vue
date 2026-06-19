@@ -6,28 +6,28 @@
       <div v-if="!showForm" key="lista">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Habilitaciones</h1>
-            <p class="text-muted-foreground mt-1">Gestiona tus preferencias laborales, credenciales y licencias.</p>
+            <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.certifications.title') }}</h1>
+            <p class="text-muted-foreground mt-1">{{ $t('admin.views.certifications.description') }}</p>
           </div>
           <NeonButton @click="openForm(null)" glow>
             <template #icon-left><Plus :size="18" /></template>
-            Nueva Habilitación
+            {{ $t('admin.titles.new_certification') }}
           </NeonButton>
         </div>
 
         <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
           <Loader2 class="h-10 w-10 animate-spin mb-4" />
-          <p class="text-sm font-medium text-muted-foreground">Cargando habilitaciones...</p>
+          <p class="text-sm font-medium text-muted-foreground">{{ $t('admin.views.certifications.loading') }}</p>
         </div>
         
         <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
           <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
             <ShieldCheck :size="32" />
           </div>
-          <h3 class="text-xl font-bold text-foreground">No hay habilitaciones</h3>
-          <p class="text-muted-foreground mt-2 max-w-sm text-center">Aún no has registrado preferencias ni certificaciones operativas.</p>
+          <h3 class="text-xl font-bold text-foreground">{{ $t('admin.views.certifications.empty_title') }}</h3>
+          <p class="text-muted-foreground mt-2 max-w-sm text-center">{{ $t('admin.views.certifications.empty_desc') }}</p>
           <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
-            Agregar la primera
+            {{ $t('admin.views.certifications.add_first') }}
           </NeonButton>
         </div>
 
@@ -81,13 +81,13 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
             <h1 class="text-3xl font-extrabold tracking-tight text-foreground">
-              {{ editingHabilitacion ? 'Editar Habilitación' : 'Crear Habilitación' }}
+              {{ editingHabilitacion ? $t('admin.titles.edit_certification') : $t('admin.titles.new_certification') }}
             </h1>
-            <p class="text-muted-foreground mt-1">Completa los detalles de tu habilitación o preferencia.</p>
+            <p class="text-muted-foreground mt-1">{{ $t('admin.views.projects.form_desc') }}</p>
           </div>
           <NeonButton @click="showForm = false" variant="outline">
             <template #icon-left><ArrowLeft :size="18" /></template>
-            Volver a Habilitaciones
+            {{ $t('admin.views.certifications.back') }}
           </NeonButton>
         </div>
 
@@ -114,8 +114,10 @@ import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import { Plus, X, Loader2, ShieldCheck, Edit2, Trash2, ArrowLeft } from 'lucide-vue-next'
 import { useHabilitacionesStore } from '../../stores/habilitaciones'
+import { useI18n } from 'vue-i18n'
 
 const store = useHabilitacionesStore()
+const { t } = useI18n()
 const showForm = ref(false)
 const editingHabilitacion = ref(null)
 
@@ -135,7 +137,7 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+  if (confirm(t('admin.views.certifications.delete_confirm'))) {
     await store.remove(id)
   }
 }

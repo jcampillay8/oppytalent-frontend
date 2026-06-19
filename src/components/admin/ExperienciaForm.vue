@@ -1,7 +1,7 @@
 <template>
   <div class="bg-secondary/30 backdrop-blur-md border border-border/50 rounded-xl p-6 mb-8">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-border/50">
-      <h3 class="text-lg font-semibold text-foreground">{{ experiencia ? 'Editar Experiencia' : 'Nueva Experiencia' }}</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ experiencia ? $t('admin.titles.edit_experience') : $t('admin.titles.new_experience') }}</h3>
       <div class="flex gap-2">
         <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'es' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('es')">
           🇪🇸 Español (Principal)
@@ -28,25 +28,25 @@
         <h4 class="text-base font-semibold text-foreground mb-4">Datos Generales</h4>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Periodo Inicio</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.start_date') }}</label>
             <input v-model="form.periodo_inicio" type="date" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" required />
           </div>
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Periodo Fin</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.end_date') }}</label>
             <input v-model="form.periodo_fin" type="date" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50" :disabled="esActual" />
             <label class="flex items-center gap-2 mt-2 text-sm text-muted-foreground cursor-pointer">
               <input type="checkbox" v-model="esActual" class="rounded border-white/20 bg-black/20 text-primary focus:ring-primary/50" />
-              Actualmente trabajando aquí
+              {{ $t('forms.current') }}
             </label>
           </div>
         </div>
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">URL de Imagen (o ID de Google Drive)</label>
+          <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.image_url') }}</label>
           <ImageUploader v-model="form.image_url" />
         </div>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Enlace Externo / Proyecto Relacionado</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.link') }}</label>
             <input v-model="form.link" type="url" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="https://..." />
           </div>
           <div class="flex-1 space-y-1.5">
@@ -62,11 +62,11 @@
       <div class="space-y-4">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Empresa</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.company') }}</label>
             <input v-model="activeModel.empresa" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" required />
           </div>
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Rol</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.role') }}</label>
             <input v-model="activeModel.rol" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" required />
           </div>
         </div>
@@ -83,9 +83,9 @@
       <div class="flex gap-3 pt-4 border-t border-border/50">
         <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-medium transition-colors" :disabled="isSubmitting">
           <span v-if="isSubmitting" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          {{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}
+          {{ isSubmitting ? '...' : $t('common.save') }}
         </button>
-        <button type="button" class="px-4 py-2 bg-transparent border border-border/50 text-muted-foreground hover:bg-secondary rounded-lg text-sm font-medium transition-colors" @click="$emit('cancel')" :disabled="isSubmitting">Cancelar</button>
+        <button type="button" class="px-4 py-2 bg-transparent border border-border/50 text-muted-foreground hover:bg-secondary rounded-lg text-sm font-medium transition-colors" @click="$emit('cancel')" :disabled="isSubmitting">{{ $t('common.cancel') }}</button>
       </div>
     </form>
   </div>

@@ -7,28 +7,28 @@
         <div v-if="!showForm" key="lista">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-              <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Proyectos</h1>
-              <p class="text-muted-foreground mt-1">Gestiona tu portafolio de proyectos e implementaciones.</p>
+              <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.projects.title') }}</h1>
+              <p class="text-muted-foreground mt-1">{{ $t('admin.views.projects.description') }}</p>
             </div>
             <NeonButton @click="openForm(null)" glow>
               <template #icon-left><Plus :size="18" /></template>
-              Nuevo Proyecto
+              {{ $t('admin.titles.new_project') }}
             </NeonButton>
           </div>
 
           <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
             <Loader2 class="h-10 w-10 animate-spin mb-4" />
-            <p class="text-sm font-medium text-muted-foreground">Cargando proyectos...</p>
+            <p class="text-sm font-medium text-muted-foreground">{{ $t('admin.views.projects.loading') }}</p>
           </div>
           
           <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
             <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
               <FolderKanban :size="32" />
             </div>
-            <h3 class="text-xl font-bold text-foreground">No hay proyectos</h3>
-            <p class="text-muted-foreground mt-2 max-w-sm text-center">Todavía no has registrado ningún proyecto. ¡Comienza a destacar tu trabajo ahora!</p>
+            <h3 class="text-xl font-bold text-foreground">{{ $t('admin.views.projects.empty_title') }}</h3>
+            <p class="text-muted-foreground mt-2 max-w-sm text-center">{{ $t('admin.views.projects.empty_desc') }}</p>
             <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
-              Agregar el primero
+              {{ $t('admin.views.projects.add_first') }}
             </NeonButton>
           </div>
 
@@ -86,13 +86,13 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
               <h1 class="text-3xl font-extrabold tracking-tight text-foreground">
-                {{ editingProyecto ? 'Editar Proyecto' : 'Nuevo Proyecto' }}
+                {{ editingProyecto ? $t('admin.titles.edit_project') : $t('admin.titles.new_project') }}
               </h1>
-              <p class="text-muted-foreground mt-1">Completa los detalles a continuación.</p>
+              <p class="text-muted-foreground mt-1">{{ $t('admin.views.projects.form_desc') }}</p>
             </div>
             <NeonButton @click="showForm = false" variant="outline">
               <template #icon-left><ArrowLeft :size="18" /></template>
-              Volver a Proyectos
+              {{ $t('admin.views.projects.back') }}
             </NeonButton>
           </div>
 
@@ -121,8 +121,10 @@ import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
 import { Plus, X, Loader2, FolderKanban, Calendar, Edit2, Trash2, Briefcase, ArrowLeft } from 'lucide-vue-next'
 import { useProyectosStore } from '../../stores/proyectos'
+import { useI18n } from 'vue-i18n'
 
 const store = useProyectosStore()
+const { t } = useI18n()
 const showForm = ref(false)
 const editingProyecto = ref(null)
 
@@ -148,7 +150,7 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Estás seguro de que deseas eliminar este proyecto? Esta acción no se puede deshacer.')) {
+  if (confirm(t('admin.views.projects.delete_confirm'))) {
     await store.remove(id)
   }
 }

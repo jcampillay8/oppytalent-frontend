@@ -33,9 +33,8 @@
       <div v-else class="flex flex-col items-center text-muted-foreground">
         <span class="text-4xl mb-2">☁️</span>
         <p class="font-medium mb-2 text-foreground">Arrastra tu imagen o haz clic para subir</p>
-        <small v-if="authStore.user?.is_premium" class="text-xs text-primary">Premium Activo: Cloudflare R2</small>
-        <small v-else-if="authStore.user?.google_refresh_token" class="text-xs">Subiendo a Google Drive</small>
-        <small v-else class="text-xs text-amber-500 font-medium">⚠️ Configura tu almacenamiento primero</small>
+        <small v-if="authStore.user?.is_premium" class="text-xs text-primary">Almacenamiento Ilimitado (Premium)</small>
+        <small v-else class="text-xs text-muted-foreground">Almacenamiento Seguro Habilitado</small>
       </div>
     </div>
     

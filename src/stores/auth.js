@@ -34,6 +34,8 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     token.value = null
     localStorage.removeItem('token')
+    localStorage.removeItem('currentPortfolioUser')
+    window.location.href = '/login'
   }
 
   return { user, token, loading, login, fetchUser, logout }

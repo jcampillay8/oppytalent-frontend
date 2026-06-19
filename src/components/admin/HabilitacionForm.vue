@@ -3,7 +3,7 @@
     <div class="grid grid-cols-1 gap-6">
       
       <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">Tipo de Habilitación</label>
+        <label class="text-sm font-semibold text-foreground">{{ $t('forms.type') }}</label>
         <select 
           v-model="form.tipo"
           class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
@@ -16,7 +16,7 @@
       </div>
 
       <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">Título</label>
+        <label class="text-sm font-semibold text-foreground">{{ $t('forms.title') }}</label>
         <input 
           v-model="form.titulo" 
           type="text" 
@@ -27,7 +27,7 @@
       </div>
 
       <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">Descripción / Detalles</label>
+        <label class="text-sm font-semibold text-foreground">{{ $t('forms.description') }}</label>
         <textarea 
           v-model="form.descripcion" 
           class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground min-h-[100px]"
@@ -36,11 +36,26 @@
         ></textarea>
       </div>
 
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-foreground">{{ $t('forms.image_url') }} ({{ $t('common.optional') }})</label>
+        <ImageUploader v-model="form.image_url" />
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-foreground">{{ $t('forms.link') }} ({{ $t('common.optional') }})</label>
+        <input 
+          v-model="form.enlace" 
+          type="url" 
+          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+          placeholder="Ej: https://credly.com/..." 
+        />
+      </div>
+
     </div>
 
     <div class="flex items-center justify-end gap-3 pt-4 border-t border-border/50">
-      <NeonButton type="button" variant="ghost" @click="$emit('cancel')">Cancelar</NeonButton>
-      <NeonButton type="submit" glow>Guardar</NeonButton>
+      <NeonButton type="button" variant="ghost" @click="$emit('cancel')">{{ $t('common.cancel') }}</NeonButton>
+      <NeonButton type="submit" glow>{{ $t('common.save') }}</NeonButton>
     </div>
   </form>
 </template>
@@ -48,6 +63,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
+import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
   habilitacion: {
@@ -61,7 +77,9 @@ const emit = defineEmits(['save', 'cancel'])
 const form = ref({
   tipo: 'LICENCIA',
   titulo: '',
-  descripcion: ''
+  descripcion: '',
+  image_url: '',
+  enlace: ''
 })
 
 function initForm() {
@@ -71,7 +89,9 @@ function initForm() {
     form.value = {
       tipo: 'LICENCIA',
       titulo: '',
-      descripcion: ''
+      descripcion: '',
+      image_url: '',
+      enlace: ''
     }
   }
 }

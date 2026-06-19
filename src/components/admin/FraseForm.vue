@@ -1,7 +1,7 @@
 <template>
   <div class="bg-secondary/30 backdrop-blur-md border border-border/50 rounded-xl p-6 mb-8">
     <div class="flex justify-between items-center mb-6 pb-4 border-b border-border/50">
-      <h3 class="text-lg font-semibold text-foreground">{{ frase ? 'Editar Frase' : 'Nueva Frase' }}</h3>
+      <h3 class="text-lg font-semibold text-foreground">{{ frase ? $t('admin.titles.edit_quote') : $t('admin.titles.new_quote') }}</h3>
       <div class="flex gap-2">
         <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'es' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('es')">
           🇪🇸 Español (Principal)
@@ -26,7 +26,7 @@
       <!-- TRANSLATABLE FIELDS -->
       <div class="space-y-4">
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">Texto de la Frase</label>
+          <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.quote') }}</label>
           <textarea
             v-model="activeModel.texto"
             required
@@ -37,7 +37,7 @@
         </div>
 
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">Autor</label>
+          <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.author') }}</label>
           <input
             v-model="activeModel.autor"
             type="text"
@@ -51,10 +51,10 @@
       <div class="flex gap-3 pt-4 border-t border-border/50">
         <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-medium transition-colors" :disabled="loading">
           <span v-if="loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          {{ loading ? 'Guardando...' : 'Guardar Frase' }}
+          {{ loading ? '...' : $t('common.save') }}
         </button>
         <button type="button" class="px-4 py-2 bg-transparent border border-border/50 text-muted-foreground hover:bg-secondary rounded-lg text-sm font-medium transition-colors" @click="$emit('cancel')" :disabled="loading">
-          Cancelar
+          {{ $t('common.cancel') }}
         </button>
       </div>
     </form>

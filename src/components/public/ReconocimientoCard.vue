@@ -4,7 +4,10 @@
       <div class="p-5 flex flex-col flex-grow">
         <div class="flex justify-between items-start gap-4 mb-2">
           <div class="flex items-center gap-3">
-            <div class="p-2 rounded-md bg-pink-500/10 text-pink-500 shrink-0">
+            <div v-if="tData.image_url" class="w-12 h-12 rounded-md overflow-hidden shrink-0 border border-pink-500/20">
+              <img :src="tData.image_url" class="w-full h-full object-cover" alt="Premio" />
+            </div>
+            <div v-else class="p-2 rounded-md bg-pink-500/10 text-pink-500 shrink-0">
               <Award :size="18" />
             </div>
             <div>
@@ -19,9 +22,11 @@
         
         <div class="mt-auto pt-3 border-t border-border/50 flex justify-between items-center">
           <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-pink-500/10 text-pink-500 border border-pink-500/20">
-            {{ tData.tipo || 'Reconocimiento' }}
+            {{ tData.tipo || $t('portfolio.reconocimientos') }}
           </span>
-          <a v-if="tData.enlace" :href="tData.enlace" target="_blank" @click.stop class="text-xs text-pink-500 hover:text-pink-400 font-medium">Ver Más &rarr;</a>
+          <a v-if="tData.enlace" :href="tData.enlace" target="_blank" @click.stop class="flex items-center gap-1 text-xs text-pink-500 hover:text-pink-400 font-medium bg-pink-500/5 px-2 py-1 rounded-md transition-colors">
+            {{ $t('portfolio.read_more') }} <ExternalLink :size="12" />
+          </a>
         </div>
       </div>
     </GlassCard>
@@ -33,7 +38,7 @@ import { useTranslatedData } from '../../composables/useTranslatedData'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GlassCard from '../ui/GlassCard.vue'
-import { Award } from 'lucide-vue-next'
+import { Award, ExternalLink } from 'lucide-vue-next'
 
 const props = defineProps({
   reconocimiento: { type: Object, required: true },

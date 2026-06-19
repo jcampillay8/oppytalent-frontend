@@ -105,12 +105,11 @@ const activeTabs = computed(() => {
   if (props.config.estudios !== false) {
     tabs.push({ id: 'estudios', label: t('portfolio.estudios'), icon: GraduationCap, count: props.estudios.length })
   }
-  // Suponiendo que hay variables locales o keys para reconocimientos/habilitaciones
   if (props.config.reconocimientos !== false) {
-    tabs.push({ id: 'reconocimientos', label: 'Reconocimientos', icon: Award, count: props.reconocimientos.length })
+    tabs.push({ id: 'reconocimientos', label: t('portfolio.reconocimientos'), icon: Award, count: props.reconocimientos.length })
   }
   if (props.config.habilitaciones !== false) {
-    tabs.push({ id: 'habilitaciones', label: 'Habilitaciones', icon: ShieldCheck, count: props.habilitaciones.length })
+    tabs.push({ id: 'habilitaciones', label: t('portfolio.habilitaciones'), icon: ShieldCheck, count: props.habilitaciones.length })
   }
   return tabs
 })

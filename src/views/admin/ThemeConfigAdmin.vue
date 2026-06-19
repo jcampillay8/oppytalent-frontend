@@ -3,9 +3,9 @@
     <AdminLayout>
       <div class="mb-8">
         <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-          <Palette :size="32" class="text-primary" /> Personalización Visual
+          <Palette :size="32" class="text-primary" /> {{ $t('admin.views.theme_config.title') }}
         </h1>
-        <p class="text-muted-foreground mt-1">Selecciona el estilo visual que mejor represente tu marca personal.</p>
+        <p class="text-muted-foreground mt-1">{{ $t('admin.views.theme_config.description') }}</p>
       </div>
 
       <GlassCard class="p-6 md:p-8 w-full">
@@ -14,7 +14,7 @@
           <!-- SECCIÓN: TEMA VISUAL -->
           <div>
             <h2 class="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-              <Palette :size="24" class="text-primary" /> Colores del Tema
+              <Palette :size="24" class="text-primary" /> {{ $t('admin.views.theme_config.colors_section') }}
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <div 
@@ -52,9 +52,9 @@
           <!-- SECCIÓN: ESTRUCTURA (LAYOUT) -->
           <div>
             <h2 class="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
-              <LayoutDashboard :size="24" class="text-primary" /> Estructura del Portafolio
+              <LayoutDashboard :size="24" class="text-primary" /> {{ $t('admin.views.theme_config.layout_section') }}
             </h2>
-            <p class="text-sm text-muted-foreground mb-6">Elige cómo quieres que los reclutadores naveguen por tu perfil profesional.</p>
+            <p class="text-sm text-muted-foreground mb-6">{{ $t('admin.views.theme_config.layout_desc') }}</p>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               
@@ -91,8 +91,8 @@
                 </div>
 
                 <div class="p-4">
-                  <h4 class="font-bold text-foreground mb-1">Tabs Dinámicos</h4>
-                  <p class="text-xs text-muted-foreground leading-relaxed">Navegación tradicional por pestañas. Ideal para lectura extensa y perfiles con mucha información.</p>
+                  <h4 class="font-bold text-foreground mb-1">{{ $t('admin.views.theme_config.tabs_title') }}</h4>
+                  <p class="text-xs text-muted-foreground leading-relaxed">{{ $t('admin.views.theme_config.tabs_desc') }}</p>
                 </div>
               </div>
 
@@ -127,8 +127,8 @@
                 </div>
 
                 <div class="p-4">
-                  <h4 class="font-bold text-foreground mb-1">Bento Box</h4>
-                  <p class="text-xs text-muted-foreground leading-relaxed">Cuadrícula interactiva de vanguardia. Muestra tu perfil entero de un solo vistazo. Altamente visual.</p>
+                  <h4 class="font-bold text-foreground mb-1">{{ $t('admin.views.theme_config.bento_title') }}</h4>
+                  <p class="text-xs text-muted-foreground leading-relaxed">{{ $t('admin.views.theme_config.bento_desc') }}</p>
                 </div>
               </div>
 
@@ -140,9 +140,9 @@
               <template #icon-left><Save :size="18" v-if="!saving" /></template>
               <span v-if="saving" class="flex items-center gap-2">
                 <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Guardando...
+                {{ $t('admin.views.theme_config.saving') }}
               </span>
-              <span v-else>Guardar Apariencia</span>
+              <span v-else>{{ $t('admin.views.theme_config.save_appearance') }}</span>
             </NeonButton>
           </div>
         </form>
@@ -152,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
@@ -160,9 +160,11 @@ import { Palette, Check, Save, LayoutDashboard } from 'lucide-vue-next'
 import { useAuthStore } from '../../stores/auth'
 import { useThemeStore } from '../../stores/useThemeStore'
 import { api } from '../../services/api'
+import { useI18n } from 'vue-i18n'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const { t } = useI18n()
 
 const form = ref({
   portfolio_theme: 'dark-glass',
@@ -171,38 +173,38 @@ const form = ref({
 
 const saving = ref(false)
 
-const availableThemes = [
+const availableThemes = computed(() => [
   {
     id: 'dark-glass',
-    name: 'Dark Glass',
-    description: 'Elegante, tecnológico y profundo. (Por defecto)',
+    name: t('admin.views.theme_config.themes.dark_glass_name'),
+    description: t('admin.views.theme_config.themes.dark_glass_desc'),
     previewStyle: { background: 'linear-gradient(135deg, #09090b 0%, #18181b 100%)' }
   },
   {
     id: 'light-minimalist',
-    name: 'Light Minimal',
-    description: 'Limpio, luminoso y profesional.',
+    name: t('admin.views.theme_config.themes.light_minimal_name'),
+    description: t('admin.views.theme_config.themes.light_minimal_desc'),
     previewStyle: { background: '#f8fafc' }
   },
   {
     id: 'cyber-neon',
-    name: 'Cyber Neon',
-    description: 'Alto contraste, vibrante y hacker.',
+    name: t('admin.views.theme_config.themes.cyber_neon_name'),
+    description: t('admin.views.theme_config.themes.cyber_neon_desc'),
     previewStyle: { background: '#000000' }
   },
   {
     id: 'ocean-blue',
-    name: 'Ocean Blue',
-    description: 'Corporativo, serio y confiable. Estilo OppyTec.',
+    name: t('admin.views.theme_config.themes.ocean_blue_name'),
+    description: t('admin.views.theme_config.themes.ocean_blue_desc'),
     previewStyle: { background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)' }
   },
   {
     id: 'rose-gold',
-    name: 'Rose Gold',
-    description: 'Creativo, cálido y personal.',
+    name: t('admin.views.theme_config.themes.rose_gold_name'),
+    description: t('admin.views.theme_config.themes.rose_gold_desc'),
     previewStyle: { background: 'linear-gradient(135deg, #2a101f 0%, #701a40 100%)' }
   }
-]
+])
 
 onMounted(async () => {
   if (!authStore.user) {
@@ -244,7 +246,7 @@ const saveConfig = async () => {
       saving.value = false
     }, 500)
   } catch (err) {
-    alert(err.message || 'Error al guardar el tema')
+    alert(err.message || t('admin.views.theme_config.error_saving'))
     saving.value = false
   }
 }

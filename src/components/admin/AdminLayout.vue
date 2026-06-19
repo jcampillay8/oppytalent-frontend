@@ -163,9 +163,24 @@
             class="font-medium text-sm whitespace-nowrap transition-all duration-300"
             :class="isCollapsed && !isOpenMobile ? 'opacity-0 w-0' : 'opacity-100'"
           >
-            Salir a Público
+            {{ $t('admin.sidebar.back') }}
           </span>
         </router-link>
+        
+        <button
+          @click="handleLogout"
+          class="flex items-center gap-4 px-3 h-11 rounded-xl w-full mt-2 text-destructive hover:text-destructive hover:bg-destructive/10 transition-all outline-none"
+        >
+          <div class="relative shrink-0 w-8 flex justify-center">
+            <LogOut :size="20" />
+          </div>
+          <span
+            class="font-medium text-sm whitespace-nowrap transition-all duration-300"
+            :class="isCollapsed && !isOpenMobile ? 'opacity-0 w-0' : 'opacity-100'"
+          >
+            Cerrar Sesión
+          </span>
+        </button>
       </div>
     </aside>
 
@@ -194,12 +209,22 @@ import {
   User, Layers, MessageSquare, LineChart, Settings, 
   Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu, Award, ShieldCheck, ChevronDown
 } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+import { useAuthStore } from '../../stores/auth'
+
+const { t } = useI18n()
 
 const route = useRoute()
+const authStore = useAuthStore()
+
 const isCollapsed = ref(false)
 const isOpenMobile = ref(false)
 
 const openMenus = ref(['trayectoria']) // Open by default
+
+function handleLogout() {
+  authStore.logout()
+}
 
 function toggleMenu(id) {
   if (openMenus.value.includes(id)) {
@@ -214,26 +239,26 @@ const isActive = (path) => route.path === path || route.path.startsWith(path + '
 const menuItems = computed(() => {
   const base = `/${route.params.username || 'admin'}`
   return [
-    { path: `${base}/dashboard`, label: 'Dashboard', icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
-    { path: `${base}/perfil`, label: 'Sobre Mí', icon: User, color: '#06b6d4', rgb: '6,182,212' },
+    { path: `${base}/dashboard`, label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
+    { path: `${base}/perfil`, label: t('admin.sidebar.profile'), icon: User, color: '#06b6d4', rgb: '6,182,212' },
     {
       label: 'Mi Trayectoria',
       icon: Briefcase,
       id: 'trayectoria',
       children: [
-        { path: `${base}/proyectos`, label: 'Proyectos', icon: FolderKanban, color: '#8b5cf6', rgb: '139,92,246' },
-        { path: `${base}/experiencias`, label: 'Experiencia', icon: Briefcase, color: '#10b981', rgb: '16,185,129' },
-        { path: `${base}/estudios`, label: 'Estudios', icon: GraduationCap, color: '#f59e0b', rgb: '245,158,11' },
-        { path: `${base}/reconocimientos`, label: 'Reconocimientos', icon: Award, color: '#ec4899', rgb: '236,72,153' },
-        { path: `${base}/habilitaciones`, label: 'Habilitaciones', icon: ShieldCheck, color: '#6366f1', rgb: '99,102,241' },
+        { path: `${base}/proyectos`, label: t('admin.sidebar.projects'), icon: FolderKanban, color: '#8b5cf6', rgb: '139,92,246' },
+        { path: `${base}/experiencias`, label: t('admin.sidebar.experience'), icon: Briefcase, color: '#10b981', rgb: '16,185,129' },
+        { path: `${base}/estudios`, label: t('admin.sidebar.studies'), icon: GraduationCap, color: '#f59e0b', rgb: '245,158,11' },
+        { path: `${base}/reconocimientos`, label: t('admin.sidebar.recognitions'), icon: Award, color: '#ec4899', rgb: '236,72,153' },
+        { path: `${base}/habilitaciones`, label: t('admin.sidebar.certifications'), icon: ShieldCheck, color: '#6366f1', rgb: '99,102,241' },
       ]
     },
     { path: `${base}/secciones`, label: 'Secciones', icon: Layers, color: '#f43f5e', rgb: '244,63,94' },
-    { path: `${base}/frases`, label: 'Frases', icon: MessageSquare, color: '#8b5cf6', rgb: '139,92,246' },
-    { path: `${base}/chat-logs`, label: 'Chat Logs', icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
-    { path: `${base}/chat-config`, label: 'Config. IA', icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
-    { path: `${base}/theme-config`, label: 'Apariencia', icon: Palette, color: '#f43f5e', rgb: '244,63,94' },
-    { path: `${base}/almacenamiento`, label: 'Storage', icon: Database, color: '#64748b', rgb: '100,116,139' },
+    { path: `${base}/frases`, label: t('admin.sidebar.quotes'), icon: MessageSquare, color: '#8b5cf6', rgb: '139,92,246' },
+    { path: `${base}/chat-logs`, label: t('admin.sidebar.metrics'), icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
+    { path: `${base}/chat-config`, label: t('admin.sidebar.ai_config'), icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
+    { path: `${base}/theme-config`, label: t('admin.sidebar.theme_config', 'Apariencia'), icon: Palette, color: '#f43f5e', rgb: '244,63,94' },
+    { path: `${base}/storage`, label: t('admin.sidebar.storage', 'Almacenamiento'), icon: Database, color: '#eab308', rgb: '234,179,8' },
   ]
 })
 </script>

@@ -1,5 +1,6 @@
-const BASE_URL = '/api/v1'
+import Compressor from 'compressorjs';
 
+const BASE_URL = '/api/v1'
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token')
   const headers = {
@@ -227,21 +228,36 @@ export const api = {
   },
   
   uploadImage(file) {
-    const formData = new FormData()
-    formData.append('file', file)
-    // Usar fetch directamente porque enviamos FormData, no JSON
-    const token = localStorage.getItem('token')
-    return fetch('/api/v1/images/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      body: formData
-    }).then(async (res) => {
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.detail || 'Error uploading file')
-      return data
-    })
+    return new Promise((resolve, reject) => {
+      new Compressor(file, {
+        quality: 0.7,
+        maxWidth: 1200,
+        mimeType: 'image/webp',
+        success(result) {
+          const formData = new FormData()
+          // Ensure the file is saved as .webp to match the compression
+          const filename = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+          formData.append('file', result, filename)
+          
+          const token = localStorage.getItem('token')
+          fetch('/api/v1/images/upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          }).then(async (res) => {
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.detail || 'Error uploading file')
+            resolve(data)
+          }).catch(reject)
+        },
+        error(err) {
+          console.error('Compresión fallida:', err.message);
+          reject(err);
+        },
+      });
+    });
   },
   // Reconocimientos
   getReconocimientos(params = '') {

@@ -56,10 +56,7 @@
           <div class="p-2.5 bg-amber-500/10 rounded-xl text-amber-500">
             <GraduationCap :size="20" />
           </div>
-          <h3 class="text-lg font-bold text-foreground group-hover:text-amber-500 transition-colors">Educación</h3>
-        </div>
-        <div class="relative z-10">
-          <p class="text-sm text-muted-foreground">Formación académica y <br/> grados universitarios.</p>
+          <h3 class="text-lg font-bold text-foreground group-hover:text-amber-500 transition-colors">{{ $t('portfolio.estudios') }}</h3>
         </div>
       </div>
 
@@ -72,10 +69,7 @@
           <div class="p-2.5 bg-pink-500/10 rounded-xl text-pink-500">
             <Award :size="20" />
           </div>
-          <h3 class="text-lg font-bold text-foreground group-hover:text-pink-500 transition-colors">Premios & Medios</h3>
-        </div>
-        <div class="relative z-10">
-          <p class="text-sm text-muted-foreground">Apariciones públicas y reconocimientos.</p>
+          <h3 class="text-lg font-bold text-foreground group-hover:text-pink-500 transition-colors">{{ $t('portfolio.reconocimientos') }}</h3>
         </div>
       </div>
 
@@ -88,10 +82,7 @@
           <div class="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500">
             <ShieldCheck :size="20" />
           </div>
-          <h3 class="text-lg font-bold text-foreground group-hover:text-indigo-500 transition-colors">Acreditaciones</h3>
-        </div>
-        <div class="relative z-10">
-          <p class="text-sm text-muted-foreground">Preferencias operativas y credenciales.</p>
+          <h3 class="text-lg font-bold text-foreground group-hover:text-indigo-500 transition-colors">{{ $t('portfolio.habilitaciones') }}</h3>
         </div>
       </div>
 
@@ -187,11 +178,11 @@ const closeModal = () => {
 
 const modalInfo = computed(() => {
   switch (activeModal.value) {
-    case 'experiencia': return { title: t('portfolio.experiencia'), subtitle: 'Mi trayectoria laboral', icon: Briefcase, colorClass: 'text-emerald-500' }
-    case 'proyectos': return { title: t('portfolio.proyectos'), subtitle: 'Soluciones y casos de estudio', icon: FolderKanban, colorClass: 'text-blue-500' }
-    case 'estudios': return { title: t('portfolio.estudios'), subtitle: 'Formación académica', icon: GraduationCap, colorClass: 'text-amber-500' }
-    case 'reconocimientos': return { title: 'Reconocimientos', subtitle: 'Premios y apariciones', icon: Award, colorClass: 'text-pink-500' }
-    case 'habilitaciones': return { title: 'Habilitaciones', subtitle: 'Acreditaciones y licencias', icon: ShieldCheck, colorClass: 'text-indigo-500' }
+    case 'experiencia': return { title: t('portfolio.experiencia'), subtitle: '', icon: Briefcase, colorClass: 'text-emerald-500' }
+    case 'proyectos': return { title: t('portfolio.proyectos'), subtitle: '', icon: FolderKanban, colorClass: 'text-blue-500' }
+    case 'estudios': return { title: t('portfolio.estudios'), subtitle: '', icon: GraduationCap, colorClass: 'text-amber-500' }
+    case 'reconocimientos': return { title: t('portfolio.reconocimientos'), subtitle: '', icon: Award, colorClass: 'text-pink-500' }
+    case 'habilitaciones': return { title: t('portfolio.habilitaciones'), subtitle: '', icon: ShieldCheck, colorClass: 'text-indigo-500' }
     default: return {}
   }
 })

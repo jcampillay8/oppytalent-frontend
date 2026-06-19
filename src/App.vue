@@ -168,8 +168,6 @@ onMounted(async () => {
       console.warn("Failed to fetch auth user:", e)
     }
   }
-  
-  perfilStore.fetchAll()
 })
 
 watch(() => route.path, async () => {
@@ -178,6 +176,8 @@ watch(() => route.path, async () => {
     try {
       const user = await api.getUserByUsername(username)
       portfolioOwnerName.value = user.firstName || user.username
+      // Fetch only the profile of the target user
+      await perfilStore.fetchAll(`?username=${username}`)
     } catch(e) {}
   }
 }, { immediate: true })
@@ -251,7 +251,6 @@ function closeMenu() {
 
 function handleLogout() {
   authStore.logout()
-  router.push('/login')
 }
 
 function toggleLanguage() {
@@ -260,9 +259,7 @@ function toggleLanguage() {
 }
 
 
-onMounted(() => {
-  perfilStore.fetchAll()
-})
+
 
 onUnmounted(() => {
   if (searchTimeout) clearTimeout(searchTimeout)

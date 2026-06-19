@@ -7,28 +7,28 @@
         <div v-if="!showForm" key="lista">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-              <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Estudios & Certificaciones</h1>
-              <p class="text-muted-foreground mt-1">Registra tu formación académica y certificados.</p>
+              <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.studies.title') }}</h1>
+              <p class="text-muted-foreground mt-1">{{ $t('admin.views.studies.description') }}</p>
             </div>
             <NeonButton @click="openForm(null)" glow variant="primary">
               <template #icon-left><Plus :size="18" /></template>
-              Nuevo Estudio
+              {{ $t('admin.titles.new_study') }}
             </NeonButton>
           </div>
 
           <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
             <Loader2 class="h-10 w-10 animate-spin mb-4" />
-            <p class="text-sm font-medium text-muted-foreground">Cargando estudios...</p>
+            <p class="text-sm font-medium text-muted-foreground">{{ $t('admin.views.studies.loading') }}</p>
           </div>
           
           <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
             <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
               <GraduationCap :size="32" />
             </div>
-            <h3 class="text-xl font-bold text-foreground">No hay estudios registrados</h3>
-            <p class="text-muted-foreground mt-2 max-w-sm text-center">Aún no has agregado tus títulos o certificaciones académicas.</p>
+            <h3 class="text-xl font-bold text-foreground">{{ $t('admin.views.studies.empty_title') }}</h3>
+            <p class="text-muted-foreground mt-2 max-w-sm text-center">{{ $t('admin.views.studies.empty_desc') }}</p>
             <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
-              Agregar el primero
+              {{ $t('admin.views.studies.add_first') }}
             </NeonButton>
           </div>
 
@@ -81,13 +81,13 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
               <h1 class="text-3xl font-extrabold tracking-tight text-foreground">
-                {{ editingEstudio ? 'Editar Estudio' : 'Registrar Estudio' }}
+                {{ editingEstudio ? $t('admin.titles.edit_study') : $t('admin.titles.new_study') }}
               </h1>
-              <p class="text-muted-foreground mt-1">Completa los detalles de tu formación académica.</p>
+              <p class="text-muted-foreground mt-1">{{ $t('admin.views.projects.form_desc') }}</p>
             </div>
             <NeonButton @click="showForm = false" variant="outline">
               <template #icon-left><ArrowLeft :size="18" /></template>
-              Volver a Estudios
+              {{ $t('admin.views.studies.back') }}
             </NeonButton>
           </div>
 
@@ -115,8 +115,10 @@ import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import { Plus, X, Loader2, GraduationCap, Edit2, Trash2, Building2, Award, BookOpen, ArrowLeft } from 'lucide-vue-next'
 import { useEstudiosStore } from '../../stores/estudios'
+import { useI18n } from 'vue-i18n'
 
 const store = useEstudiosStore()
+const { t } = useI18n()
 const showForm = ref(false)
 const editingEstudio = ref(null)
 
@@ -136,7 +138,7 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Estás seguro de que deseas eliminar este estudio?')) {
+  if (confirm(t('admin.views.studies.delete_confirm'))) {
     await store.remove(id)
   }
 }

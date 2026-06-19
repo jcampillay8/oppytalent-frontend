@@ -2,8 +2,8 @@
   
     <AdminLayout>
       <div class="mb-8">
-        <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Configuración de Secciones</h1>
-        <p class="text-muted-foreground mt-1">Elige qué secciones se muestran por defecto al abrir tu portafolio público.</p>
+        <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.sections.title') }}</h1>
+        <p class="text-muted-foreground mt-1">{{ $t('admin.views.sections.description') }}</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -33,7 +33,7 @@
               />
               <div class="w-11 h-6 bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               <span class="ml-3 text-sm font-medium" :class="defaults[s.key] ? 'text-primary' : 'text-muted-foreground'">
-                {{ defaults[s.key] ? 'Visible' : 'Oculta' }}
+                {{ defaults[s.key] ? $t('admin.views.sections.visible') : $t('admin.views.sections.hidden') }}
               </span>
             </label>
           </div>
@@ -50,8 +50,10 @@ import { useSectionConfig } from '../../composables/useSectionConfig'
 import { api } from '../../services/api'
 import { onMounted } from 'vue'
 import { Filter, FolderKanban, Briefcase, GraduationCap } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
 const { defaults, fetchConfigs } = useSectionConfig()
+const { t } = useI18n()
 
 onMounted(() => {
   fetchConfigs()
@@ -66,7 +68,7 @@ const updateToggle = async (key, value) => {
     defaults[key] = value
   } catch (error) {
     console.error('Error updating config:', error)
-    alert('Error al guardar la configuración')
+    alert(t('admin.views.sections.error_saving'))
   }
 }
 

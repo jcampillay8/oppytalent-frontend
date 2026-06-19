@@ -150,7 +150,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/:username/almacenamiento',
+    path: '/:username/storage',
     name: 'StorageConfigAdmin',
     component: () => import('../views/admin/StorageConfigAdmin.vue'),
     meta: { requiresAuth: true },

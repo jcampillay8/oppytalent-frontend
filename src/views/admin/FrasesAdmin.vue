@@ -3,12 +3,12 @@
     <AdminLayout>
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Frases Célebres</h1>
-          <p class="text-muted-foreground mt-1">Citas y pensamientos que definen tu filosofía.</p>
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.quotes.title') }}</h1>
+          <p class="text-muted-foreground mt-1">{{ $t('admin.views.quotes.description') }}</p>
         </div>
         <NeonButton @click="openForm(null)" glow variant="primary">
           <template #icon-left><Plus :size="18" /></template>
-          Nueva Frase
+          {{ $t('admin.titles.new_quote') }}
         </NeonButton>
       </div>
 
@@ -16,7 +16,7 @@
         <GlassCard>
           <div class="flex items-center justify-between mb-4 border-b border-border/50 pb-4">
             <h2 class="text-lg font-bold text-foreground">
-              {{ editingFrase ? 'Editar Frase' : 'Registrar Frase' }}
+              {{ editingFrase ? $t('admin.titles.edit_quote') : $t('admin.titles.new_quote') }}
             </h2>
             <button @click="showForm = false" class="p-2 text-muted-foreground hover:text-destructive transition-colors">
               <X :size="20" />
@@ -32,17 +32,17 @@
 
       <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
         <Loader2 class="h-10 w-10 animate-spin mb-4" />
-        <p class="text-sm font-medium text-muted-foreground">Cargando frases...</p>
+        <p class="text-sm font-medium text-muted-foreground">{{ $t('admin.views.quotes.loading') }}</p>
       </div>
       
       <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
         <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
           <MessageSquare :size="32" />
         </div>
-        <h3 class="text-xl font-bold text-foreground">No hay frases registradas</h3>
-        <p class="text-muted-foreground mt-2 max-w-sm text-center">Aún no has agregado tus frases inspiradoras. ¡Compártelas con el mundo!</p>
+        <h3 class="text-xl font-bold text-foreground">{{ $t('admin.views.quotes.empty_title') }}</h3>
+        <p class="text-muted-foreground mt-2 max-w-sm text-center">{{ $t('admin.views.quotes.empty_desc') }}</p>
         <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
-          Agregar la primera
+          {{ $t('admin.views.quotes.add_first') }}
         </NeonButton>
       </div>
 
@@ -76,7 +76,7 @@
             <div class="flex items-center gap-2 justify-end mt-4 pt-4 border-t border-border/50">
               <NeonButton variant="outline" @click="openForm(f)">
                 <template #icon-left><Edit2 :size="14" /></template>
-                Editar
+                {{ $t('common.edit') }}
               </NeonButton>
               <NeonButton variant="destructive" @click="handleDelete(f.id)">
                 <template #icon-left><Trash2 :size="14" /></template>
@@ -97,8 +97,10 @@ import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import { Plus, X, Loader2, MessageSquare, Quote, Edit2, Trash2 } from 'lucide-vue-next'
 import { useFrasesStore } from '../../stores/frases'
+import { useI18n } from 'vue-i18n'
 
 const store = useFrasesStore()
+const { t } = useI18n()
 const showForm = ref(false)
 const editingFrase = ref(null)
 
@@ -123,7 +125,7 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Estás seguro de que deseas eliminar esta frase?')) {
+  if (confirm(t('admin.views.quotes.delete_confirm'))) {
     await store.remove(id)
   }
 }

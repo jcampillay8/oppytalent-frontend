@@ -35,7 +35,7 @@
               <Mail :size="24" class="text-primary" />
             </div>
             <div>
-              <span class="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Email</span>
+              <span class="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-0.5">{{ $t('contact.email') }}</span>
               <span class="text-foreground font-medium group-hover:text-primary transition-colors">{{ tData.email }}</span>
             </div>
           </a>

@@ -1,13 +1,12 @@
 <template>
   
     <AdminLayout>
-      <div class="mb-8">
-        <h1 class="text-3xl font-extrabold tracking-tight text-foreground mb-2">Dashboard</h1>
-        <p class="text-muted-foreground">¡Hola, <span class="text-primary">{{ authStore.user?.username }}</span>! 👋 Tu centro de comando de IA.</p>
-      </div>
-
       <!-- ESTADO ACTIVO: Dashboard Normal -->
       <template v-if="!isPortfolioEmpty && !isLoading">
+        <div class="mb-8">
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground mb-2">Dashboard</h1>
+          <p class="text-muted-foreground">¡Hola, <span class="text-primary">{{ authStore.user?.username }}</span>! 👋 Tu centro de comando de IA.</p>
+        </div>
         <div class="flex flex-col gap-6">
           
           <!-- Cuadrícula de Estadísticas -->
@@ -303,7 +302,6 @@ function formatDateShort(dateString) {
 
 function handleLogout() {
   authStore.logout()
-  router.push('/login')
 }
 
 // Lógica de CV

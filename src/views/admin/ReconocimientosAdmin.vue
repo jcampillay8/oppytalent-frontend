@@ -6,28 +6,28 @@
       <div v-if="!showForm" key="lista">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-foreground">Reconocimientos</h1>
-            <p class="text-muted-foreground mt-1">Gestiona tus premios, publicaciones y apariciones en medios.</p>
+            <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.recognitions.title') }}</h1>
+            <p class="text-muted-foreground mt-1">{{ $t('admin.views.recognitions.description') }}</p>
           </div>
           <NeonButton @click="openForm(null)" glow>
             <template #icon-left><Plus :size="18" /></template>
-            Nuevo Reconocimiento
+            {{ $t('admin.titles.new_recognition') }}
           </NeonButton>
         </div>
 
         <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
           <Loader2 class="h-10 w-10 animate-spin mb-4" />
-          <p class="text-sm font-medium text-muted-foreground">Cargando reconocimientos...</p>
+          <p class="text-sm font-medium text-muted-foreground">{{ $t('admin.views.recognitions.loading') }}</p>
         </div>
         
         <div v-else-if="!store.items.length" class="flex flex-col items-center justify-center py-20">
           <div class="h-20 w-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground mb-4 border border-border">
             <Award :size="32" />
           </div>
-          <h3 class="text-xl font-bold text-foreground">No hay reconocimientos</h3>
-          <p class="text-muted-foreground mt-2 max-w-sm text-center">Aún no has registrado premios ni publicaciones.</p>
+          <h3 class="text-xl font-bold text-foreground">{{ $t('admin.views.recognitions.empty_title') }}</h3>
+          <p class="text-muted-foreground mt-2 max-w-sm text-center">{{ $t('admin.views.recognitions.empty_desc') }}</p>
           <NeonButton variant="outline" class="mt-6" @click="openForm(null)">
-            Agregar el primero
+            {{ $t('admin.views.recognitions.add_first') }}
           </NeonButton>
         </div>
 
@@ -82,13 +82,13 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
             <h1 class="text-3xl font-extrabold tracking-tight text-foreground">
-              {{ editingReconocimiento ? 'Editar Reconocimiento' : 'Crear Reconocimiento' }}
+              {{ editingReconocimiento ? $t('admin.titles.edit_recognition') : $t('admin.titles.new_recognition') }}
             </h1>
-            <p class="text-muted-foreground mt-1">Completa los detalles de tu reconocimiento.</p>
+            <p class="text-muted-foreground mt-1">{{ $t('admin.views.projects.form_desc') }}</p>
           </div>
           <NeonButton @click="showForm = false" variant="outline">
             <template #icon-left><ArrowLeft :size="18" /></template>
-            Volver a Reconocimientos
+            {{ $t('admin.views.recognitions.back') }}
           </NeonButton>
         </div>
 
@@ -116,8 +116,10 @@ import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
 import { Plus, X, Loader2, Award, Calendar, Edit2, Trash2, ArrowLeft } from 'lucide-vue-next'
 import { useReconocimientosStore } from '../../stores/reconocimientos'
+import { useI18n } from 'vue-i18n'
 
 const store = useReconocimientosStore()
+const { t } = useI18n()
 const showForm = ref(false)
 const editingReconocimiento = ref(null)
 
@@ -137,7 +139,7 @@ async function handleSave(data) {
 }
 
 async function handleDelete(id) {
-  if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+  if (confirm(t('admin.views.recognitions.delete_confirm'))) {
     await store.remove(id)
   }
 }

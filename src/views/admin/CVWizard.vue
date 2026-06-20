@@ -167,9 +167,17 @@
                   <label class="text-sm font-medium text-foreground">LinkedIn</label>
                   <input type="url" v-model="formData.linkedin" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
                 </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Sobre Mí (Resumen Personal)</label>
+                  <textarea v-model="formData.sobre_mi" rows="4" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"></textarea>
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Habilidades / Aptitudes (separadas por comas)</label>
+                  <input type="text" v-model="habilidadesInput" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
                 <div class="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm text-primary/80 flex gap-3 mt-6">
                   <Info :size="20" class="shrink-0 mt-0.5" />
-                  <p>El nombre de usuario se mantendrá igual. Para el perfil, estos datos te sugerimos añadirlos en tu descripción si lo deseas, o usarlos como base.</p>
+                  <p>El nombre de usuario se mantendrá igual. Las habilidades se guardarán en tu perfil.</p>
                 </div>
               </template>
 
@@ -250,6 +258,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../services/api'
+import { toast } from 'vue3-toastify'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
@@ -265,8 +274,14 @@ const currentIndex = ref(-1)
 const formData = ref({})
 const saving = ref(false)
 
+const showRawData = ref(false)
+const rawJsonText = ref('')
+const habilidadesInput = ref('')
+
 const dragTarget = ref(null)
 const draggedItem = ref(null)
+
+
 
 function onDragStart(event, type, index) {
   draggedItem.value = { type, index }
@@ -340,6 +355,11 @@ function selectItem(type, index) {
   
   if (type === 'contacto') {
     formData.value = { ...cvWizardStore.datosContacto }
+    if (formData.value.habilidades && Array.isArray(formData.value.habilidades)) {
+      habilidadesInput.value = formData.value.habilidades.join(', ')
+    } else {
+      habilidadesInput.value = ''
+    }
   } else if (type === 'proyecto') {
     formData.value = { ...cvWizardStore.pendingProyectos[index] }
   } else if (type === 'experiencia') {
@@ -430,14 +450,17 @@ async function saveCurrentItem() {
         telefono: formData.value.telefono || '',
         ciudad: formData.value.ubicacion || '',
         linkedin: formData.value.linkedin || '',
-        descripcion: 'Perfil importado desde CV'
+        descripcion: formData.value.sobre_mi || 'Perfil importado desde CV',
+        habilidades: habilidadesInput.value.split(',').map(h => h.trim()).filter(Boolean)
       }
 
       if (currentPerfiles && currentPerfiles.length > 0) {
         // Actualizar el primero (usualmente solo hay 1 perfil por usuario)
         const currentId = currentPerfiles[0].id
-        // No sobreescribir la descripción si ya existe
-        delete dataToSave.descripcion
+        // Si no hay sobre_mi del CV, mantenemos la descripcion actual (eliminándolo del payload para no sobreescribir)
+        if (!formData.value.sobre_mi) {
+          delete dataToSave.descripcion
+        }
         await api.updatePerfil(currentId, dataToSave)
       } else {
         await api.createPerfil(dataToSave)
@@ -448,7 +471,7 @@ async function saveCurrentItem() {
     autoSelectNext()
     
   } catch (error) {
-    alert("Error al guardar: " + error.message)
+    toast.error("Error al guardar: " + error.message)
   } finally {
     saving.value = false
   }

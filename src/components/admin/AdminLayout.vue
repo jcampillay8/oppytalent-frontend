@@ -226,7 +226,7 @@ if (authStore.user?.username) {
 const isCollapsed = ref(false)
 const isOpenMobile = ref(false)
 
-const openMenus = ref(['trayectoria']) // Open by default
+const openMenus = ref([]) // Closed by default
 
 function handleLogout() {
   authStore.logout()

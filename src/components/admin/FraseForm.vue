@@ -64,6 +64,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { api } from '../../services/api.js'
+import { toast } from 'vue3-toastify'
 
 const props = defineProps({
   frase: { type: Object, default: null },
@@ -110,7 +111,7 @@ function setTab(tab) {
 
 async function translateWithAI() {
   if (!form.value.texto || !form.value.autor) {
-    alert("Primero debes llenar los campos en Español para poder traducir.")
+    toast.error("Primero debes llenar los campos en Español para poder traducir.")
     return
   }
   
@@ -130,7 +131,7 @@ async function translateWithAI() {
     
   } catch (error) {
     console.error("Error al traducir:", error)
-    alert("Ocurrió un error al intentar traducir con la IA.")
+    toast.error("Ocurrió un error al intentar traducir con la IA.")
   } finally {
     isTranslating.value = false
   }

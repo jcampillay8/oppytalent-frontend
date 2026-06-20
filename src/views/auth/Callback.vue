@@ -9,6 +9,7 @@
 import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+import { toast } from 'vue3-toastify'
 
 const router = useRouter()
 const route = useRoute()
@@ -41,7 +42,7 @@ onMounted(async () => {
       router.push('/home')
     }
   } else {
-    alert("Error de autenticación. Redirigiendo a inicio de sesión.")
+    toast.error("Error de autenticación. Redirigiendo a inicio de sesión.")
     router.push('/login')
   }
 })

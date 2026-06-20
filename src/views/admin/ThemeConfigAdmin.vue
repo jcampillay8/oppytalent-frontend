@@ -161,6 +161,7 @@ import { useAuthStore } from '../../stores/auth'
 import { useThemeStore } from '../../stores/useThemeStore'
 import { api } from '../../services/api'
 import { useI18n } from 'vue-i18n'
+import { toast } from 'vue3-toastify'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
@@ -246,7 +247,7 @@ const saveConfig = async () => {
       saving.value = false
     }, 500)
   } catch (err) {
-    alert(err.message || t('admin.views.theme_config.error_saving'))
+    toast.error(err.message || t('admin.views.theme_config.error_saving'))
     saving.value = false
   }
 }

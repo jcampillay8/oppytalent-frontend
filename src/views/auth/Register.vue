@@ -81,6 +81,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { toast } from 'vue3-toastify'
 import NeonButton from '../../components/ui/NeonButton.vue'
 
 const router = useRouter()
@@ -119,10 +120,10 @@ async function handleRegister() {
       throw new Error(error.detail || 'Error en el registro')
     }
     
-    alert('Registro exitoso. Serás redirigido para iniciar sesión.')
+    toast.success('Registro exitoso. Serás redirigido para iniciar sesión.')
     router.push('/login')
   } catch (error) {
-    alert(error.message)
+    toast.error(error.message)
   } finally {
     loading.value = false
   }

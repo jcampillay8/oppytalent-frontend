@@ -78,6 +78,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+import { toast } from 'vue3-toastify'
 import NeonButton from '../../components/ui/NeonButton.vue'
 
 const router = useRouter()
@@ -137,7 +138,7 @@ async function handleLogin() {
       router.push('/home')
     }
   } catch (error) {
-    alert(error.message)
+    toast.error(error.message)
   } finally {
     loading.value = false
   }

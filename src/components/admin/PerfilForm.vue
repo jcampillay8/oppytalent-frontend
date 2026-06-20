@@ -94,6 +94,10 @@
             <textarea v-model="activeIdiomasText" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 font-mono text-xs" rows="4" placeholder='[{"idioma": "Inglés", "nivel": "Avanzado"}]' @blur="parseIdiomas"></textarea>
           </div>
         </div>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-muted-foreground">Habilidades / Aptitudes (separadas por comas)</label>
+          <input v-model="activeHabilidadesInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Liderazgo, Ventas, Python, CRM" @blur="parseHabilidades" />
+        </div>
       </div>
 
       <div class="flex gap-3 pt-4 border-t border-border/50">
@@ -111,6 +115,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
+import { toast } from 'vue3-toastify'
 import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
@@ -136,13 +141,16 @@ const form = ref({
   youtube_url: '',
   certificaciones: [],
   idiomas: [],
+  habilidades: [],
   traducciones: []
 })
 
 const certificacionesTextEs = ref('')
 const idiomasTextEs = ref('')
+const habilidadesInputEs = ref('')
 const certificacionesTextEn = ref('')
 const idiomasTextEn = ref('')
+const habilidadesInputEn = ref('')
 
 const activeModel = computed(() => {
   if (currentTab.value === 'es') return form.value
@@ -153,7 +161,8 @@ const activeModel = computed(() => {
       idioma: 'en',
       descripcion: '',
       certificaciones: [],
-      idiomas: []
+      idiomas: [],
+      habilidades: []
     }
     form.value.traducciones.push(enTranslation)
   }
@@ -170,9 +179,19 @@ const activeIdiomasText = computed({
   set: (val) => currentTab.value === 'es' ? idiomasTextEs.value = val : idiomasTextEn.value = val
 })
 
+const activeHabilidadesInput = computed({
+  get: () => currentTab.value === 'es' ? habilidadesInputEs.value : habilidadesInputEn.value,
+  set: (val) => currentTab.value === 'es' ? habilidadesInputEs.value = val : habilidadesInputEn.value = val
+})
+
 function setTab(tab) {
   currentTab.value = tab
   activeModel.value
+}
+
+function parseHabilidades() {
+  const arr = activeHabilidadesInput.value.split(',').map((s) => s.trim()).filter(Boolean)
+  activeModel.value.habilidades = arr
 }
 
 function parseCertificaciones() {
@@ -201,7 +220,7 @@ function handleParseAvatarUrl() {
 
 async function translateWithAI() {
   if (!form.value.descripcion) {
-    alert("Primero debes llenar los campos en Español para poder traducir.")
+    toast.error("Primero debes llenar los campos en Español para poder traducir.")
     return
   }
   
@@ -210,7 +229,8 @@ async function translateWithAI() {
     const contentToTranslate = {
       descripcion: form.value.descripcion,
       certificaciones: form.value.certificaciones,
-      idiomas: form.value.idiomas
+      idiomas: form.value.idiomas,
+      habilidades: form.value.habilidades
     }
 
     const response = await api.translateWithAI(contentToTranslate, 'en')
@@ -220,16 +240,18 @@ async function translateWithAI() {
     enModel.descripcion = t.descripcion || ''
     enModel.certificaciones = t.certificaciones || []
     enModel.idiomas = t.idiomas || []
+    enModel.habilidades = t.habilidades || []
     
     certificacionesTextEn.value = JSON.stringify(enModel.certificaciones || [], null, 2)
     idiomasTextEn.value = JSON.stringify(enModel.idiomas || [], null, 2)
+    habilidadesInputEn.value = (enModel.habilidades || []).join(', ')
     
   } catch (error) {
     console.error("Error al traducir:", error)
     if (error.detail && error.detail.includes('Cuota agotada')) {
-      alert("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.")
+      toast.warning("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.", { autoClose: 6000 })
     } else {
-      alert("Ocurrió un error al intentar traducir con la IA.")
+      toast.error("Ocurrió un error al intentar traducir con la IA.")
     }
   } finally {
     isTranslating.value = false
@@ -244,10 +266,12 @@ async function handleSubmit() {
   handleParseAvatarUrl()
   parseCertificaciones()
   parseIdiomas()
+  parseHabilidades()
   
   currentTab.value = 'en'
   parseCertificaciones()
   parseIdiomas()
+  parseHabilidades()
   
   currentTab.value = 'es'
   
@@ -267,11 +291,13 @@ onMounted(() => {
     
     certificacionesTextEs.value = JSON.stringify(form.value.certificaciones || [], null, 2)
     idiomasTextEs.value = JSON.stringify(form.value.idiomas || [], null, 2)
+    habilidadesInputEs.value = (form.value.habilidades || []).join(', ')
     
     const enTrans = form.value.traducciones.find(t => t.idioma === 'en')
     if (enTrans) {
       certificacionesTextEn.value = JSON.stringify(enTrans.certificaciones || [], null, 2)
       idiomasTextEn.value = JSON.stringify(enTrans.idiomas || [], null, 2)
+      habilidadesInputEn.value = (enTrans.habilidades || []).join(', ')
     }
   }
 })

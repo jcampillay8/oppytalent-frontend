@@ -64,6 +64,7 @@ import { ref, computed } from 'vue'
 import { api } from '../../services/api'
 import { parseImageUrl } from '../../services/utils'
 import { useAuthStore } from '../../stores/auth'
+import { toast } from 'vue3-toastify'
 
 const props = defineProps({
   modelValue: {
@@ -104,7 +105,7 @@ const handleFileChange = (e) => {
 
 const uploadFile = async (file) => {
   if (!file.type.startsWith('image/')) {
-    alert('Por favor selecciona un archivo de imagen válido.')
+    toast.error('Por favor selecciona un archivo de imagen válido.')
     return
   }
   
@@ -113,7 +114,7 @@ const uploadFile = async (file) => {
     const res = await api.uploadImage(file)
     emit('update:modelValue', res.url)
   } catch (error) {
-    alert(error.message || 'Error al subir la imagen. Verifica tu configuración de almacenamiento.')
+    toast.error(error.message || 'Error al subir la imagen. Verifica tu configuración de almacenamiento.')
   } finally {
     uploading.value = false
     if (fileInput.value) fileInput.value.value = ''

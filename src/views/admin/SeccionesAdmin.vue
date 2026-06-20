@@ -51,6 +51,7 @@ import { api } from '../../services/api'
 import { onMounted } from 'vue'
 import { Filter, FolderKanban, Briefcase, GraduationCap } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { toast } from 'vue3-toastify'
 
 const { defaults, fetchConfigs } = useSectionConfig()
 const { t } = useI18n()
@@ -68,7 +69,7 @@ const updateToggle = async (key, value) => {
     defaults[key] = value
   } catch (error) {
     console.error('Error updating config:', error)
-    alert(t('admin.views.sections.error_saving'))
+    toast.error(t('admin.views.sections.error_saving'))
   }
 }
 

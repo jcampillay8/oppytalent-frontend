@@ -75,6 +75,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
+import { toast } from 'vue3-toastify'
 import ImageUploader from './ImageUploader.vue'
 
 const props = defineProps({
@@ -123,7 +124,7 @@ function handleParseImageUrl() {
 
 async function translateWithAI() {
   if (!form.value.titulo) {
-    alert("Primero debes llenar los campos en Español para poder traducir.")
+    toast.error("Primero debes llenar los campos en Español para poder traducir.")
     return
   }
   
@@ -146,9 +147,9 @@ async function translateWithAI() {
   } catch (error) {
     console.error("Error al traducir:", error)
     if (error.detail && error.detail.includes('Cuota agotada')) {
-      alert("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.")
+      toast.warning("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.", { autoClose: 6000 })
     } else {
-      alert("Ocurrió un error al intentar traducir con la IA.")
+      toast.error("Ocurrió un error al intentar traducir con la IA.")
     }
   } finally {
     isTranslating.value = false

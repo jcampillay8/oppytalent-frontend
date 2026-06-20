@@ -8,38 +8,7 @@
         <p class="text-muted-foreground mt-1">{{ $t('admin.views.chat_config.description') }}</p>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- Configuración AI API Key -->
-        <GlassCard>
-          <div class="flex items-center gap-3 mb-4 pb-4 border-b border-border/50">
-            <KeyRound :size="20" class="text-primary" />
-            <h3 class="text-lg font-bold text-foreground">{{ $t('admin.views.chat_config.ai_section') }}</h3>
-          </div>
-          <p class="text-sm text-muted-foreground mb-6 leading-relaxed">
-            <span v-html="$t('admin.views.chat_config.ai_desc')"></span> <Badge variant="secondary" class="mx-1">{{ authStore.user?.ai_credits }} {{ $t('admin.views.chat_config.free_credits') }}</Badge>{{ $t('admin.views.chat_config.ai_desc2') }}
-          </p>
-          
-          <div class="space-y-2">
-            <label class="text-sm font-medium text-foreground">{{ $t('admin.views.chat_config.api_key_label') }}</label>
-            <div class="flex gap-2">
-              <input
-                type="password"
-                v-model="geminiKeyForm"
-                class="flex-1 px-4 py-2 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono text-sm"
-                :placeholder="authStore.user?.has_gemini_key ? $t('admin.views.chat_config.api_key_saved') : $t('admin.views.chat_config.api_key_placeholder')"
-              />
-              <NeonButton @click="saveGeminiKey" :disabled="savingKey" variant="outline" class="shrink-0">
-                <span v-if="savingKey" class="flex items-center gap-2">
-                  <div class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-                </span>
-                <span v-else>{{ $t('admin.views.chat_config.validate_save') }}</span>
-              </NeonButton>
-            </div>
-            <p v-if="keySuccessMsg" class="text-xs text-emerald-500 mt-2 flex items-center gap-1"><CheckCircle2 :size="12" /> {{ keySuccessMsg }}</p>
-            <p v-if="keyErrorMsg" class="text-xs text-destructive mt-2 flex items-center gap-1"><AlertCircle :size="12" /> {{ keyErrorMsg }}</p>
-          </div>
-        </GlassCard>
+      <div class="grid grid-cols-1 gap-6">
 
         <!-- Configuración de Chat -->
         <GlassCard>
@@ -157,28 +126,7 @@ const saving = ref(false)
 const successMsg = ref('')
 const errorMsg = ref('')
 
-const geminiKeyForm = ref('')
-const savingKey = ref(false)
-const keySuccessMsg = ref('')
-const keyErrorMsg = ref('')
 
-async function saveGeminiKey() {
-  if (!geminiKeyForm.value) return
-  savingKey.value = true
-  keySuccessMsg.value = ''
-  keyErrorMsg.value = ''
-  
-  try {
-    const res = await api.updateGeminiKey(geminiKeyForm.value)
-    keySuccessMsg.value = res.message
-    geminiKeyForm.value = ''
-    await authStore.fetchUser()
-  } catch (err) {
-    keyErrorMsg.value = err.detail || t('admin.views.chat_config.key_error_msg')
-  } finally {
-    savingKey.value = false
-  }
-}
 
 onMounted(async () => {
   try {

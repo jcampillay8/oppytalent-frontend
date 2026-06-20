@@ -264,7 +264,7 @@ const menuItems = computed(() => {
     { path: `${base}/chat-logs`, label: t('admin.sidebar.metrics'), icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
     { path: `${base}/chat-config`, label: t('admin.sidebar.ai_config'), icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
     { path: `${base}/theme-config`, label: t('admin.sidebar.theme_config', 'Apariencia'), icon: Palette, color: '#f43f5e', rgb: '244,63,94' },
-    { path: `${base}/storage`, label: t('admin.sidebar.storage', 'Almacenamiento'), icon: Database, color: '#eab308', rgb: '234,179,8' },
+    { path: `${base}/storage`, label: t('admin.sidebar.storage', 'Plan y Consumo'), icon: Database, color: '#10b981', rgb: '16,185,129' },
   ]
 })
 </script>

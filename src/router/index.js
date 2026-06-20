@@ -151,8 +151,8 @@ const routes = [
   },
   {
     path: '/:username/storage',
-    name: 'StorageConfigAdmin',
-    component: () => import('../views/admin/StorageConfigAdmin.vue'),
+    name: 'PlanConsumoAdmin',
+    component: () => import('../views/admin/PlanConsumoAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {

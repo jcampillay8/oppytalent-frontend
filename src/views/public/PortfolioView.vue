@@ -9,10 +9,10 @@
       </div>
 
       <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
-        {{ perfil?.nombre_completo || 'Jaime Gabriel Campillay Rojas' }}
+        {{ perfil?.nombre_completo || 'Usuario de OppyTalent' }}
       </h1>
       <p class="text-lg md:text-xl text-primary font-medium mb-8">
-        {{ perfil?.ocupacion || 'Ingeniero Civil Industrial • Magíster • Senior Software/Data Engineer' }}
+        {{ perfil?.ocupacion || 'Profesional' }}
       </p>
       
       <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mt-4 flex items-center justify-center gap-3 mb-4">
@@ -99,7 +99,7 @@ onMounted(async () => {
   if (currentPath.includes('/portfolio/') || currentPath === '/portafolio') {
     // Determine user to load
     const pathMatch = currentPath.match(/\/portfolio\/([^/]+)/)
-    const username = pathMatch ? pathMatch[1] : 'jcampillayworks' // default for local testing if no match
+    const username = pathMatch ? pathMatch[1] : (localStorage.getItem('currentPortfolioUser') || 'jcampillayworks')
     
     // Configs
     await fetchConfigs(username)

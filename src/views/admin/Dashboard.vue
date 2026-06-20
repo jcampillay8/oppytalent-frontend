@@ -193,7 +193,7 @@
           <GlassCard class="relative">
             <h2 class="text-xl font-bold mb-2">Carga tu Currículum</h2>
             <p class="text-sm text-muted-foreground mb-6">
-              Sube tu CV (PDF, Word, TXT, Imagen) y nuestra IA extraerá tu experiencia, estudios y habilidades automáticamente.
+              Sube tu archivo (PDF, Word, Excel, PPT, TXT, Audio, Imagen o ZIP) y nuestra IA extraerá tu experiencia, estudios y habilidades automáticamente.
             </p>
             
             <form @submit.prevent="handleCVUpload" class="space-y-6">
@@ -204,7 +204,7 @@
                 <input 
                   type="file" 
                   ref="fileInput" 
-                  accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg" 
+                  accept=".pdf,application/pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.md,.csv,.json,.xml,.png,.jpg,.jpeg,.zip,.html,.epub,audio/*,image/*" 
                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
                   @change="onFileChange" 
                   required 
@@ -243,6 +243,7 @@
 <script setup>
 import { onMounted, computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { toast } from 'vue3-toastify'
 import { api } from '../../services/api'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
@@ -320,7 +321,7 @@ function onFileChange(event) {
     if (isValid) {
       selectedFile.value = file
     } else {
-      alert("Por favor, sube un formato válido (PDF, Word, TXT, MD o Imagen).")
+      toast.warning("Por favor, sube un formato válido (PDF, Word, Excel, PPT, TXT, Audio, Imagen o ZIP).")
       selectedFile.value = null
     }
   }
@@ -352,9 +353,9 @@ async function handleCVUpload() {
     
   } catch (error) {
     if (error.detail && error.detail.includes('Cuota agotada')) {
-      alert("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.")
+      toast.warning("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.", { autoClose: 6000 })
     } else {
-      alert("Ocurrió un error al subir el CV: " + (error.detail || error.message))
+      toast.error("Ocurrió un error al subir el CV: " + (error.detail || error.message), { autoClose: 5000 })
     }
   } finally {
     uploadingCV.value = false

@@ -45,8 +45,8 @@
 
           <!-- User Menu & Lang -->
           <div class="flex items-center gap-2">
-            <button @click="toggleLanguage" class="h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
-              {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
+            <button @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'" class="h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
+              {{ currentLang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN' }}
             </button>
 
             <!-- User Dropdown via AnimatedDropdown Component -->
@@ -59,9 +59,9 @@
               </template>
               <template #content="{ close }">
                 <div class="flex flex-col space-y-1 p-1">
-                  <router-link to="/admin" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                  <button @click="goToAdmin(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
                     <LayoutDashboard :size="16" /> {{ $t('nav.admin') }}
-                  </router-link>
+                  </button>
                   <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
                     <Bot :size="16" /> Mi Chat IA
                   </router-link>
@@ -237,6 +237,15 @@ function goToMyPortfolio() {
   }
   isDropdownOpen.value = false
   router.push('/portafolio')
+}
+
+function goToAdmin() {
+  if (authStore.user?.username) {
+    const username = authStore.user.username.split('@')[0]
+    localStorage.setItem('currentPortfolioUser', username)
+  }
+  isDropdownOpen.value = false
+  router.push('/admin')
 }
 
 const chatLink = computed(() => {

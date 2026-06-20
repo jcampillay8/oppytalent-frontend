@@ -14,16 +14,21 @@
             @input="onSearch" 
             @focus="showResults = true"
             @blur="hideResultsDelay"
+            @keydown.down.prevent="onArrowDown"
+            @keydown.up.prevent="onArrowUp"
+            @keydown.enter.prevent="onEnter"
             placeholder="Buscar talento..." 
             class="search-input" 
           />
           <div class="search-results-wrapper">
-            <div v-if="showResults && searchResults.length > 0" class="search-results glass-panel">
+            <div v-if="showResults && searchResults.length > 0" ref="searchResultsContainer" class="search-results glass-panel">
               <router-link 
-                v-for="user in searchResults" 
+                v-for="(user, index) in searchResults" 
                 :key="user.id" 
+                :id="'search-result-' + index"
                 :to="`/${user.username.split('@')[0]}`" 
                 class="search-result-item"
+                :class="{ 'selected': index === selectedIndex }"
               >
                 <div class="search-avatar">
                   <img v-if="user.userImage" :src="user.userImage" alt="Avatar" />
@@ -74,7 +79,7 @@
             </div>
           </div>
           <button class="lang-btn btn-outline-glass" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
-            {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
+            {{ currentLang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN' }}
           </button>
         </div>
       </div>
@@ -139,10 +144,10 @@
           <!-- Placeholder Post 1 -->
           <div class="post-card glass-panel">
             <div class="post-header">
-              <div class="avatar-small">JC</div>
+              <div class="avatar-small">OT</div>
               <div class="post-meta">
-                <strong>Jaime Campillay</strong>
-                <span>Ingeniero Civil Industrial • Hace 2 horas</span>
+                <strong>OppyTalent Bot</strong>
+                <span>Administrador • Hace 2 horas</span>
               </div>
             </div>
             <div class="post-content">
@@ -199,6 +204,7 @@ const searchQuery = ref('')
 const searchResults = ref([])
 const showResults = ref(false)
 const isSearching = ref(false)
+const selectedIndex = ref(-1)
 const currentUser = ref(null)
 const isDropdownOpen = ref(false)
 let searchTimeout = null
@@ -213,12 +219,58 @@ onMounted(async () => {
   }
 })
 
+const searchResultsContainer = ref(null)
+
+function scrollToSelection() {
+  setTimeout(() => {
+    const el = document.getElementById('search-result-' + selectedIndex.value)
+    if (el && searchResultsContainer.value) {
+      const container = searchResultsContainer.value
+      const elTop = el.offsetTop
+      const elBottom = elTop + el.offsetHeight
+      const containerTop = container.scrollTop
+      const containerBottom = containerTop + container.clientHeight
+
+      if (elTop < containerTop) {
+        container.scrollTop = elTop
+      } else if (elBottom > containerBottom) {
+        container.scrollTop = elBottom - container.clientHeight
+      }
+    }
+  }, 10)
+}
+
+function onArrowDown() {
+  if (showResults.value && searchResults.value.length > 0) {
+    selectedIndex.value = (selectedIndex.value + 1) % searchResults.value.length
+    scrollToSelection()
+  }
+}
+
+function onArrowUp() {
+  if (showResults.value && searchResults.value.length > 0) {
+    selectedIndex.value = selectedIndex.value <= 0 ? searchResults.value.length - 1 : selectedIndex.value - 1
+    scrollToSelection()
+  }
+}
+
+function onEnter() {
+  if (showResults.value && searchResults.value.length > 0 && selectedIndex.value >= 0) {
+    const user = searchResults.value[selectedIndex.value]
+    router.push(`/${user.username.split('@')[0]}`)
+    showResults.value = false
+    searchQuery.value = ''
+    selectedIndex.value = -1
+  }
+}
+
 function onSearch() {
   if (searchTimeout) clearTimeout(searchTimeout)
   
   if (!searchQuery.value.trim()) {
     searchResults.value = []
     isSearching.value = false
+    selectedIndex.value = -1
     return
   }
 
@@ -228,6 +280,7 @@ function onSearch() {
     try {
       const data = await api.searchUsers(searchQuery.value)
       searchResults.value = data
+      selectedIndex.value = -1
     } catch (error) {
       console.error('Error buscando usuarios:', error)
       searchResults.value = []
@@ -370,8 +423,8 @@ onUnmounted(() => {
   transition: background 0.2s;
 }
 
-.search-result-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+.search-result-item:hover, .search-result-item.selected {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .search-avatar {

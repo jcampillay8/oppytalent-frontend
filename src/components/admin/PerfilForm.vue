@@ -26,6 +26,16 @@
       <!-- COMMON FIELDS -->
       <div v-show="currentTab === 'es'" class="space-y-4">
         <h4 class="text-base font-semibold text-foreground mb-4">Datos Generales</h4>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1 space-y-1.5">
+            <label class="block text-sm font-medium text-muted-foreground">Nombre Completo</label>
+            <input v-model="form.nombre_completo" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Ej: Jaime Campillay" />
+          </div>
+          <div class="flex-1 space-y-1.5">
+            <label class="block text-sm font-medium text-muted-foreground">Ocupación / Título Profesional</label>
+            <input v-model="form.ocupacion" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Ej: Ingeniero Civil Industrial" />
+          </div>
+        </div>
         <div class="space-y-1.5">
           <label class="block text-sm font-medium text-muted-foreground">URL de Imagen de perfil</label>
           <ImageUploader v-model="form.image_url" />
@@ -113,6 +123,8 @@ const isTranslating = ref(false)
 const currentTab = ref('es')
 
 const form = ref({
+  nombre_completo: '',
+  ocupacion: '',
   descripcion: '',
   image_url: '',
   avatar_url: '',

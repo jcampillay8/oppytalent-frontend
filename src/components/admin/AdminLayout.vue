@@ -202,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { 
   LayoutDashboard, FolderKanban, Briefcase, GraduationCap, 
@@ -216,6 +216,12 @@ const { t } = useI18n()
 
 const route = useRoute()
 const authStore = useAuthStore()
+
+// Forzar que el AdminPanel siempre muestre los datos del usuario logueado
+if (authStore.user?.username) {
+  const username = authStore.user.username.split('@')[0]
+  localStorage.setItem('currentPortfolioUser', username)
+}
 
 const isCollapsed = ref(false)
 const isOpenMobile = ref(false)

@@ -60,41 +60,42 @@
             </div>
 
             <div class="space-y-4">
-              <label class="text-sm font-medium text-foreground block border-b border-border/50 pb-2">{{ $t('admin.views.chat_config.suggested_qs') }}</label>
+              <div class="flex items-center justify-between border-b border-border/50 pb-2">
+                <label class="text-sm font-medium text-foreground">Torpedos de Venta (Directrices para la IA)</label>
+                <button type="button" @click="addPitchRule" :disabled="form.ai_pitch_rules.length >= 5" class="text-xs text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                  + Agregar Torpedo
+                </button>
+              </div>
+              <p class="text-xs text-muted-foreground mt-1 mb-3 leading-relaxed">Entrena a tu IA. Dile qué proyecto destacar cuando un reclutador pregunte por una habilidad específica (Máx. 5).</p>
               
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-muted-foreground text-xs font-bold">Q1</span>
-                </div>
-                <input
-                  type="text"
-                  v-model="form.chat_suggested_q1"
-                  class="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  :placeholder="$t('admin.views.chat_config.q1_placeholder')"
-                />
+              <div v-if="form.ai_pitch_rules.length === 0" class="text-center p-6 bg-secondary/50 border border-dashed border-border rounded-xl">
+                <p class="text-sm text-muted-foreground">No tienes torpedos configurados. La IA usará su criterio predeterminado.</p>
               </div>
 
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-muted-foreground text-xs font-bold">Q2</span>
+              <div v-for="(rule, idx) in form.ai_pitch_rules" :key="idx" class="relative p-4 bg-background border border-border rounded-xl space-y-3" v-motion="{ initial: { opacity: 0, y: 10 }, enter: { opacity: 1, y: 0 } }">
+                <button type="button" @click="removePitchRule(idx)" class="absolute top-3 right-3 text-muted-foreground hover:text-destructive transition-colors">
+                  <X :size="16" />
+                </button>
+                <div class="space-y-1">
+                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Condición (Si preguntan sobre...)</label>
+                  <input type="text" v-model="rule.keyword" placeholder="Ej: IoT, Monitoreo, Liderazgo" class="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary/50" />
                 </div>
-                <input
-                  type="text"
-                  v-model="form.chat_suggested_q2"
-                  class="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  :placeholder="$t('admin.views.chat_config.q2_placeholder')"
-                />
-              </div>
-
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span class="text-muted-foreground text-xs font-bold">Q3</span>
+                <div class="space-y-1">
+                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Acción (La IA argumentará que...)</label>
+                  <textarea v-model="rule.pitch" rows="2" placeholder="Ej: Destaca que tengo experiencia con ESP32 y que el proyecto FastAlert es el mejor ejemplo..." class="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 resize-y"></textarea>
                 </div>
-                <input
-                  v-model="form.chat_suggested_q3"
-                  class="w-full pl-10 pr-4 py-2 bg-secondary border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  :placeholder="$t('admin.views.chat_config.q3_placeholder')"
-                />
+                <div class="space-y-1">
+                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Enlace (Invitar a ver...)</label>
+                  <select v-model="rule.call_to_action" class="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary/50">
+                    <option value="#">-- Sin enlace --</option>
+                    <optgroup label="Proyectos">
+                      <option v-for="p in proyectosStore.items" :key="'p'+p.id" :value="`/proyecto/${p.id}`">{{ p.title }}</option>
+                    </optgroup>
+                    <optgroup label="Experiencias">
+                      <option v-for="e in experienciasStore.items" :key="'e'+e.id" :value="`/experiencia/${e.id}`">{{ e.company }}</option>
+                    </optgroup>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -124,20 +125,33 @@ import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { Bot, KeyRound, MessageSquare, Save, CheckCircle2, AlertCircle } from 'lucide-vue-next'
+import { Bot, KeyRound, MessageSquare, Save, CheckCircle2, AlertCircle, X } from 'lucide-vue-next'
 import { api } from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
+import { useProyectosStore } from '../../stores/proyectos'
+import { useExperienciasStore } from '../../stores/experiencias'
 import { useI18n } from 'vue-i18n'
 
 const authStore = useAuthStore()
 const { t } = useI18n()
 
+const proyectosStore = useProyectosStore()
+const experienciasStore = useExperienciasStore()
+
 const form = ref({
   chat_welcome_message: '',
-  chat_suggested_q1: '',
-  chat_suggested_q2: '',
-  chat_suggested_q3: ''
+  ai_pitch_rules: []
 })
+
+function addPitchRule() {
+  if (form.value.ai_pitch_rules.length < 5) {
+    form.value.ai_pitch_rules.push({ keyword: '', pitch: '', call_to_action: '#' })
+  }
+}
+
+function removePitchRule(idx) {
+  form.value.ai_pitch_rules.splice(idx, 1)
+}
 
 const saving = ref(false)
 const successMsg = ref('')
@@ -171,9 +185,14 @@ onMounted(async () => {
     const userProfile = await api.me()
     if (userProfile) {
       form.value.chat_welcome_message = userProfile.chat_welcome_message || ''
-      form.value.chat_suggested_q1 = userProfile.chat_suggested_q1 || ''
-      form.value.chat_suggested_q2 = userProfile.chat_suggested_q2 || ''
-      form.value.chat_suggested_q3 = userProfile.chat_suggested_q3 || ''
+      form.value.ai_pitch_rules = userProfile.ai_pitch_rules || []
+    }
+    
+    // Load projects and experiences for the dropdowns
+    const user = localStorage.getItem('currentPortfolioUser') || authStore.user?.username.split('@')[0]
+    if (user) {
+      if (!proyectosStore.items.length) await proyectosStore.fetchAll(`?username=${user}`)
+      if (!experienciasStore.items.length) await experienciasStore.fetchAll(`?username=${user}`)
     }
   } catch (err) {
     console.error('Error loading chat config:', err)
@@ -186,12 +205,15 @@ async function saveConfig() {
   errorMsg.value = ''
   
   try {
+    // Validate rules to avoid saving empty objects
+    const validRules = form.value.ai_pitch_rules.filter(r => r.keyword && r.pitch)
+    
     await api.updateChatConfig({
       chat_welcome_message: form.value.chat_welcome_message || null,
-      chat_suggested_q1: form.value.chat_suggested_q1 || null,
-      chat_suggested_q2: form.value.chat_suggested_q2 || null,
-      chat_suggested_q3: form.value.chat_suggested_q3 || null,
+      ai_pitch_rules: validRules
     })
+    // Update local state to reflect what was saved
+    form.value.ai_pitch_rules = validRules
     successMsg.value = t('admin.views.chat_config.success_msg')
     setTimeout(() => successMsg.value = '', 3000)
   } catch (err) {

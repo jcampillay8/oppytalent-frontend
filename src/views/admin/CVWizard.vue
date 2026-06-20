@@ -421,6 +421,28 @@ async function saveCurrentItem() {
       }
       await api.createEstudio(dataToSave)
     }
+    else if (currentItemType.value === 'contacto') {
+      const currentPerfiles = await api.getPerfil()
+      const dataToSave = {
+        nombre_completo: formData.value.nombre || '',
+        ocupacion: formData.value.ocupacion || '',
+        email: formData.value.email || '',
+        telefono: formData.value.telefono || '',
+        ciudad: formData.value.ubicacion || '',
+        linkedin: formData.value.linkedin || '',
+        descripcion: 'Perfil importado desde CV'
+      }
+
+      if (currentPerfiles && currentPerfiles.length > 0) {
+        // Actualizar el primero (usualmente solo hay 1 perfil por usuario)
+        const currentId = currentPerfiles[0].id
+        // No sobreescribir la descripción si ya existe
+        delete dataToSave.descripcion
+        await api.updatePerfil(currentId, dataToSave)
+      } else {
+        await api.createPerfil(dataToSave)
+      }
+    }
     
     removeItemFromStore()
     autoSelectNext()

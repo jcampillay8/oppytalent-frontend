@@ -22,7 +22,7 @@
             </div>
           </div>
           <div>
-            <h3 class="text-2xl font-bold text-foreground mb-1">{{ tData.nombre_completo || 'Jaime Campillay' }}</h3>
+            <h3 class="text-2xl font-bold text-foreground mb-1">{{ tData.nombre_completo || 'Usuario de OppyTalent' }}</h3>
             <p v-if="tData.ciudad" class="text-muted-foreground flex items-center justify-center sm:justify-start gap-1">
               <MapPin :size="16" class="text-primary" /> {{ tData.ciudad }}
             </p>

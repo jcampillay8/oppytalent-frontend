@@ -6,9 +6,13 @@
       </div>
       <input
         type="text"
+        ref="searchInputRef"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
         @focus="isFocused = true; $emit('focus')"
+        @keydown.down.prevent="onArrowDown"
+        @keydown.up.prevent="onArrowUp"
+        @keydown.enter.prevent="onEnter"
         placeholder="Buscar talento... (⌘ + K)"
         class="block w-full pl-10 pr-12 py-2 border border-border/50 rounded-xl bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-300 backdrop-blur-sm"
       />
@@ -33,13 +37,15 @@
       <div v-else-if="results.length === 0" class="p-4 text-center text-sm text-muted-foreground">
         No se encontraron talentos con "{{ modelValue }}"
       </div>
-      <div v-else class="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20">
+      <div v-else ref="searchResultsListRef" class="max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20">
         <router-link
-          v-for="user in results"
+          v-for="(user, index) in results"
           :key="user.id"
+          :id="'spotlight-result-' + index"
           :to="`/${user.username.split('@')[0]}`"
           @click="closeSearch"
-          class="flex items-center gap-3 p-3 hover:bg-primary/10 transition-colors border-b border-border/50 last:border-0"
+          class="flex items-center gap-3 p-3 transition-colors border-b border-border/50 last:border-0"
+          :class="[index === selectedIndex ? 'bg-primary/20' : 'hover:bg-primary/10']"
         >
           <div class="h-10 w-10 rounded-full bg-secondary overflow-hidden flex items-center justify-center shrink-0 border border-border">
             <img v-if="user.userImage" :src="user.userImage" class="h-full w-full object-cover" />
@@ -58,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Search, Loader2 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -70,14 +76,66 @@ const props = defineProps({
   isLoading: Boolean
 })
 
+watch(() => props.results, () => {
+  selectedIndex.value = -1
+})
+
 const emit = defineEmits(['update:modelValue', 'focus', 'close'])
 
 const isFocused = ref(false)
 const searchContainerRef = ref(null)
+const searchInputRef = ref(null)
+const searchResultsListRef = ref(null)
+const selectedIndex = ref(-1)
+
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const closeSearch = () => {
   isFocused.value = false
+  selectedIndex.value = -1
   emit('close')
+}
+
+const scrollToSelection = () => {
+  setTimeout(() => {
+    const el = document.getElementById('spotlight-result-' + selectedIndex.value)
+    if (el && searchResultsListRef.value) {
+      const container = searchResultsListRef.value
+      const elTop = el.offsetTop
+      const elBottom = elTop + el.offsetHeight
+      const containerTop = container.scrollTop
+      const containerBottom = containerTop + container.clientHeight
+
+      if (elTop < containerTop) {
+        container.scrollTop = elTop
+      } else if (elBottom > containerBottom) {
+        container.scrollTop = elBottom - container.clientHeight
+      }
+    }
+  }, 10)
+}
+
+const onArrowDown = () => {
+  if (isFocused.value && props.results.length > 0) {
+    selectedIndex.value = (selectedIndex.value + 1) % props.results.length
+    scrollToSelection()
+  }
+}
+
+const onArrowUp = () => {
+  if (isFocused.value && props.results.length > 0) {
+    selectedIndex.value = selectedIndex.value <= 0 ? props.results.length - 1 : selectedIndex.value - 1
+    scrollToSelection()
+  }
+}
+
+const onEnter = () => {
+  if (isFocused.value && props.results.length > 0 && selectedIndex.value >= 0) {
+    const user = props.results[selectedIndex.value]
+    router.push(`/${user.username.split('@')[0]}`)
+    closeSearch()
+  }
 }
 
 const handleClickOutside = (e) => {

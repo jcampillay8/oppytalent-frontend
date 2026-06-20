@@ -32,7 +32,7 @@
               <UserCircle2 :size="40" class="text-primary hidden sm:block" />
               {{ locale === 'en' ? 'About Me' : 'Sobre Mí' }}
             </h1>
-            <p class="text-xl font-medium text-primary">{{ profile.nombre_completo || 'Jaime Gabriel Campillay Rojas' }}</p>
+            <p class="text-xl font-medium text-primary">{{ profile.nombre_completo || 'Usuario de OppyTalent' }}</p>
           </header>
           
           <div class="prose prose-zinc dark:prose-invert max-w-none markdown-body mb-10" v-html="renderMarkdown(tData.descripcion)"></div>

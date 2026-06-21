@@ -89,6 +89,27 @@
               Se descuenta al usar el chat y traducir CVs.
             </p>
           </div>
+          
+          <div class="pt-4 mt-2 border-t border-border/50">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-foreground">Cerebro Vectorial (RAG)</span>
+              <div class="flex items-center gap-2">
+                <NeonButton @click="syncRag" :disabled="syncingRag" variant="outline" size="sm" class="h-8 text-xs">
+                  <span v-if="syncingRag" class="flex items-center gap-2">
+                    <div class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+                  </span>
+                  <span v-else class="flex items-center gap-1">
+                    <RefreshCw :size="12" /> Re-indexar
+                  </span>
+                </NeonButton>
+                <button @click="showRagInfo = true" class="text-muted-foreground hover:text-primary transition-colors p-1 rounded-full hover:bg-secondary">
+                  <HelpCircle :size="18" />
+                </button>
+              </div>
+            </div>
+            <p v-if="syncRagSuccess" class="text-xs text-emerald-500 mt-2 flex items-center gap-1"><CheckCircle2 :size="12" /> {{ syncRagSuccess }}</p>
+            <p v-if="syncRagError" class="text-xs text-destructive mt-2 flex items-center gap-1"><AlertCircle :size="12" /> {{ syncRagError }}</p>
+          </div>
         </div>
       </GlassCard>
 
@@ -154,6 +175,56 @@
       </div>
 
     </div>
+
+    <!-- MODAL INFO RAG -->
+    <div v-if="showRagInfo" class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" @click.self="showRagInfo = false">
+      <div class="bg-card border border-border/50 shadow-2xl rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in-95 duration-200 custom-scrollbar">
+        <button @click="showRagInfo = false" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+          <X :size="24" />
+        </button>
+        <div class="p-6 md:p-8">
+          <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
+            <Brain :size="28" class="text-primary" /> ¿Qué hace este "Re-indexar"?
+          </h2>
+          
+          <div class="space-y-4 text-sm text-muted-foreground leading-relaxed">
+            <p>El botón "Re-indexar" (o "Re-indexar Cerebro IA") es la herramienta que le permite a tu asistente de IA "memorizar" tus datos usando la nueva arquitectura matemática (vectores).</p>
+            
+            <p>Cuando haces clic en él, ocurre lo siguiente en el backend:</p>
+            
+            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">1. Extracción de tu Información</h3>
+            <p>El sistema toma toda la información que tienes en OppyTalent: tu Perfil, tus Proyectos, tus Experiencias, Estudios, etc., y borra la memoria matemática anterior para que no haya datos duplicados o viejos.</p>
+
+            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">2. Conversión a "Vectores" (Embeddings)</h3>
+            <p>Envía cada pedacito de información (por ejemplo, un solo proyecto) a Google Gemini. Gemini lee el texto y lo convierte en una larga lista de 768 números decimales. A esta lista de números se le llama "Vector". Estos vectores capturan el "significado" o "semántica" del texto. Es decir, la IA deja de ver letras y empieza a ver conceptos matemáticos.</p>
+
+            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">3. Guardado en la Base de Datos (pgvector)</h3>
+            <p>Guarda todos esos vectores en tu base de datos de PostgreSQL (en la nueva tabla PortfolioDocument).</p>
+
+            <h3 class="text-base font-semibold text-foreground mt-8 mb-2 border-t border-border/50 pt-6">¿En qué te beneficia en el día a día?</h3>
+            <p>Gracias a que tu información ahora está "Vectorizada" (indexada), logras <strong>Búsqueda Semántica</strong>. Cuando un reclutador va a tu portafolio y le pregunta al Chatbot: "¿Ha trabajado con Python en la nube?", sucede la magia:</p>
+
+            <ul class="list-disc pl-5 space-y-1">
+              <li>El chat convierte esa pregunta a vector.</li>
+              <li>Compara matemáticamente la pregunta con todos tus vectores en milisegundos.</li>
+              <li>Encuentra exactamente los 3 o 4 proyectos/experiencias que más coinciden con Python y Cloud.</li>
+              <li>Le pasa únicamente esos 4 proyectos a Gemini para que genere la respuesta.</li>
+            </ul>
+
+            <p class="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-foreground font-medium">
+              <strong>En conclusión:</strong> Apretar el botón "Re-indexar" es decirle a tu IA: "Acabo de subir nuevos proyectos y cambiar mis datos. Por favor, vuelve a estudiar mi currículum y conviértelo a matemáticas para que seas ultra rápido respondiendo y no gastemos todos mis créditos de peticiones."
+            </p>
+          </div>
+          
+          <div class="mt-8 flex justify-end">
+            <NeonButton @click="showRagInfo = false" variant="primary">
+              Entendido
+            </NeonButton>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </AdminLayout>
 </template>
 
@@ -163,7 +234,7 @@ import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { HardDrive, Zap, Activity, Sparkles, KeyRound, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-vue-next'
+import { HardDrive, Zap, Activity, Sparkles, KeyRound, CheckCircle2, AlertCircle, ExternalLink, RefreshCw, HelpCircle, X, Brain } from 'lucide-vue-next'
 import { useAuthStore } from '../../stores/auth'
 import { api } from '../../services/api'
 
@@ -244,6 +315,26 @@ const geminiKeyForm = ref('')
 const savingKey = ref(false)
 const keySuccessMsg = ref('')
 const keyErrorMsg = ref('')
+
+const syncingRag = ref(false)
+const syncRagSuccess = ref('')
+const syncRagError = ref('')
+const showRagInfo = ref(false)
+
+async function syncRag() {
+  syncingRag.value = true
+  syncRagSuccess.value = ''
+  syncRagError.value = ''
+  try {
+    const res = await api.post('/api/v1/user/sync-rag')
+    syncRagSuccess.value = res.data.message || 'Cerebro re-indexado.'
+    setTimeout(() => { syncRagSuccess.value = '' }, 5000)
+  } catch (error) {
+    syncRagError.value = error.response?.data?.detail || 'Error al re-indexar.'
+  } finally {
+    syncingRag.value = false
+  }
+}
 
 async function saveGeminiKey() {
   if (!geminiKeyForm.value) return

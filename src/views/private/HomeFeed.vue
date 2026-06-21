@@ -1,300 +1,347 @@
 <template>
-  <div class="home-container">
+  <div class="min-h-screen bg-background text-foreground font-sans relative overflow-x-hidden pt-20 pb-10">
+    <!-- Decorative Blurs -->
+    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
+
     <!-- Navbar Premium -->
-    <nav class="navbar glass-panel">
-      <div class="navbar-brand">
-        <router-link to="/home" class="logo">Oppy<span>Talent</span></router-link>
-      </div>
-      
-      <div class="navbar-search-container">
-        <div class="navbar-search">
+    <nav class="fixed top-0 left-0 right-0 h-16 bg-background/70 backdrop-blur-xl border-b border-border/50 z-50 flex items-center justify-between px-6">
+      <div class="flex items-center gap-8">
+        <router-link to="/home" class="text-xl font-black tracking-tighter text-foreground decoration-none flex items-center gap-2">
+          Oppy<span class="text-primary">Talent</span>
+        </router-link>
+        
+        <!-- Search bar (Only visually for networking, B2B is separate) -->
+        <div class="relative hidden md:block w-80 group">
+          <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            <Search class="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          </div>
           <input 
             type="text" 
-            v-model="searchQuery" 
-            @input="onSearch" 
-            @focus="showResults = true"
-            @blur="hideResultsDelay"
-            @keydown.down.prevent="onArrowDown"
-            @keydown.up.prevent="onArrowUp"
-            @keydown.enter.prevent="onEnter"
-            placeholder="Buscar talento..." 
-            class="search-input" 
+            placeholder="Buscar talentos o proyectos..." 
+            class="w-full h-10 pl-10 pr-4 bg-secondary/50 border border-border rounded-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-foreground placeholder:text-muted-foreground"
           />
-          <div class="search-results-wrapper">
-            <div v-if="showResults && searchResults.length > 0" ref="searchResultsContainer" class="search-results glass-panel">
-              <router-link 
-                v-for="(user, index) in searchResults" 
-                :key="user.id" 
-                :id="'search-result-' + index"
-                :to="`/${user.username.split('@')[0]}`" 
-                class="search-result-item"
-                :class="{ 'selected': index === selectedIndex }"
-              >
-                <div class="search-avatar">
-                  <img v-if="user.userImage" :src="user.userImage" alt="Avatar" />
-                  <span v-else>{{ (user.firstName || user.username || 'U').charAt(0) }}{{ (user.lastName || '').charAt(0) }}</span>
-                </div>
-                <div class="search-info">
-                  <strong>{{ user.firstName || user.username }} {{ user.lastName || '' }}</strong>
-                  <span>{{ user.occupation || 'Talento OppyTalent' }}</span>
-                </div>
-              </router-link>
-            </div>
-            <div v-else-if="showResults && searchQuery && searchResults.length === 0 && !isSearching" class="search-results glass-panel empty">
-              <p>No se encontraron talentos con "{{ searchQuery }}"</p>
-            </div>
-          </div>
         </div>
       </div>
-      <div class="navbar-right-container">
-        <div class="navbar-menu">
-          <button class="nav-item active"><i class="icon-home"></i> Inicio</button>
-          <button class="nav-item"><i class="icon-network"></i> Red</button>
-          <button class="nav-item"><i class="icon-jobs"></i> Empleos</button>
-        </div>
-        <div class="navbar-user">
-          <div class="user-dropdown-container" v-if="currentUser" @click.stop="isDropdownOpen = !isDropdownOpen">
-            <button class="dropdown-trigger btn-outline-glass">
-              <img v-if="currentUser.userImage || currentUser.avatar_url" :src="currentUser.userImage || currentUser.avatar_url" class="dropdown-avatar" />
-              <span v-else class="dropdown-avatar-placeholder">
-                {{ (currentUser.firstName || currentUser.username || 'U').charAt(0) }}{{ (currentUser.lastName || '').charAt(0) }}
-              </span>
-              <span class="dropdown-arrow">▼</span>
-            </button>
-            
-            <div class="user-dropdown-menu glass-panel" v-if="isDropdownOpen" @click.stop>
-              <router-link to="/admin" class="dropdown-item" @click="isDropdownOpen = false">
-                <span class="icon">👤</span> Panel Admin
-              </router-link>
-              <router-link :to="`/${currentUser.username?.split('@')[0] || ''}`" class="dropdown-item" @click="isDropdownOpen = false">
-                <span class="icon">🤖</span> Mi Chat IA
-              </router-link>
-              <button class="dropdown-item" @click="goToMyPortfolio">
-                <span class="icon">💼</span> Mi Portafolio
-              </button>
-              <div class="dropdown-divider"></div>
-              <button class="dropdown-item text-danger" @click="logout">
-                <span class="icon">🚪</span> Cerrar Sesión
-              </button>
+
+      <div class="flex items-center gap-4">
+        <button v-if="currentUser?.is_recruiter" @click="router.push('/b2b')" class="hidden md:flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-full hover:shadow-lg hover:shadow-emerald-500/20 transition-all">
+          <Briefcase size="14"/> Portal B2B
+        </button>
+
+        <!-- Dropdown -->
+        <div class="relative" v-if="currentUser">
+          <button @click.stop="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-2 hover:bg-secondary p-1 pr-3 rounded-full transition-colors border border-border/50">
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm overflow-hidden border border-border">
+              <img v-if="currentUser.userImage || currentUser.avatar_url" :src="currentUser.userImage || currentUser.avatar_url" class="w-full h-full object-cover" />
+              <span v-else>{{ (currentUser.firstName || currentUser.username || 'U').charAt(0).toUpperCase() }}</span>
             </div>
-          </div>
-          <button class="lang-btn btn-outline-glass" @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'">
-            {{ currentLang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN' }}
+            <ChevronDown size="14" class="text-muted-foreground" />
           </button>
+
+          <div v-if="isDropdownOpen" @click.stop class="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-xl py-2 z-50 animate-in slide-in-from-top-2">
+            <div class="px-4 py-2 border-b border-border/50 mb-2">
+              <p class="text-sm font-bold truncate">{{ currentUser.firstName || currentUser.username }}</p>
+              <p class="text-xs text-muted-foreground truncate">{{ currentUser.username }}</p>
+            </div>
+            <router-link to="/admin" @click="isDropdownOpen = false" class="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
+              <Settings size="16" class="text-muted-foreground"/> Configuración
+            </router-link>
+            <button @click="goToMyPortfolio" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary transition-colors text-left">
+              <Briefcase size="16" class="text-muted-foreground"/> Mi Portafolio
+            </button>
+            <div class="h-px bg-border/50 my-2"></div>
+            <button @click="logout" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-400/10 transition-colors text-left">
+              <LogOut size="16" /> Cerrar Sesión
+            </button>
+          </div>
         </div>
       </div>
     </nav>
 
-    <!-- Main Content Grid -->
-    <main class="home-grid">
-      <!-- Left Sidebar (Profile summary) -->
-      <aside class="sidebar-left">
-        <div class="profile-card glass-panel">
-          <div class="profile-cover"></div>
-          <router-link 
-            v-if="currentUser"
-            :to="`/${currentUser.username.split('@')[0]}`" 
-            class="profile-info profile-link"
-          >
-            <div class="profile-avatar">
-              <img v-if="currentUser.userImage" :src="currentUser.userImage" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
-              <span v-else>{{ (currentUser.firstName || currentUser.username || 'U').charAt(0) }}{{ (currentUser.lastName || '').charAt(0) }}</span>
+    <!-- Main Grid -->
+    <main class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
+      
+      <!-- Left Sidebar: Mi Perfil & Métricas -->
+      <aside class="lg:col-span-3 space-y-6">
+        <!-- Tarjeta de Perfil -->
+        <div class="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:border-primary/50 transition-colors group relative">
+          <div class="h-20 bg-gradient-to-br from-primary/80 to-purple-600/80"></div>
+          <div class="px-5 pb-5 text-center -mt-10">
+            <div class="w-20 h-20 mx-auto rounded-full bg-background p-1 mb-3">
+              <div class="w-full h-full rounded-full bg-secondary flex items-center justify-center font-bold text-2xl text-foreground overflow-hidden border border-border relative group-hover:ring-4 ring-primary/20 transition-all">
+                <img v-if="currentUser?.userImage" :src="currentUser?.userImage" class="w-full h-full object-cover" />
+                <span v-else>{{ (currentUser?.firstName || currentUser?.username || 'U').charAt(0).toUpperCase() }}</span>
+              </div>
             </div>
-            <h3 class="profile-name-hover">{{ currentUser.firstName || currentUser.username }} {{ currentUser.lastName || '' }}</h3>
-            <p>{{ currentUser.occupation || 'Talento en crecimiento' }}</p>
-          </router-link>
-          <div v-else class="profile-info">
-            <div class="profile-avatar"><span>👤</span></div>
-            <h3>Cargando...</h3>
-            <p>Talento en crecimiento</p>
+            <h2 class="text-lg font-bold text-foreground">{{ currentUser?.firstName || currentUser?.username }} {{ currentUser?.lastName || '' }}</h2>
+            <p class="text-xs text-muted-foreground mt-1">{{ currentUser?.occupation || 'Talento Tech' }}</p>
+            
+            <button @click="goToMyPortfolio" class="w-full mt-5 py-2 bg-secondary hover:bg-primary hover:text-primary-foreground text-foreground text-sm font-medium rounded-xl transition-all border border-border hover:border-primary flex justify-center items-center gap-2">
+              <Eye size="16" /> Ver mi vitrina
+            </button>
           </div>
-          <div class="profile-stats">
-            <div class="stat">
-              <span>Contactos</span>
-              <strong>0</strong>
+        </div>
+
+        <!-- Métricas del Clon Digital -->
+        <div class="bg-card border border-border rounded-2xl p-5 shadow-sm">
+          <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+            <Bot class="text-primary" size="18" /> Rendimiento de mi Clon IA
+          </h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                <MessageSquare size="14"/> Interacciones
+              </div>
+              <span class="font-bold text-foreground">12</span>
             </div>
-            <div class="stat">
-              <span>Vistas de perfil</span>
-              <strong>0</strong>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                <Eye size="14"/> Vistas de Perfil
+              </div>
+              <span class="font-bold text-foreground">48</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                <Swords size="14"/> Citaciones B2B
+              </div>
+              <span class="font-bold text-emerald-500">2</span>
             </div>
           </div>
-          <div v-if="currentUser" style="margin-top: 1rem;">
-            <router-link to="/admin" class="flex items-center justify-center gap-2 p-3 bg-primary/20 text-primary border border-primary rounded-lg font-semibold hover:bg-primary/30 transition-colors text-center w-full">
-              ⚙️ Administrar Perfil
-            </router-link>
+          <div class="mt-4 p-3 bg-secondary/50 rounded-xl border border-border/50">
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              <span class="font-bold text-foreground">Tip:</span> Tu clon digital tiene un 85% de completitud. Agrega más proyectos para mejorar tus respuestas automáticas.
+            </p>
           </div>
         </div>
       </aside>
 
-      <!-- Center Feed -->
-      <section class="feed">
-        <div class="create-post glass-panel">
-          <div class="post-input-area">
-            <div class="avatar-small">👤</div>
-            <input type="text" placeholder="¿Qué tienes en mente, talento?" class="post-input" />
-          </div>
-          <div class="post-actions">
-            <button class="post-action-btn">📷 Foto</button>
-            <button class="post-action-btn">🎥 Video</button>
-            <button class="post-action-btn">📄 Artículo</button>
-          </div>
+      <!-- Center: Vitrina de Proyectos (Showcase) -->
+      <section class="lg:col-span-6 space-y-6">
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
+            <Sparkles class="text-yellow-500" size="24" /> Inspiración y Proyectos
+          </h1>
+          <button class="text-sm font-medium text-primary hover:underline">Ver todos</button>
         </div>
 
-        <div class="feed-posts">
-          <!-- Placeholder Post 1 -->
-          <div class="post-card glass-panel">
-            <div class="post-header">
-              <div class="avatar-small">OT</div>
-              <div class="post-meta">
-                <strong>OppyTalent Bot</strong>
-                <span>Administrador • Hace 2 horas</span>
+        <!-- Fake Project Showcase Cards -->
+        <div class="space-y-6">
+          <div class="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold border border-emerald-500/30">
+                  A
+                </div>
+                <div>
+                  <h4 class="font-bold text-foreground text-sm">Ana Martínez</h4>
+                  <p class="text-xs text-muted-foreground">Frontend Developer</p>
+                </div>
+              </div>
+              <span class="text-[10px] uppercase tracking-wider font-bold text-primary bg-primary/10 px-2 py-1 rounded-full">
+                Destacado
+              </span>
+            </div>
+            
+            <h3 class="text-lg font-bold mb-2">E-commerce con Nuxt 3 y Supabase</h3>
+            <p class="text-sm text-muted-foreground line-clamp-3 mb-4">
+              Implementación completa de un e-commerce utilizando SSR con Nuxt 3. La base de datos y la autenticación están manejadas por Supabase, logrando un perfomance de 99 en Lighthouse.
+            </p>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Vue.js</span>
+              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Supabase</span>
+              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Tailwind</span>
+            </div>
+            
+            <div class="flex gap-3 border-t border-border/50 pt-4">
+              <button class="flex-1 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
+                <ExternalLink size="16" /> Ver Demo
+              </button>
+              <button class="py-2 px-4 border border-border hover:border-primary text-muted-foreground hover:text-primary text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
+                <Heart size="16" /> 24
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold border border-blue-500/30">
+                  C
+                </div>
+                <div>
+                  <h4 class="font-bold text-foreground text-sm">Carlos Dev</h4>
+                  <p class="text-xs text-muted-foreground">Data Engineer</p>
+                </div>
               </div>
             </div>
-            <div class="post-content">
-              <p>¡Bienvenidos a OppyTalent! La nueva red para potenciar el desarrollo profesional y conectar oportunidades.</p>
+            
+            <h3 class="text-lg font-bold mb-2">Pipeline ETL en tiempo real con Kafka</h3>
+            <p class="text-sm text-muted-foreground line-clamp-3 mb-4">
+              Arquitectura de procesamiento de datos en streaming utilizando Apache Kafka y Python. Procesa más de 10k eventos por segundo y los ingesta en un data warehouse.
+            </p>
+            
+            <div class="flex gap-2 mb-4">
+              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Python</span>
+              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Kafka</span>
+              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">AWS</span>
             </div>
-            <div class="post-footer">
-              <button class="interaction-btn">👍 Recomendar</button>
-              <button class="interaction-btn">💬 Comentar</button>
-              <button class="interaction-btn">🔗 Compartir</button>
+            
+            <div class="flex gap-3 border-t border-border/50 pt-4">
+              <button class="flex-1 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
+                <ExternalLink size="16" /> Ver Repositorio
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Right Sidebar (News/Widgets) -->
-      <aside class="sidebar-right">
-        <div class="widget glass-panel">
-          <h3>Noticias OppyTalent</h3>
-          <ul class="news-list">
-            <li>
-              <strong>Lanzamiento de la plataforma</strong>
-              <span>Hace 1 hora</span>
-            </li>
-            <li>
-              <strong>Nuevas herramientas de IA</strong>
-              <span>Hace 5 horas</span>
-            </li>
-          </ul>
+      <!-- Right Sidebar: Insights & Networking -->
+      <aside class="lg:col-span-3 space-y-6">
+        
+        <!-- Radar de la Demanda (Insights) -->
+        <div class="bg-gradient-to-br from-card to-card/50 border border-primary/20 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[40px] rounded-full pointer-events-none"></div>
+          
+          <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2 relative z-10">
+            <Activity class="text-primary" size="18" /> Radar de la Demanda
+          </h3>
+          
+          <div v-if="demandData" class="space-y-4 relative z-10">
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              La IA de OppyTalent analizó <strong>+{{ demandData.total_searches }} búsquedas</strong> de Headhunters esta semana en tu área.
+            </p>
+            
+            <div v-for="(insight, i) in demandData.insights" :key="i" class="space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-foreground font-medium">{{ insight.skill }}</span>
+                <span :class="`text-${insight.color_class} font-bold`">{{ insight.trend }}</span>
+              </div>
+              <div class="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                <div :class="`bg-${insight.color_class} h-1.5 rounded-full`" :style="{ width: insight.percentage + '%' }"></div>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-primary/10 rounded-xl border border-primary/20">
+              <p class="text-xs text-foreground font-medium flex items-start gap-2">
+                <Lightbulb size="14" class="text-yellow-500 flex-shrink-0 mt-0.5"/>
+                Sugerencia: {{ demandData.suggestion }}
+              </p>
+            </div>
+          </div>
+          <div v-else class="py-10 flex justify-center relative z-10">
+            <div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
         </div>
+
+        <!-- Feedback de Batalla (Tribunal) -->
+        <div v-if="talentFeedback && talentFeedback.length > 0" class="bg-card border border-primary/30 rounded-2xl p-5 shadow-sm relative overflow-hidden group">
+          <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+          <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+            <Swords class="text-primary" size="18" /> Feedback de Batalla B2B
+          </h3>
+          <p class="text-xs text-muted-foreground mb-4">
+            ¡Tu Clon Digital fue evaluado en <strong>{{ talentFeedback.length }}</strong> paneles técnicos recientemente!
+          </p>
+          
+          <div class="space-y-4">
+            <div v-for="fb in talentFeedback.slice(0,2)" :key="fb.id" class="p-3 bg-secondary rounded-xl border border-border">
+              <p class="text-xs font-medium text-foreground mb-1 line-clamp-1 opacity-80 flex items-center gap-1">
+                <MessageSquare size="12"/> Reclutador: "{{ fb.question }}"
+              </p>
+              <div class="text-xs text-muted-foreground prose prose-invert prose-sm leading-relaxed" v-html="fb.talent_feedback || 'Procesando feedback...'"></div>
+              <p class="text-[10px] text-right mt-2 text-primary opacity-70">{{ new Date(fb.created_at).toLocaleDateString() }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Networking Sugerido -->
+        <div class="bg-card border border-border rounded-2xl p-5 shadow-sm">
+          <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+            <Users class="text-primary" size="18" /> Conecta con Talentos
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold text-xs border border-purple-500/30">M</div>
+                <div>
+                  <p class="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer">Martín UX</p>
+                  <p class="text-[10px] text-muted-foreground">Diseñador UI/UX</p>
+                </div>
+              </div>
+              <button class="w-8 h-8 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground flex items-center justify-center text-muted-foreground transition-all">
+                <UserPlus size="14"/>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between group">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs border border-amber-500/30">S</div>
+                <div>
+                  <p class="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer">Sofía QA</p>
+                  <p class="text-[10px] text-muted-foreground">Automation Engineer</p>
+                </div>
+              </div>
+              <button class="w-8 h-8 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground flex items-center justify-center text-muted-foreground transition-all">
+                <UserPlus size="14"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </aside>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { api } from '../../services/api' // Asegúrate de que api.js esté configurado
+import { api } from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
-import { useI18n } from 'vue-i18n'
+import { 
+  Search, ChevronDown, Settings, LogOut, Briefcase, Eye, 
+  Bot, MessageSquare, Swords, Sparkles, ExternalLink, Heart,
+  Activity, Lightbulb, Users, UserPlus
+} from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { locale } = useI18n()
 
-const currentLang = computed(() => locale.value)
-
-function toggleLanguage() {
-  locale.value = locale.value === 'es' ? 'en' : 'es'
-  localStorage.setItem('user-language', locale.value)
-}
-
-const searchQuery = ref('')
-const searchResults = ref([])
-const showResults = ref(false)
-const isSearching = ref(false)
-const selectedIndex = ref(-1)
 const currentUser = ref(null)
 const isDropdownOpen = ref(false)
-let searchTimeout = null
-let blurTimeout = null
+const demandData = ref(null)
+const talentFeedback = ref([])
 
 onMounted(async () => {
-  document.addEventListener('click', () => { isDropdownOpen.value = false })
+  document.addEventListener('click', closeDropdown)
   try {
     currentUser.value = await api.me()
   } catch (error) {
     console.error('Error fetching current user:', error)
   }
+  
+  try {
+    demandData.value = await api.getDemandInsights()
+  } catch (error) {
+    console.error('Error fetching demand insights:', error)
+  }
+
+  try {
+    talentFeedback.value = await api.getTalentFeedback()
+  } catch (error) {
+    console.error('Error fetching talent feedback:', error)
+  }
 })
 
-const searchResultsContainer = ref(null)
+onUnmounted(() => {
+  document.removeEventListener('click', closeDropdown)
+})
 
-function scrollToSelection() {
-  setTimeout(() => {
-    const el = document.getElementById('search-result-' + selectedIndex.value)
-    if (el && searchResultsContainer.value) {
-      const container = searchResultsContainer.value
-      const elTop = el.offsetTop
-      const elBottom = elTop + el.offsetHeight
-      const containerTop = container.scrollTop
-      const containerBottom = containerTop + container.clientHeight
-
-      if (elTop < containerTop) {
-        container.scrollTop = elTop
-      } else if (elBottom > containerBottom) {
-        container.scrollTop = elBottom - container.clientHeight
-      }
-    }
-  }, 10)
-}
-
-function onArrowDown() {
-  if (showResults.value && searchResults.value.length > 0) {
-    selectedIndex.value = (selectedIndex.value + 1) % searchResults.value.length
-    scrollToSelection()
-  }
-}
-
-function onArrowUp() {
-  if (showResults.value && searchResults.value.length > 0) {
-    selectedIndex.value = selectedIndex.value <= 0 ? searchResults.value.length - 1 : selectedIndex.value - 1
-    scrollToSelection()
-  }
-}
-
-function onEnter() {
-  if (showResults.value && searchResults.value.length > 0 && selectedIndex.value >= 0) {
-    const user = searchResults.value[selectedIndex.value]
-    router.push(`/${user.username.split('@')[0]}`)
-    showResults.value = false
-    searchQuery.value = ''
-    selectedIndex.value = -1
-  }
-}
-
-function onSearch() {
-  if (searchTimeout) clearTimeout(searchTimeout)
-  
-  if (!searchQuery.value.trim()) {
-    searchResults.value = []
-    isSearching.value = false
-    selectedIndex.value = -1
-    return
-  }
-
-  isSearching.value = true
-  // Debounce search
-  searchTimeout = setTimeout(async () => {
-    try {
-      const data = await api.searchUsers(searchQuery.value)
-      searchResults.value = data
-      selectedIndex.value = -1
-    } catch (error) {
-      console.error('Error buscando usuarios:', error)
-      searchResults.value = []
-    } finally {
-      isSearching.value = false
-    }
-  }, 300)
-}
-
-function hideResultsDelay() {
-  if (blurTimeout) clearTimeout(blurTimeout)
-  blurTimeout = setTimeout(() => {
-    showResults.value = false
-  }, 200)
+function closeDropdown() {
+  isDropdownOpen.value = false
 }
 
 function goToMyPortfolio() {
@@ -310,385 +357,8 @@ function logout() {
   authStore.logout()
   router.push('/login')
 }
-
-onUnmounted(() => {
-  if (searchTimeout) clearTimeout(searchTimeout)
-  if (blurTimeout) clearTimeout(blurTimeout)
-  document.removeEventListener('click', () => { isDropdownOpen.value = false })
-})
 </script>
 
 <style scoped>
-.home-container {
-  min-height: 100vh;
-  background-color: #09090b;
-  color: #fafafa;
-  font-family: 'Inter', sans-serif;
-  padding-top: 5rem;
-}
-
-.glass-panel {
-  background: rgba(24, 24, 27, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4rem;
-  display: grid;
-  grid-template-columns: 1fr minmax(auto, 400px) 1fr;
-  align-items: center;
-  padding: 0 2rem;
-  z-index: 50;
-  border-radius: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.logo {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: white;
-  text-decoration: none;
-}
-.logo span { color: #3b82f6; }
-
-.navbar-menu {
-  display: flex;
-  gap: 2rem;
-}
-
-.navbar-search-container {
-  width: 100%;
-  position: relative;
-}
-
-.navbar-search {
-  width: 100%;
-  position: relative;
-}
-
-.search-input {
-  width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  color: white;
-  font-family: inherit;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-
-.search-input:focus {
-  outline: none;
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.search-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 0.5rem;
-  max-height: 400px;
-  overflow-y: auto;
-  border-radius: 8px;
-  z-index: 100;
-  padding: 0.5rem 0;
-}
-
-.search-results.empty {
-  padding: 1rem;
-  text-align: center;
-  color: #a1a1aa;
-  font-size: 0.85rem;
-}
-
-.search-result-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  text-decoration: none;
-  color: #fafafa;
-  transition: background 0.2s;
-}
-
-.search-result-item:hover, .search-result-item.selected {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.search-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #3b82f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: white;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.search-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.search-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.search-info strong {
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.search-info span {
-  font-size: 0.75rem;
-  color: #a1a1aa;
-}
-
-.navbar-right-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 2rem;
-}
-
-.nav-item {
-  background: none;
-  border: none;
-  color: #a1a1aa;
-  font-weight: 500;
-  font-size: 0.9rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.2s;
-}
-
-.nav-item:hover, .nav-item.active {
-  color: #fafafa;
-}
-
-.btn-outline-glass {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.btn-outline-glass:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.home-grid {
-  max-width: 1300px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 280px 1fr 300px;
-  gap: 1.5rem;
-  padding: 1.5rem;
-}
-
-/* Left Sidebar */
-.profile-cover {
-  height: 60px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 12px 12px 0 0;
-}
-
-.profile-info {
-  padding: 0 1rem 1rem;
-  text-align: center;
-  margin-top: -30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.profile-avatar {
-  width: 64px;
-  height: 64px;
-  background: #1e293b;
-  border: 2px solid #18181b;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.profile-info h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
-.profile-info p { font-size: 0.8rem; color: #a1a1aa; }
-
-.profile-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.profile-link:hover .profile-name-hover {
-  text-decoration: underline;
-  color: #3b82f6;
-}
-
-.profile-stats {
-  padding: 1rem;
-}
-.stat {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  margin-bottom: 0.5rem;
-}
-.stat span { color: #a1a1aa; }
-.stat strong { color: #3b82f6; }
-
-/* Center Feed */
-.create-post {
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-.post-input-area {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-.avatar-small {
-  width: 40px;
-  height: 40px;
-  background: #3b82f6;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-.post-input {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 0.5rem 1rem;
-  color: white;
-  font-family: inherit;
-  transition: all 0.2s;
-}
-.post-input:focus {
-  outline: none;
-  background: rgba(0, 0, 0, 0.3);
-  border-color: #3b82f6;
-}
-.post-actions {
-  display: flex;
-  justify-content: space-around;
-}
-.post-action-btn {
-  background: none;
-  border: none;
-  color: #a1a1aa;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 0.85rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-.post-action-btn:hover { background: rgba(255, 255, 255, 0.05); }
-
-.post-card {
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-.post-header {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-.post-meta {
-  display: flex;
-  flex-direction: column;
-}
-.post-meta strong { font-size: 0.9rem; }
-.post-meta span { font-size: 0.75rem; color: #a1a1aa; }
-.post-content {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-.post-footer {
-  display: flex;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding-top: 0.5rem;
-}
-.interaction-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  color: #a1a1aa;
-  padding: 0.5rem;
-  cursor: pointer;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: background 0.2s;
-}
-.interaction-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fafafa; }
-
-/* Right Sidebar */
-.widget {
-  padding: 1rem;
-}
-.widget h3 {
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
-  color: #fafafa;
-}
-.news-list {
-  list-style: none;
-  padding: 0;
-}
-.news-list li {
-  margin-bottom: 0.75rem;
-}
-.news-list strong {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #e4e4e7;
-}
-.news-list span {
-  font-size: 0.75rem;
-  color: #a1a1aa;
-}
-
-@media (max-width: 1024px) {
-  .home-grid { grid-template-columns: 1fr 300px; }
-  .sidebar-left { display: none; }
-}
-@media (max-width: 768px) {
-  .home-grid { grid-template-columns: 1fr; }
-  .sidebar-right { display: none; }
-}
+/* Las transiciones suaves y decoraciones glass ya están en las clases utilitarias de Tailwind */
 </style>

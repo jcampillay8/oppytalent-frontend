@@ -83,6 +83,34 @@
           </form>
         </GlassCard>
 
+        <!-- Configuración de Privacidad B2B -->
+        <GlassCard>
+          <div class="flex items-center gap-3 mb-4 pb-4 border-b border-border/50">
+            <Globe :size="20" class="text-primary" />
+            <h3 class="text-lg font-bold text-foreground">Visibilidad B2B (Meta-Reclutador)</h3>
+            <Badge variant="primary" class="ml-auto">Premium</Badge>
+          </div>
+          
+          <div class="flex items-start gap-4">
+            <div class="flex-1">
+              <h4 class="text-md font-semibold text-foreground">Permitir que las empresas me encuentren</h4>
+              <p class="text-sm text-muted-foreground mt-1 leading-relaxed">
+                Al activar esto, tu perfil ("Clon Digital") será indexado en el Meta-Buscador privado de empresas de OppyTalent. Los Headhunters podrán encontrarte automáticamente según tus habilidades y experiencia, e invitar a tu IA al "Tribunal de IAs" para pre-evaluación.
+              </p>
+            </div>
+            <div class="flex items-center">
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" v-model="b2bVisible" @change="saveB2bConfig" class="sr-only peer">
+                <div class="w-11 h-6 bg-secondary border border-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+          </div>
+          <div v-if="b2bSaving" class="text-xs text-primary mt-2 flex items-center gap-2">
+            <div class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+            Guardando preferencia...
+          </div>
+        </GlassCard>
+
       </div>
     </AdminLayout>
   
@@ -94,7 +122,7 @@ import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { Bot, KeyRound, MessageSquare, Save, CheckCircle2, AlertCircle, X } from 'lucide-vue-next'
+import { Bot, KeyRound, MessageSquare, Save, CheckCircle2, AlertCircle, X, Globe } from 'lucide-vue-next'
 import { api } from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
 import { useProyectosStore } from '../../stores/proyectos'
@@ -112,6 +140,9 @@ const form = ref({
   ai_pitch_rules: []
 })
 
+const b2bVisible = ref(false)
+const b2bSaving = ref(false)
+
 function addPitchRule() {
   if (form.value.ai_pitch_rules.length < 5) {
     form.value.ai_pitch_rules.push({ keyword: '', pitch: '', call_to_action: '#' })
@@ -126,14 +157,13 @@ const saving = ref(false)
 const successMsg = ref('')
 const errorMsg = ref('')
 
-
-
 onMounted(async () => {
   try {
     const userProfile = await api.me()
     if (userProfile) {
       form.value.chat_welcome_message = userProfile.chat_welcome_message || ''
       form.value.ai_pitch_rules = userProfile.ai_pitch_rules || []
+      b2bVisible.value = userProfile.is_visible_b2b || false
     }
     
     // Load projects and experiences for the dropdowns
@@ -168,6 +198,21 @@ async function saveConfig() {
     errorMsg.value = t('admin.views.chat_config.error_msg')
   } finally {
     saving.value = false
+  }
+}
+
+async function saveB2bConfig() {
+  b2bSaving.value = true
+  try {
+    await api.updateB2bConfig({
+      is_visible_b2b: b2bVisible.value
+    })
+  } catch (err) {
+    console.error('Error saving B2B config:', err)
+    // Revert visually if failed
+    b2bVisible.value = !b2bVisible.value
+  } finally {
+    b2bSaving.value = false
   }
 }
 </script>

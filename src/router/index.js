@@ -36,6 +36,18 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/b2b',
+    name: 'B2BHome',
+    component: () => import('../views/b2b/B2BHome.vue'),
+    meta: { requiresAuth: true } 
+  },
+  {
+    path: '/b2b/tribunal',
+    name: 'TribunalRoom',
+    component: () => import('../views/b2b/TribunalRoom.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/portafolio',
     name: 'Portfolio',
     component: () => import('../views/public/PortfolioView.vue'),

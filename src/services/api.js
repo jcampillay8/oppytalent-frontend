@@ -62,6 +62,39 @@ export const api = {
       body: JSON.stringify(data),
     })
   },
+  searchTalent(query) {
+    return request('/b2b/search', {
+      method: 'POST',
+      body: JSON.stringify({ query, limit: 10 }),
+    })
+  },
+  tribunalCandidate(question, candidate_id) {
+    return request('/b2b/tribunal/candidate', {
+      method: 'POST',
+      body: JSON.stringify({ question, candidate_id }),
+    })
+  },
+  tribunalModerator(question, candidates) {
+    return request('/b2b/tribunal/moderator', {
+      method: 'POST',
+      body: JSON.stringify({ question, candidates }),
+    })
+  },
+  getTribunalHistory() {
+    return request('/b2b/tribunals/history')
+  },
+  getTalentFeedback() {
+    return request('/b2b/tribunals/talent-feedback')
+  },
+  getDemandInsights() {
+    return request('/b2b/insights/demand')
+  },
+  updateB2bConfig(data) {
+    return request('/user/b2b-config', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  },
   updateThemeConfig(data) {
     return request('/user/theme-config', {
       method: 'PUT',

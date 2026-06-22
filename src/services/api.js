@@ -49,6 +49,45 @@ export const api = {
     })
   },
   
+  // RBAC & Impersonation
+  impersonate(role_id) {
+    return request('/auth/impersonate', {
+      method: 'POST',
+      body: JSON.stringify({ role_id }),
+    })
+  },
+  restoreRole() {
+    return request('/auth/restore', {
+      method: 'POST'
+    })
+  },
+  qaResetCredits() {
+    return request('/qa/reset-credits', {
+      method: 'POST'
+    })
+  },
+  getRoles() {
+    return request('/admin/rbac/roles')
+  },
+  getPermissions() {
+    return request('/admin/rbac/permissions')
+  },
+  toggleRolePermission(role_id, permission_id) {
+    return request(`/admin/rbac/roles/${role_id}/permissions/toggle`, {
+      method: 'POST',
+      body: JSON.stringify({ permission_id })
+    })
+  },
+  getRbacUsers() {
+    return request('/admin/rbac/users')
+  },
+  updateUserRole(user_id, role_id) {
+    return request(`/admin/rbac/users/${user_id}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role_id })
+    })
+  },
+
   // Users
   searchUsers(query) {
     return request(`/user/search?q=${encodeURIComponent(query)}`)
@@ -93,6 +132,12 @@ export const api = {
     return request('/user/b2b-config', {
       method: 'PUT',
       body: JSON.stringify(data),
+    })
+  },
+  selectUserRole(role_name) {
+    return request('/user/select-role', {
+      method: 'POST',
+      body: JSON.stringify({ role_name })
     })
   },
   updateThemeConfig(data) {

@@ -4,17 +4,6 @@
     <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 blur-[100px] rounded-full pointer-events-none"></div>
     <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
-    <nav class="w-full p-6 flex justify-between items-center relative z-10">
-      <div class="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
-        OppyTalent <span class="text-xs ml-1 uppercase tracking-widest text-muted-foreground border border-border px-2 py-1 rounded-full">For Business</span>
-      </div>
-      <div>
-        <button @click="logout" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-          Cerrar Sesión
-        </button>
-      </div>
-    </nav>
-
     <main class="flex-1 flex flex-col items-center justify-center p-6 relative z-10 w-full max-w-4xl mx-auto">
       <div class="text-center mb-12">
         <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
@@ -166,10 +155,6 @@ const suggestions = [
   "Líder Técnico Cloud AWS",
   "Diseñador UX enfocado en SaaS"
 ]
-
-function logout() {
-  authStore.logout()
-}
 
 function toggleSelection(id) {
   if (results.value.length === 1) return; // Disallow selection if it's a fast-track

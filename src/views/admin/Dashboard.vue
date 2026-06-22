@@ -96,6 +96,20 @@
                   <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
                 </GlassCard>
               </router-link>
+
+              <!-- Panel RBAC (Solo Superadmin/Owner) -->
+              <router-link v-if="authStore.user?.role === 'SUPERADMIN' || authStore.user?.permissions?.includes('can_manage_roles')" to="/admin/rbac" class="block outline-none">
+                <GlassCard hoverEffect class="h-full cursor-pointer group bg-gradient-to-br from-amber-500/5 to-transparent">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                      <ShieldCheck :size="20" />
+                    </div>
+                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Seguridad RBAC</span>
+                  </div>
+                  <div class="text-2xl font-extrabold text-foreground mb-1">Roles & Permisos</div>
+                  <div class="text-xs text-muted-foreground">Gestionar accesos &rarr;</div>
+                </GlassCard>
+              </router-link>
             </div>
           </div>
 

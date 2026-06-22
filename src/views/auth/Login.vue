@@ -119,6 +119,18 @@ async function handleLogin() {
     
     if (authStore.user) {
       const baseUsername = authStore.user.username.split('@')[0]
+      
+      // Role-based redirect
+      const roleName = authStore.user.role_name?.toUpperCase()
+      if (roleName === 'HUNTER') {
+        router.push('/b2b')
+        return
+      } else if (roleName === 'OWNER' || roleName === 'ADMIN' || authStore.user.role === 'SUPERADMIN') {
+        router.push('/admin')
+        return
+      }
+
+      // Default Talent routing
       try {
         const perfilResponse = await fetch(`/api/v1/perfil/?username=${baseUsername}`)
         if (perfilResponse.ok) {

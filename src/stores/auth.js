@@ -38,5 +38,30 @@ export const useAuthStore = defineStore('auth', () => {
     window.location.href = '/login'
   }
 
-  return { user, token, loading, login, fetchUser, logout }
+  async function impersonate(role_id) {
+    loading.value = true
+    try {
+      const data = await api.impersonate(role_id)
+      token.value = data.access_token || data.accessToken
+      localStorage.setItem('token', token.value)
+      // Refetch user context completely to re-trigger route guards and UI state
+      await fetchUser()
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function restoreRole() {
+    loading.value = true
+    try {
+      const data = await api.restoreRole()
+      token.value = data.access_token || data.accessToken
+      localStorage.setItem('token', token.value)
+      await fetchUser()
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return { user, token, loading, login, fetchUser, logout, impersonate, restoreRole }
 })

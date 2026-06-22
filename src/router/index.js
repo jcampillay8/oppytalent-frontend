@@ -30,6 +30,12 @@ const routes = [
     component: () => import('../views/auth/Callback.vue'),
   },
   {
+    path: '/onboarding/role-selection',
+    name: 'RoleSelection',
+    component: () => import('../views/auth/RoleSelection.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/home',
     name: 'HomeFeed',
     component: () => import('../views/private/HomeFeed.vue'),
@@ -45,6 +51,24 @@ const routes = [
     path: '/b2b/tribunal',
     name: 'TribunalRoom',
     component: () => import('../views/b2b/TribunalRoom.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/b2b/pipeline',
+    name: 'B2BPipeline',
+    component: () => import('../views/b2b/Pipeline.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/b2b/metrics',
+    name: 'B2BMetrics',
+    component: () => import('../views/b2b/Metrics.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/b2b/admin',
+    name: 'B2BAdmin',
+    component: () => import('../views/b2b/CompanyAdmin.vue'),
     meta: { requiresAuth: true }
   },
   {
@@ -168,6 +192,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/:username/rbac',
+    name: 'RBACAdmin',
+    component: () => import('../views/admin/RBACAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/:username',
     name: 'UserPortfolio',
     component: () => import('../views/public/Home.vue'),
@@ -191,7 +221,9 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+import { useAuthStore } from '../stores/auth'
+
+router.beforeEach(async (to, from, next) => {
   const token = localStorage.getItem('token')
   
   if (to.meta.requiresAuth && !token) {
@@ -203,6 +235,20 @@ router.beforeEach((to, from, next) => {
   } 
   // En cualquier otro caso, continuar
   else {
+    // Role Gate Check (si está logueado pero no tiene role_id y no está ya en la pantalla de selección)
+    if (token && to.path !== '/onboarding/role-selection' && !to.path.startsWith('/auth/')) {
+      try {
+        const authStore = useAuthStore()
+        if (!authStore.user) {
+          await authStore.fetchUser()
+        }
+        if (authStore.user && authStore.user.role_id === null) {
+          return next('/onboarding/role-selection')
+        }
+      } catch (e) {
+        console.error("Error validando role_id en el router:", e)
+      }
+    }
     next()
   }
 })

@@ -1,14 +1,32 @@
 <template>
   <div class="app">
+    <!-- Impersonation Banner -->
+    <div v-if="authStore.user?.isImpersonating" class="bg-amber-500 text-white px-4 py-2 flex items-center justify-between text-sm font-medium shadow-md z-[100] relative">
+      <div class="flex items-center gap-2">
+        <span>⚠️ Estás navegando bajo un rol simulado (Impersonate). Tus acciones afectan a este rol.</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <button @click="handleQaResetCredits" :disabled="authStore.loading" class="flex items-center gap-1 bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md transition-colors">
+          <Zap :size="14" /> Recargar 10 Créditos (QA)
+        </button>
+        <button @click="handleRestoreRole" :disabled="authStore.loading" class="flex items-center gap-1 bg-black/20 hover:bg-black/30 px-3 py-1 rounded-md transition-colors">
+          Volver al Modo Owner
+        </button>
+      </div>
+    </div>
+
     <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl" v-if="!isAppLayout">
       <div class="container flex h-16 max-w-[1536px] items-center justify-between">
         
         <!-- Logo -->
-        <router-link to="/home" class="flex items-center gap-2 font-bold text-xl tracking-tight transition-colors hover:text-primary">
+        <router-link :to="isHunter ? '/b2b' : '/home'" class="flex items-center gap-2 font-bold text-xl tracking-tight transition-colors hover:text-primary">
           <div class="h-8 w-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
             <Zap :size="18" />
           </div>
-          <span class="text-foreground">Oppy<span class="text-primary">Talent</span></span>
+          <span class="text-foreground flex items-center">
+            Oppy<span class="text-primary">Talent</span>
+            <span v-if="isHunter" class="ml-2 px-2 py-0.5 rounded-full border border-primary/30 bg-primary/10 text-[10px] font-semibold text-primary uppercase tracking-wider hidden sm:inline-block">For Business</span>
+          </span>
         </router-link>
       
         <!-- Search Spotlight -->
@@ -25,8 +43,24 @@
 
         <!-- Right Side Nav -->
         <div class="flex items-center gap-4">
-          <!-- Desktop Nav -->
-          <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+          <!-- Desktop Nav (Hunter) -->
+          <nav v-if="isHunter" class="hidden md:flex items-center gap-6 text-sm font-medium">
+            <router-link to="/b2b" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Search :size="16" /> Buscador
+            </router-link>
+            <router-link to="/b2b/pipeline" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Users :size="16" /> Mis Talentos
+            </router-link>
+            <router-link to="/b2b/tribunal" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Scale :size="16" /> Tribunal IA
+            </router-link>
+            <router-link to="/b2b/metrics" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Activity :size="16" /> Métricas B2B
+            </router-link>
+          </nav>
+
+          <!-- Desktop Nav (Talent) -->
+          <nav v-else class="hidden md:flex items-center gap-6 text-sm font-medium">
             <router-link :to="chatLink" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
               <MessageSquare :size="16" /> {{ $t('nav.chat') }}
             </router-link>
@@ -59,16 +93,47 @@
               </template>
               <template #content="{ close }">
                 <div class="flex flex-col space-y-1 p-1">
-                  <button @click="goToAdmin(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                  <!-- Mostrar Dashboard Admin solo si NO es Hunter, o si tiene los permisos explícitos y no estamos en la vista B2B -->
+                  <button v-if="authStore.user?.permissions?.includes('view_admin_dashboard') && !isHunter" @click="goToAdmin(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
                     <LayoutDashboard :size="16" /> {{ $t('nav.admin') }}
                   </button>
-                  <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
-                    <Bot :size="16" /> Mi Chat IA
-                  </router-link>
-                  <button @click="goToMyPortfolio(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
-                    <Briefcase :size="16" /> Mi Portafolio
-                  </button>
+                  
+                  <!-- Dropdown Hunter -->
+                  <template v-if="isHunter">
+                    <router-link to="/b2b/admin" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                      <Building2 :size="16" /> Mi Empresa
+                    </router-link>
+                    <button class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                      <CreditCard :size="16" /> Suscripción y Créditos
+                    </button>
+                  </template>
+
+                  <!-- Dropdown Talent -->
+                  <template v-else>
+                    <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                      <Bot :size="16" /> Mi Chat IA
+                    </router-link>
+                    <button @click="goToMyPortfolio(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                      <Briefcase :size="16" /> Mi Portafolio
+                    </button>
+                  </template>
+
                   <div class="h-px bg-border my-1"></div>
+                  
+                  <!-- Impersonation Dropdown Section -->
+                  <div v-if="authStore.user?.permissions?.includes('can_impersonate')" class="px-2 py-1">
+                    <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-1">Probar como...</div>
+                    <button 
+                      v-for="role in availableRoles" 
+                      :key="role.id"
+                      @click="handleQuickImpersonate(role.id); close()"
+                      class="flex items-center gap-2 w-full text-left px-2 py-1.5 text-xs rounded-md hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                    >
+                      <VenetianMask :size="14" /> {{ role.name }}
+                    </button>
+                  </div>
+                  <div v-if="authStore.user?.permissions?.includes('can_impersonate')" class="h-px bg-border my-1"></div>
+
                   <button @click="handleLogout(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg text-destructive hover:bg-destructive/10 transition-colors">
                     <LogOut :size="16" /> Cerrar Sesión
                   </button>
@@ -96,18 +161,37 @@
               @update:modelValue="onSearch"
             />
           </div>
-          <router-link :to="chatLink" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
-            <MessageSquare :size="20" /> {{ $t('nav.chat') }}
-          </router-link>
-          <router-link to="/portafolio" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
-            <Briefcase :size="20" /> {{ $t('nav.portafolio') }}
-          </router-link>
-          <router-link to="/contactame" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
-            <Mail :size="20" /> {{ $t('nav.contact') }}
-          </router-link>
-          <router-link to="/sobre-mi" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
-            <User :size="20" /> {{ $t('nav.about', { name: portfolioOwnerName }) }}
-          </router-link>
+          <!-- Mobile Menu Hunter -->
+          <template v-if="isHunter">
+            <router-link to="/b2b" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <Search :size="20" /> Buscador
+            </router-link>
+            <router-link to="/b2b/pipeline" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <Users :size="20" /> Mis Talentos
+            </router-link>
+            <router-link to="/b2b/tribunal" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <Scale :size="20" /> Tribunal IA
+            </router-link>
+            <router-link to="/b2b/metrics" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <Activity :size="20" /> Métricas B2B
+            </router-link>
+          </template>
+
+          <!-- Mobile Menu Talent -->
+          <template v-else>
+            <router-link :to="chatLink" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <MessageSquare :size="20" /> {{ $t('nav.chat') }}
+            </router-link>
+            <router-link to="/portafolio" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <Briefcase :size="20" /> {{ $t('nav.portafolio') }}
+            </router-link>
+            <router-link to="/contactame" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <Mail :size="20" /> {{ $t('nav.contact') }}
+            </router-link>
+            <router-link to="/sobre-mi" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <User :size="20" /> {{ $t('nav.about', { name: portfolioOwnerName }) }}
+            </router-link>
+          </template>
         </nav>
       </div>
     </header>
@@ -134,7 +218,7 @@ import ChatWidget from './components/public/ChatWidget.vue'
 import AnimatedDropdown from './components/ui/AnimatedDropdown.vue'
 import SearchSpotlight from './components/ui/SearchSpotlight.vue'
 import { api } from './services/api'
-import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu } from 'lucide-vue-next'
+import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard } from 'lucide-vue-next'
 
 const { locale } = useI18n()
 
@@ -142,6 +226,8 @@ const route = useRoute()
 const router = useRouter()
 const perfilStore = usePerfilStore()
 const authStore = useAuthStore()
+
+const isHunter = computed(() => authStore.user?.role_name?.toUpperCase() === 'HUNTER')
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
 const isMenuOpen = ref(false)
 const isDropdownOpen = ref(false)
@@ -153,6 +239,8 @@ const authUserInitials = computed(() => {
   if (!authStore.user) return 'U'
   return ((authStore.user.firstName || authStore.user.username || 'U').charAt(0) + (authStore.user.lastName || '').charAt(0)).toUpperCase()
 })
+
+const availableRoles = ref([])
 
 onMounted(async () => {
   // Inicializar el sistema de temas (OppyTec Style)
@@ -167,6 +255,12 @@ onMounted(async () => {
     } catch (e) {
       console.warn("Failed to fetch auth user:", e)
     }
+  }
+
+  if (authStore.user?.permissions?.includes('can_impersonate')) {
+    try {
+      availableRoles.value = await api.getRoles()
+    } catch(e) {}
   }
 })
 
@@ -267,8 +361,31 @@ function toggleLanguage() {
   localStorage.setItem('user-language', locale.value)
 }
 
+async function handleQaResetCredits() {
+  if (confirm("¿Estás seguro de inyectar 10 créditos QA usando tus privilegios originales?")) {
+    try {
+      await api.qaResetCredits();
+      alert("Créditos recargados con éxito.");
+      await authStore.fetchUser();
+    } catch(e) {
+      alert("Error al recargar créditos: " + e.message);
+    }
+  }
+}
 
+async function handleRestoreRole() {
+  await authStore.restoreRole();
+  router.push('/admin');
+}
 
+async function handleQuickImpersonate(roleId) {
+  try {
+    await authStore.impersonate(roleId);
+    router.push('/b2b');
+  } catch(e) {
+    alert("Error al impersonar: " + e.message);
+  }
+}
 
 onUnmounted(() => {
   if (searchTimeout) clearTimeout(searchTimeout)

@@ -46,35 +46,47 @@
                 v-for="p in store.items" 
                 :key="p.id" 
                 hoverEffect 
-                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5"
               >
-                <div class="flex-1 flex flex-col gap-2 min-w-0">
-                  <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-md bg-primary/10 text-primary shrink-0">
-                      <Briefcase :size="18" />
+                <div class="flex flex-row items-start gap-4 w-full">
+                <!-- Imagen grande al estilo YouTube (si existe) -->
+                <div v-if="p.image_url" class="shrink-0 w-24 sm:w-48 h-24 sm:h-32 rounded-lg overflow-hidden border border-border/50">
+                  <img :src="p.image_url" alt="" class="w-full h-full object-cover" />
+                </div>
+
+                <!-- Contenedor derecho para el resto de la info -->
+                <div class="flex-1 flex flex-col sm:flex-row justify-between items-start gap-4 min-w-0">
+                  
+                  <div class="flex-1 flex flex-col gap-2 min-w-0 w-full">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-md bg-primary/10 text-primary shrink-0 hidden sm:flex">
+                        <Briefcase :size="18" />
+                      </div>
+                      <h3 class="font-bold text-lg text-foreground truncate" :title="p.titulo">{{ p.titulo }}</h3>
                     </div>
-                    <h3 class="font-bold text-lg text-foreground truncate" :title="p.titulo">{{ p.titulo }}</h3>
+                    <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                      <Calendar :size="14" />
+                      <span>{{ formatDate(p.fecha_proyecto) }}</span>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                      <Badge v-for="tag in p.tags.slice(0, 3)" :key="tag" variant="secondary" class="whitespace-nowrap text-[10px] sm:text-xs">
+                        {{ tag }}
+                      </Badge>
+                      <span v-if="p.tags.length > 3" class="text-xs text-muted-foreground">...</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                    <Calendar :size="14" />
-                    <span>{{ formatDate(p.fecha_proyecto) }}</span>
+
+                  <div class="flex items-center gap-2 shrink-0 sm:mt-0 w-full sm:w-auto justify-end">
+                    <NeonButton variant="outline" @click="openForm(p)">
+                      <template #icon-left><Edit2 :size="14" /></template>
+                      <span class="hidden sm:inline">Editar</span>
+                    </NeonButton>
+                    <NeonButton variant="destructive" @click="handleDelete(p.id)">
+                      <template #icon-left><Trash2 :size="14" /></template>
+                    </NeonButton>
                   </div>
-                </div>
 
-                <div class="flex flex-wrap items-center gap-2 max-w-sm">
-                  <Badge v-for="tag in p.tags" :key="tag" variant="secondary" class="whitespace-nowrap">
-                    {{ tag }}
-                  </Badge>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-4 sm:mt-0">
-                  <NeonButton variant="outline" @click="openForm(p)">
-                    <template #icon-left><Edit2 :size="14" /></template>
-                    Editar
-                  </NeonButton>
-                  <NeonButton variant="destructive" @click="handleDelete(p.id)">
-                    <template #icon-left><Trash2 :size="14" /></template>
-                  </NeonButton>
+                  </div>
                 </div>
               </GlassCard>
             </TransitionGroup>

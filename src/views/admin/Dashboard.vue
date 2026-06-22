@@ -115,27 +115,27 @@
 
         <!-- Chart Panel -->
         <div class="mt-8">
-          <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground mb-4">Interacciones de IA (Chat)</h2>
+          <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground mb-4">Interacciones de IA (Chat) - Últimos 14 días</h2>
           <GlassCard>
-            <div v-if="chatLogsStore.stats.length > 0" class="h-64 flex items-end gap-2 p-2">
+            <div class="h-64 flex items-end gap-1 sm:gap-2 p-2">
               <div 
-                v-for="stat in chatLogsStore.stats" 
+                v-for="stat in paddedChartData" 
                 :key="stat.date" 
                 class="flex-1 flex flex-col items-center gap-2 h-full justify-end group"
               >
                 <div 
-                  class="w-full bg-primary/40 group-hover:bg-primary transition-all duration-300 rounded-t-md relative" 
-                  :style="{ height: `${Math.max((stat.count / maxStatCount) * 100, 5)}%` }"
+                  class="w-full transition-all duration-300 rounded-t-sm relative" 
+                  :class="stat.count > 0 ? 'bg-primary/40 group-hover:bg-primary cursor-pointer' : 'bg-primary/5'"
+                  :style="{ height: `${Math.max((stat.count / Math.max(maxStatCount, 1)) * 100, 2)}%` }"
                 >
-                  <div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-card border border-border px-2 py-1 rounded text-xs whitespace-nowrap shadow-xl">
+                  <div v-if="stat.count > 0" class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-card border border-border px-2 py-1 rounded text-xs whitespace-nowrap shadow-xl z-10 pointer-events-none">
                     {{ stat.count }} consultas
                   </div>
                 </div>
-                <div class="text-[10px] text-muted-foreground">{{ formatDateShort(stat.date) }}</div>
+                <div class="text-[8px] sm:text-[10px] text-muted-foreground whitespace-nowrap w-full text-center overflow-hidden" :title="stat.date">
+                  {{ formatDateShort(stat.date) }}
+                </div>
               </div>
-            </div>
-            <div v-else class="h-40 flex items-center justify-center text-muted-foreground border border-dashed border-border/50 rounded-xl">
-              No hay interacciones registradas aún.
             </div>
           </GlassCard>
         </div>
@@ -302,9 +302,33 @@ const isPortfolioEmpty = computed(() => {
          habilitacionesStore.items.length === 0
 })
 
+const paddedChartData = computed(() => {
+  const data = []
+  const today = new Date()
+  
+  const statsMap = {}
+  chatLogsStore.stats.forEach(s => {
+    statsMap[s.date] = s.count
+  })
+
+  // Generar últimos 14 días
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    // Manejar Timezone offset para obtener formato local correcto YYYY-MM-DD
+    const localDate = new Date(d.getTime() - (d.getTimezoneOffset() * 60000))
+    const dateStr = localDate.toISOString().split('T')[0]
+    data.push({
+      date: dateStr,
+      count: statsMap[dateStr] || 0
+    })
+  }
+  return data
+})
+
 const maxStatCount = computed(() => {
-  if (!chatLogsStore.stats.length) return 1
-  return Math.max(...chatLogsStore.stats.map(s => s.count))
+  if (!paddedChartData.value.length) return 1
+  return Math.max(...paddedChartData.value.map(s => s.count))
 })
 
 function formatDateShort(dateString) {

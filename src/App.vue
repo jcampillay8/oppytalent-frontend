@@ -16,7 +16,7 @@
     </div>
 
     <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl" v-if="!isAppLayout">
-      <div class="container flex h-16 max-w-[1536px] items-center justify-between">
+      <div class="flex h-16 w-full items-center justify-between px-4 md:px-8">
         
         <!-- Logo -->
         <router-link :to="isHunter ? '/b2b' : '/home'" class="flex items-center gap-2 font-bold text-xl tracking-tight transition-colors hover:text-primary">
@@ -94,7 +94,7 @@
               <template #content="{ close }">
                 <div class="flex flex-col space-y-1 p-1">
                   <!-- Mostrar Dashboard Admin solo si NO es Hunter, o si tiene los permisos explícitos y no estamos en la vista B2B -->
-                  <button v-if="authStore.user?.permissions?.includes('view_admin_dashboard') && !isHunter" @click="goToAdmin(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
+                  <button v-if="authStore.user?.permissions?.includes('can_edit_portfolio') && !isHunter" @click="goToAdmin(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
                     <LayoutDashboard :size="16" /> {{ $t('nav.admin') }}
                   </button>
                   

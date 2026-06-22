@@ -45,32 +45,43 @@
               v-for="r in store.items" 
               :key="r.id" 
               hoverEffect 
-              class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5"
             >
-              <div class="flex-1 flex flex-col gap-2 min-w-0">
-                <div class="flex items-center gap-3">
-                  <div class="p-2 rounded-md bg-pink-500/10 text-pink-500 shrink-0">
-                    <Award :size="18" />
-                  </div>
-                  <h3 class="font-bold text-lg text-foreground truncate" :title="r.titulo">{{ r.titulo }}</h3>
-                </div>
-                <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                  <span class="font-medium text-foreground">{{ r.institucion }}</span>
-                  <span v-if="r.fecha">&bull; {{ r.fecha }}</span>
-                </div>
-                <div class="text-xs text-muted-foreground mt-1">
-                  {{ r.tipo }}
-                </div>
+              <div class="flex flex-row items-start gap-4 w-full">
+              <!-- Imagen grande al estilo YouTube (si existe) -->
+              <div v-if="r.image_url" class="shrink-0 w-24 sm:w-48 h-24 sm:h-32 rounded-lg overflow-hidden border border-border/50">
+                <img :src="r.image_url" alt="" class="w-full h-full object-cover" />
               </div>
 
-              <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-4 sm:mt-0">
-                <NeonButton variant="outline" @click="openForm(r)">
-                  <template #icon-left><Edit2 :size="14" /></template>
-                  Editar
-                </NeonButton>
-                <NeonButton variant="destructive" @click="handleDelete(r.id)">
-                  <template #icon-left><Trash2 :size="14" /></template>
-                </NeonButton>
+              <!-- Contenedor derecho para el resto de la info -->
+              <div class="flex-1 flex flex-col sm:flex-row justify-between items-start gap-4 min-w-0">
+                
+                <div class="flex-1 flex flex-col gap-2 min-w-0 w-full">
+                  <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-md bg-pink-500/10 text-pink-500 shrink-0 hidden sm:flex">
+                      <Award :size="18" />
+                    </div>
+                    <h3 class="font-bold text-lg text-foreground truncate" :title="r.titulo">{{ r.titulo }}</h3>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                    <span class="font-medium text-foreground">{{ r.institucion }}</span>
+                    <span v-if="r.fecha">&bull; {{ r.fecha }}</span>
+                  </div>
+                  <div class="text-xs text-muted-foreground mt-1">
+                    {{ r.tipo }}
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2 shrink-0 sm:mt-0 w-full sm:w-auto justify-end">
+                  <NeonButton variant="outline" @click="openForm(r)">
+                    <template #icon-left><Edit2 :size="14" /></template>
+                    <span class="hidden sm:inline">Editar</span>
+                  </NeonButton>
+                  <NeonButton variant="destructive" @click="handleDelete(r.id)">
+                    <template #icon-left><Trash2 :size="14" /></template>
+                  </NeonButton>
+                </div>
+
+                </div>
               </div>
             </GlassCard>
           </TransitionGroup>

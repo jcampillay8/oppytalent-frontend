@@ -16,7 +16,13 @@ export const useExperienciasStore = defineStore('experiencias', () => {
   async function fetchAll(params = '') {
     loading.value = true
     try {
-      items.value = (await api.getExperiencias(params)).map(normalize)
+      const data = (await api.getExperiencias(params)).map(normalize)
+      // Sort from most recent to oldest based on periodo_inicio
+      items.value = data.sort((a, b) => {
+        const dateA = new Date(a.periodo_inicio || 0)
+        const dateB = new Date(b.periodo_inicio || 0)
+        return dateB - dateA
+      })
     } finally {
       loading.value = false
     }

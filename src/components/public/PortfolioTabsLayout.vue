@@ -35,7 +35,6 @@
 
           <!-- Experiencia -->
           <div v-else-if="currentTab === 'experiencia'" class="grid grid-cols-1 gap-6 relative">
-            <div class="absolute left-6 top-4 bottom-4 w-px bg-border/50 hidden md:block"></div>
             <div v-if="!experiencias.length" class="text-center py-10 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">
               No se encontraron experiencias.
             </div>

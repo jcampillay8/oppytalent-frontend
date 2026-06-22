@@ -117,7 +117,6 @@
 
             <!-- Experiencia -->
             <div v-else-if="activeModal === 'experiencia'" class="grid grid-cols-1 gap-6 relative">
-              <div class="absolute left-6 top-4 bottom-4 w-px bg-border/50 hidden md:block"></div>
               <ExperienciaCard v-for="e in experiencias" :key="e.id" :experiencia="e" />
             </div>
 

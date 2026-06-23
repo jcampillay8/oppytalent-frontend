@@ -276,7 +276,7 @@ watch(() => route.path, async () => {
   }
 }, { immediate: true })
 
-const appRoutes = ['Landing', 'LoginUser', 'RegisterUser', 'HomeFeed', 'AuthCallback']
+const appRoutes = ['Landing', 'Features', 'TalentInfo', 'B2BInfo', 'Pricing', 'AboutOppy', 'LoginUser', 'RegisterUser', 'HomeFeed', 'AuthCallback']
 const isAppLayout = computed(() => appRoutes.includes(route.name))
 
 const adminRoutes = [

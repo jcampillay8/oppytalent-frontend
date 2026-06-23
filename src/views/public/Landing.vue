@@ -8,22 +8,14 @@
       </component>
 
       <!-- Navbar -->
-      <header class="relative z-40 flex justify-between items-center px-6 md:px-12 py-5 bg-[#050505]/40 backdrop-blur-xl border-b border-white/5 sticky top-0" v-motion :initial="{ opacity: 0, y: -20 }" :enter="{ opacity: 1, y: 0 }">
-        <div class="text-2xl font-extrabold tracking-tight">Oppy<span class="text-primary">Talent</span></div>
-        <div class="flex items-center gap-4">
-          <router-link to="/login" class="text-zinc-400 font-medium hover:text-white transition-colors text-sm md:text-base hidden sm:block">Iniciar Sesión</router-link>
-          <router-link to="/register">
-            <NeonButton glow variant="primary" size="sm">Registrarse</NeonButton>
-          </router-link>
-        </div>
-      </header>
+      <LandingNavbar />
 
-      <main class="flex-1 flex flex-col items-center">
+      <main class="flex-1 flex flex-col items-center pt-20">
         
         <!-- ============================================== -->
         <!-- 1. HERO SECTION (Above the fold)               -->
         <!-- ============================================== -->
-        <section class="relative w-full max-w-7xl mx-auto px-6 md:px-16 py-20 lg:py-32 flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+        <section class="relative w-full max-w-7xl mx-auto px-6 md:px-16 py-16 lg:py-20 flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
           <div class="flex-1 text-center lg:text-left z-10" v-motion :initial="{ opacity: 0, x: -30 }" :enter="{ opacity: 1, x: 0, transition: { delay: 100 } }">
             <Badge variant="outline" class="mb-6 border-primary/30 text-primary/90 bg-primary/10 uppercase tracking-wider backdrop-blur-sm px-3 py-1 text-xs font-semibold">
               Tu Portafolio Inteligente
@@ -92,7 +84,7 @@
         <!-- ============================================== -->
         <!-- 2. PROBLEMA / SOLUCIÓN (SEO: Keyword Secundaria) -->
         <!-- ============================================== -->
-        <section class="w-full bg-zinc-950/60 border-y border-white/5 py-24 backdrop-blur-sm z-10 relative">
+        <section class="w-full bg-zinc-950/60 border-y border-white/5 py-20 backdrop-blur-sm z-10 relative">
           <div class="max-w-4xl mx-auto px-6 text-center" v-motion-slide-visible-once-bottom>
             <h2 class="text-3xl md:text-4xl font-bold mb-8">Por qué tu CV y LinkedIn ya no son suficientes</h2>
             <p class="text-lg md:text-xl text-zinc-400 leading-relaxed mb-12">
@@ -262,6 +254,7 @@
 <script setup>
 import { computed } from 'vue'
 import AuroraBackground from '../../components/ui/AuroraBackground.vue'
+import LandingNavbar from '../../components/public/LandingNavbar.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
 import { 

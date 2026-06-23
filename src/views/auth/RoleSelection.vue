@@ -21,7 +21,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
         <!-- Opcion: Soy Empresa (HUNTER) -->
         <button 
-          @click="selectRole('HUNTER')"
+          @click="openBetaModal"
           :disabled="isSubmitting"
           v-motion 
           :initial="{ opacity: 0, x: -50 }" 
@@ -29,6 +29,11 @@
           class="group relative flex flex-col items-center text-center p-8 rounded-3xl border border-border/50 bg-card/40 backdrop-blur-xl hover:bg-card hover:border-primary/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20"
         >
           <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          
+          <!-- Badge Beta Cerrada -->
+          <div class="absolute -top-3 -right-3 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg border-2 border-background animate-bounce z-20">
+            BETA CERRADA
+          </div>
           
           <div class="relative z-10">
             <div class="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
@@ -75,6 +80,24 @@
         <div class="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
         <p class="text-foreground font-medium animate-pulse">Configurando tu experiencia...</p>
       </div>
+      <!-- Beta Modal Overlay -->
+      <div v-if="isBetaModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-card border border-border/50 rounded-2xl p-6 max-w-sm w-full shadow-2xl" v-motion :initial="{ scale: 0.9, opacity: 0 }" :enter="{ scale: 1, opacity: 1 }">
+          <h3 class="text-xl font-bold text-foreground mb-2 flex items-center gap-2"><Lock class="w-5 h-5 text-primary" /> Acceso Anticipado</h3>
+          <p class="text-sm text-muted-foreground mb-4">El portal B2B para Empresas se encuentra actualmente en Beta Privada. Por favor ingresa tu código de acceso.</p>
+          <input 
+            v-model="betaCode" 
+            @keyup.enter="verifyBetaCode"
+            type="password" 
+            placeholder="Ej: BETA2026CODE"
+            class="w-full bg-background border border-border/50 rounded-lg px-4 py-2 text-foreground focus:outline-none focus:border-primary mb-4"
+          />
+          <div class="flex gap-3">
+            <button @click="isBetaModalOpen = false" class="flex-1 py-2 rounded-lg border border-border/50 text-foreground hover:bg-secondary/50 transition-colors text-sm font-medium">Cancelar</button>
+            <button @click="verifyBetaCode" class="flex-1 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition-colors text-sm font-medium">Verificar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -82,7 +105,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Building2, User, ArrowRight } from 'lucide-vue-next';
+import { Building2, User, ArrowRight, Lock } from 'lucide-vue-next';
 import { api } from '../../services/api';
 import { useAuthStore } from '../../stores/auth';
 import { toast } from 'vue3-toastify';
@@ -90,6 +113,24 @@ import { toast } from 'vue3-toastify';
 const router = useRouter();
 const authStore = useAuthStore();
 const isSubmitting = ref(false);
+
+const isBetaModalOpen = ref(false);
+const betaCode = ref('');
+
+function openBetaModal() {
+  isBetaModalOpen.value = true;
+  betaCode.value = '';
+}
+
+function verifyBetaCode() {
+  if (betaCode.value.toUpperCase() === 'OPPY2026BETA') {
+    isBetaModalOpen.value = false;
+    selectRole('HUNTER');
+  } else {
+    toast.error("Código de acceso inválido o expirado. Únete a la lista de espera.");
+    betaCode.value = '';
+  }
+}
 
 async function selectRole(roleName) {
   isSubmitting.value = true;

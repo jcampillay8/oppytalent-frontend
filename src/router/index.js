@@ -8,6 +8,36 @@ const routes = [
     meta: { guestOnly: true }
   },
   {
+    path: '/features',
+    name: 'Features',
+    component: () => import('../views/public/Features.vue'),
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/talent-info',
+    name: 'TalentInfo',
+    component: () => import('../views/public/TalentInfo.vue'),
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/b2b-info',
+    name: 'B2BInfo',
+    component: () => import('../views/public/B2BInfo.vue'),
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/pricing',
+    name: 'Pricing',
+    component: () => import('../views/public/Pricing.vue'),
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/about',
+    name: 'AboutOppy',
+    component: () => import('../views/public/AboutOppy.vue'),
+    meta: { guestOnly: true }
+  },
+  {
     path: '/assistant',
     name: 'AI Assistant',
     component: () => import('../views/public/Home.vue'),

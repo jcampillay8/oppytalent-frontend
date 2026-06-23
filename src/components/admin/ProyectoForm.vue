@@ -76,9 +76,46 @@
           <label class="block text-sm font-medium text-muted-foreground">Tags (separado por comas)</label>
           <input v-model="activeTagsInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Minería, IA, Data" @blur="parseTags" />
         </div>
-        <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">KPIs (JSON)</label>
-          <textarea v-model="activeKpisText" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 font-mono text-xs" rows="3" placeholder='{"Precisión": "98%", "Latencia": "50ms"}' @blur="parseKpis"></textarea>
+        <div class="space-y-3">
+          <label class="block text-sm font-medium text-foreground">Ficha Técnica (KPIs / Datos Clave)</label>
+          <div class="bg-background border border-border/50 rounded-xl p-4 space-y-3">
+            <div v-for="(kpi, index) in activeKpisList" :key="'kpi'+index" class="flex gap-2 items-start">
+              <input v-model="kpi.key" type="text" class="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" placeholder="Ej: Inversión, Cliente, Superficie..." />
+              <input v-model="kpi.value" type="text" class="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" placeholder="Ej: $1.5M, Juan Pérez, 120m2..." />
+              <button type="button" class="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors shrink-0" @click="removeKpi(index)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+              </button>
+            </div>
+            <button type="button" class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1" @click="addKpi">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Agregar Fila a la Ficha Técnica
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <label class="block text-sm font-medium text-foreground">Galería de Imágenes (Álbum del Proyecto)</label>
+          <div class="bg-background border border-border/50 rounded-xl p-4 space-y-4">
+            <div v-for="(img, index) in activeGaleriaList" :key="'img'+index" class="p-4 bg-secondary/30 border border-border/50 rounded-lg relative">
+              <button type="button" class="absolute top-2 right-2 p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-md transition-colors" @click="removeGaleriaItem(index)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+              </button>
+              <div class="space-y-3 pr-8">
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-medium text-muted-foreground">URL de la Imagen</label>
+                  <ImageUploader v-model="img.url" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="block text-xs font-medium text-muted-foreground">Breve Reseña / Descripción</label>
+                  <input v-model="img.caption" type="text" class="w-full px-3 py-2 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" placeholder="Ej: Plano arquitectónico del primer piso..." />
+                </div>
+              </div>
+            </div>
+            <button type="button" class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1" @click="addGaleriaItem">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Agregar Foto a la Galería
+            </button>
+          </div>
         </div>
       </div>
 
@@ -120,6 +157,7 @@ const form = ref({
   image_url: '',
   youtube_url: '',
   kpis: {},
+  galeria: [],
   tags: [],
   traducciones: []
 })
@@ -127,12 +165,14 @@ const form = ref({
 // Text inputs for ES
 const stackInputEs = ref('')
 const tagsInputEs = ref('')
-const kpisTextEs = ref('')
+const kpisListEs = ref([])
+const galeriaListEs = ref([])
 
 // Text inputs for EN
 const stackInputEn = ref('')
 const tagsInputEn = ref('')
-const kpisTextEn = ref('')
+const kpisListEn = ref([])
+const galeriaListEn = ref([])
 
 // Dynamic bindings based on tab
 const activeModel = computed(() => {
@@ -147,7 +187,8 @@ const activeModel = computed(() => {
       descripcion_detallada: '',
       stack_tecnologico: [],
       tags: [],
-      kpis: {}
+      kpis: {},
+      galeria: []
     }
     form.value.traducciones.push(enTranslation)
   }
@@ -164,10 +205,31 @@ const activeTagsInput = computed({
   set: (val) => currentTab.value === 'es' ? tagsInputEs.value = val : tagsInputEn.value = val
 })
 
-const activeKpisText = computed({
-  get: () => currentTab.value === 'es' ? kpisTextEs.value : kpisTextEn.value,
-  set: (val) => currentTab.value === 'es' ? kpisTextEs.value = val : kpisTextEn.value = val
+const activeKpisList = computed({
+  get: () => currentTab.value === 'es' ? kpisListEs.value : kpisListEn.value,
+  set: (val) => currentTab.value === 'es' ? kpisListEs.value = val : kpisListEn.value = val
 })
+
+const activeGaleriaList = computed({
+  get: () => currentTab.value === 'es' ? galeriaListEs.value : galeriaListEn.value,
+  set: (val) => currentTab.value === 'es' ? galeriaListEs.value = val : galeriaListEn.value = val
+})
+
+function addKpi() {
+  activeKpisList.value.push({ key: '', value: '' })
+}
+
+function removeKpi(index) {
+  activeKpisList.value.splice(index, 1)
+}
+
+function addGaleriaItem() {
+  activeGaleriaList.value.push({ url: '', caption: '' })
+}
+
+function removeGaleriaItem(index) {
+  activeGaleriaList.value.splice(index, 1)
+}
 
 
 function setTab(tab) {
@@ -191,11 +253,23 @@ function parseTags() {
 }
 
 function parseKpis() {
-  try {
-    activeModel.value.kpis = activeKpisText.value ? JSON.parse(activeKpisText.value) : {}
-  } catch {
-    activeModel.value.kpis = {}
+  // Convert list of objects [{key: "a", value: "b"}] to dict {"a": "b"}
+  const dict = {}
+  for (const item of activeKpisList.value) {
+    if (item.key.trim()) {
+      dict[item.key.trim()] = item.value.trim()
+    }
   }
+  activeModel.value.kpis = dict
+}
+
+function parseGaleria() {
+  // Clean empty items safely
+  const cleanList = activeGaleriaList.value.filter(item => item && item.url && typeof item.url === 'string' && item.url.trim() !== '')
+  activeModel.value.galeria = cleanList.map(item => ({
+    url: parseImageUrl(item.url),
+    caption: item.caption || ''
+  }))
 }
 
 async function translateWithAI() {
@@ -212,7 +286,8 @@ async function translateWithAI() {
       descripcion_detallada: form.value.descripcion_detallada,
       stack_tecnologico: form.value.stack_tecnologico,
       tags: form.value.tags,
-      kpis: form.value.kpis
+      kpis: form.value.kpis,
+      galeria: form.value.galeria
     }
 
     const response = await api.translateWithAI(contentToTranslate, 'en')
@@ -226,11 +301,21 @@ async function translateWithAI() {
     enModel.stack_tecnologico = t.stack_tecnologico || []
     enModel.tags = t.tags || []
     enModel.kpis = t.kpis || {}
+    enModel.galeria = t.galeria || form.value.galeria || [] // Copy galeria from ES by default or translated
 
     // Update text inputs for English view
     stackInputEn.value = enModel.stack_tecnologico.join(', ')
     tagsInputEn.value = enModel.tags.join(', ')
-    kpisTextEn.value = JSON.stringify(enModel.kpis || {}, null, 2)
+    
+    // Map dict to list for EN
+    const enKpisList = []
+    if (enModel.kpis) {
+      for (const [k, v] of Object.entries(enModel.kpis)) {
+        enKpisList.push({ key: k, value: String(v) })
+      }
+    }
+    kpisListEn.value = enKpisList
+    galeriaListEn.value = JSON.parse(JSON.stringify(enModel.galeria || []))
     
   } catch (error) {
     console.error("Error al traducir:", error)
@@ -253,11 +338,13 @@ async function handleSubmit() {
   parseStack()
   parseTags()
   parseKpis()
+  parseGaleria()
   
   currentTab.value = 'en'
   parseStack()
   parseTags()
   parseKpis()
+  parseGaleria()
   currentTab.value = 'es' // reset view
   
   try {
@@ -265,7 +352,7 @@ async function handleSubmit() {
     const dataToSend = { ...form.value }
     dataToSend.traducciones = dataToSend.traducciones.filter(t => t.titulo.trim() !== '')
     
-    emit('save', dataToSend)
+    console.log("SAVE", JSON.stringify(dataToSend)); emit('save', dataToSend)
   } finally {
     // We don't turn off isSubmitting here if it succeeds because it will unmount,
     // but if we want to be safe:
@@ -284,14 +371,31 @@ onMounted(() => {
     // Init ES inputs
     stackInputEs.value = (form.value.stack_tecnologico || []).join(', ')
     tagsInputEs.value = (form.value.tags || []).join(', ')
-    kpisTextEs.value = JSON.stringify(form.value.kpis || {}, null, 2)
+    
+    // Map dict to list for ES
+    const esKpisList = []
+    if (form.value.kpis) {
+      for (const [k, v] of Object.entries(form.value.kpis)) {
+        esKpisList.push({ key: k, value: String(v) })
+      }
+    }
+    kpisListEs.value = esKpisList
+    galeriaListEs.value = JSON.parse(JSON.stringify(form.value.galeria || []))
     
     // Init EN inputs if translation exists
     const enTrans = form.value.traducciones.find(t => t.idioma === 'en')
     if (enTrans) {
       stackInputEn.value = (enTrans.stack_tecnologico || []).join(', ')
       tagsInputEn.value = (enTrans.tags || []).join(', ')
-      kpisTextEn.value = JSON.stringify(enTrans.kpis || {}, null, 2)
+      
+      const enKpisList = []
+      if (enTrans.kpis) {
+        for (const [k, v] of Object.entries(enTrans.kpis)) {
+          enKpisList.push({ key: k, value: String(v) })
+        }
+      }
+      kpisListEn.value = enKpisList
+      galeriaListEn.value = JSON.parse(JSON.stringify(enTrans.galeria || []))
     }
   }
 })

@@ -3,7 +3,7 @@
     <GlassCard hoverEffect class="h-full flex flex-col transition-all duration-300 group-hover:border-blue-500/50 overflow-hidden border-border/50">
       <div v-if="tData.image_url" class="w-full h-48 overflow-hidden relative shrink-0">
         <div class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay"></div>
-        <img :src="tData.image_url" :alt="tData.institucion" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <img :src="tData.image_url" :alt="tData.institucion" class="w-full h-full object-cover" />
       </div>
       
       <div class="p-5 flex flex-col flex-grow">

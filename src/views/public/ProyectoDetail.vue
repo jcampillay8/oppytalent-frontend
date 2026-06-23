@@ -16,24 +16,30 @@
           <span>Actualizado: {{ formatDate(translatedProyecto.updated_at) }}</span>
         </div>
         
+        <div class="mb-6 rounded-2xl overflow-hidden border border-border/50 shadow-xl bg-secondary" v-if="translatedProyecto.image_url">
+          <img :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" class="w-full max-h-[500px] object-cover" />
+        </div>
+
         <div class="flex flex-wrap gap-2 mb-6">
           <Badge v-for="tag in translatedProyecto.tags" :key="tag" variant="secondary" class="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">{{ tag }}</Badge>
           <Badge v-for="tech in translatedProyecto.stack_tecnologico" :key="tech" variant="outline">{{ tech }}</Badge>
         </div>
         
         <div class="flex flex-wrap gap-3">
-          <a v-if="translatedProyecto.link_github" :href="translatedProyecto.link_github" target="_blank" class="outline-none">
-            <NeonButton variant="outline"><template #icon-left><Github :size="18" /></template> GitHub</NeonButton>
-          </a>
+          <button v-if="translatedProyecto.galeria && translatedProyecto.galeria.length > 0" @click="openGallery" class="outline-none">
+            <NeonButton glow variant="primary" class="bg-indigo-500 border-indigo-500 shadow-indigo-500/20 hover:bg-indigo-600">
+              <template #icon-left><Image :size="18" /></template> 
+              Ver Álbum ({{ translatedProyecto.galeria.length }})
+            </NeonButton>
+          </button>
           <a v-if="translatedProyecto.link_demo" :href="translatedProyecto.link_demo" target="_blank" class="outline-none">
             <NeonButton glow><template #icon-left><ExternalLink :size="18" /></template> Demo</NeonButton>
           </a>
+          <a v-if="translatedProyecto.link_github" :href="translatedProyecto.link_github" target="_blank" class="outline-none">
+            <NeonButton variant="outline"><template #icon-left><Github :size="18" /></template> GitHub</NeonButton>
+          </a>
         </div>
       </header>
-
-      <div class="mb-10 rounded-2xl overflow-hidden border border-border/50 shadow-xl bg-secondary" v-if="translatedProyecto.image_url">
-        <img :src="translatedProyecto.image_url" :alt="translatedProyecto.titulo" class="w-full max-h-[500px] object-cover transition-transform duration-700 hover:scale-105" />
-      </div>
 
       <GlassCard class="mb-10 p-6 md:p-8" v-if="getYoutubeEmbed(translatedProyecto.youtube_url)">
         <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><Youtube :size="24" class="text-red-500" /> Video Demostrativo</h3>
@@ -54,6 +60,8 @@
             <h3 class="text-xl font-bold mb-4 pb-2 border-b border-border/50 flex items-center gap-2"><FileText :size="20" class="text-primary"/> Descripción</h3>
             <div class="prose prose-zinc dark:prose-invert max-w-none markdown-body" v-html="renderMarkdown(translatedProyecto.descripcion_detallada)"></div>
           </section>
+
+
         </div>
         
         <div class="space-y-8">
@@ -64,7 +72,7 @@
 
           <GlassCard v-if="translatedProyecto.kpis && Object.keys(translatedProyecto.kpis).length" class="p-0 overflow-hidden">
             <div class="p-5 border-b border-border/50 bg-secondary/50">
-              <h3 class="text-lg font-bold flex items-center gap-2"><TrendingUp :size="20" class="text-emerald-500" /> KPIs & Métricas</h3>
+              <h3 class="text-lg font-bold flex items-center gap-2"><TrendingUp :size="20" class="text-emerald-500" /> Ficha Técnica / KPIs</h3>
             </div>
             <div class="divide-y divide-border/50">
               <div v-for="(val, key) in translatedProyecto.kpis" :key="key">
@@ -95,11 +103,64 @@
         </div>
       </div>
     </article>
+
+    <!-- Modal de Galería -->
+    <div v-if="isGalleryOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-300">
+      <button @click="closeGallery" class="absolute top-4 right-4 md:top-6 md:right-6 p-2 md:p-3 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-full z-50">
+        <X :size="24" />
+      </button>
+
+      <div v-if="currentGalleryIndex !== null" class="relative w-full max-w-7xl h-full lg:h-[85vh] flex flex-col lg:flex-row items-center lg:items-stretch lg:bg-black/40 lg:rounded-2xl lg:overflow-hidden lg:border lg:border-white/10 lg:shadow-2xl">
+        
+        <!-- Contenedor de Imagen (Izquierda en Desktop) -->
+        <div class="relative w-full lg:w-[75%] flex-1 flex items-center justify-center h-[60vh] lg:h-full lg:bg-black/60 p-4 lg:p-8">
+          
+          <button v-if="translatedProyecto.galeria.length > 1" @click.stop="prevImage" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 p-3 text-white/70 hover:text-white bg-black/50 border border-white/10 hover:bg-black/80 rounded-full transition-all z-20 shadow-lg backdrop-blur-sm">
+            <ChevronLeft :size="32" />
+          </button>
+          
+          <button v-if="translatedProyecto.galeria.length > 1" @click.stop="nextImage" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 p-3 text-white/70 hover:text-white bg-black/50 border border-white/10 hover:bg-black/80 rounded-full transition-all z-20 shadow-lg backdrop-blur-sm">
+            <ChevronRight :size="32" />
+          </button>
+
+          <img :src="translatedProyecto.galeria[currentGalleryIndex].url" 
+               :alt="translatedProyecto.galeria[currentGalleryIndex].caption || 'Imagen de galería'" 
+               class="max-w-full max-h-full object-contain shadow-[0_0_50px_rgba(0,0,0,0.3)] animate-in zoom-in-95 duration-300 rounded-lg lg:rounded-none select-none" />
+        </div>
+        
+        <!-- Panel de Detalles (Derecha en Desktop) -->
+        <div class="w-full lg:w-[25%] bg-white/5 lg:bg-white/10 backdrop-blur-xl p-6 lg:p-8 flex flex-col mt-4 lg:mt-0 rounded-2xl lg:rounded-none border border-white/10 lg:border-y-0 lg:border-r-0 lg:border-l lg:border-white/10 overflow-y-auto">
+          
+          <!-- Header del Panel -->
+          <div class="flex items-center justify-between lg:flex-col lg:items-start mb-6 gap-4 border-b border-white/10 pb-4">
+            <div class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/20 text-xs font-bold tracking-wider text-white uppercase shadow-inner">
+              <Image :size="14" class="mr-2" /> {{ currentGalleryIndex + 1 }} / {{ translatedProyecto.galeria.length }}
+            </div>
+            <h3 class="text-white/90 font-bold text-lg hidden lg:block">{{ translatedProyecto.titulo }}</h3>
+          </div>
+          
+          <!-- Descripción -->
+          <div class="flex-1">
+            <div v-if="translatedProyecto.galeria[currentGalleryIndex].caption" class="text-white">
+              <h4 class="text-[10px] text-white/50 uppercase tracking-widest font-semibold mb-3">Descripción de la Foto</h4>
+              <p class="text-sm md:text-base font-normal leading-relaxed text-white/90">
+                {{ translatedProyecto.galeria[currentGalleryIndex].caption }}
+              </p>
+            </div>
+            <div v-else class="text-white/30 flex flex-col items-center justify-center h-40 lg:h-full opacity-50">
+              <FileText :size="32" class="mb-3" />
+              <span class="text-sm font-medium">Sin descripción detallada</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, onMounted, watch, computed } from 'vue'
+import { ref, reactive, onMounted, watch, computed, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProyectosStore } from '../../stores/proyectos'
 import { useTranslatedData } from '../../composables/useTranslatedData'
@@ -107,7 +168,7 @@ import { useI18n } from 'vue-i18n'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { ArrowLeft, Calendar, Github, ExternalLink, Youtube, FileText, Info, TrendingUp, ChevronRight } from 'lucide-vue-next'
+import { ArrowLeft, Calendar, Github, ExternalLink, Youtube, FileText, Info, TrendingUp, ChevronRight, ChevronLeft, Image, X } from 'lucide-vue-next'
 
 const route = useRoute()
 const store = useProyectosStore()
@@ -116,6 +177,45 @@ const { locale } = useI18n()
 const translatedProyecto = useTranslatedData(computed(() => store.current))
 
 const expandedKpis = reactive({})
+const isGalleryOpen = ref(false)
+const currentGalleryIndex = ref(0)
+
+function openGallery() {
+  if (translatedProyecto.value?.galeria?.length) {
+    currentGalleryIndex.value = 0
+    isGalleryOpen.value = true
+    document.body.style.overflow = 'hidden'
+  }
+}
+
+function closeGallery() {
+  isGalleryOpen.value = false
+  document.body.style.overflow = ''
+}
+
+function nextImage() {
+  const total = translatedProyecto.value.galeria.length
+  currentGalleryIndex.value = (currentGalleryIndex.value + 1) % total
+}
+
+function prevImage() {
+  const total = translatedProyecto.value.galeria.length
+  currentGalleryIndex.value = (currentGalleryIndex.value - 1 + total) % total
+}
+
+function handleKeydown(e) {
+  if (isGalleryOpen.value) {
+    if (e.key === 'Escape') closeGallery()
+    else if (e.key === 'ArrowRight') nextImage()
+    else if (e.key === 'ArrowLeft') prevImage()
+  }
+}
+
+// Cleanup body overflow if unmounted while gallery is open
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  window.removeEventListener('keydown', handleKeydown)
+})
 
 function toggleKpi(key) {
   expandedKpis[key] = !expandedKpis[key]
@@ -158,5 +258,8 @@ watch(() => route.params.id, (newId) => {
   }
 })
 
-onMounted(() => store.fetchOne(route.params.id))
+onMounted(() => {
+  store.fetchOne(route.params.id)
+  window.addEventListener('keydown', handleKeydown)
+})
 </script>

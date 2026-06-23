@@ -14,7 +14,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'default',
-    validator: (val) => ['default', 'secondary', 'destructive', 'outline', 'success', 'warning'].includes(val)
+    validator: (val) => ['default', 'primary', 'secondary', 'destructive', 'outline', 'success', 'warning'].includes(val)
   },
   className: {
     type: String,
@@ -25,6 +25,7 @@ const props = defineProps({
 const variantClasses = computed(() => {
   switch (props.variant) {
     case 'default':
+    case 'primary':
       return 'border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80'
     case 'secondary':
       return 'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80'

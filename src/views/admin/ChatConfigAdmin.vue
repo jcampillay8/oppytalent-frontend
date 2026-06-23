@@ -14,7 +14,7 @@
         <GlassCard>
           <div class="flex items-center gap-3 mb-4 pb-4 border-b border-border/50">
             <MessageSquare :size="20" class="text-primary" />
-            <h3 class="text-lg font-bold text-foreground">{{ $t('admin.views.chat_config.appearance_section') }}</h3>
+            <h3 class="text-lg font-bold text-foreground">Estrategia y Agent Skills de la IA</h3>
           </div>
           
           <form @submit.prevent="saveConfig" class="space-y-6">
@@ -29,56 +29,54 @@
             </div>
 
             <div class="space-y-4">
-              <div class="flex items-center justify-between border-b border-border/50 pb-2">
-                <label class="text-sm font-medium text-foreground">Torpedos de Venta (Directrices para la IA)</label>
-                <button type="button" @click="addPitchRule" :disabled="form.ai_pitch_rules.length >= 5" class="text-xs text-primary hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed">
-                  + Agregar Torpedo
-                </button>
+              <div class="flex items-center justify-between border-b border-border/50 pb-3">
+                <label class="text-base font-semibold text-foreground">Agent Skills (Directrices para la IA)</label>
+                <div class="flex items-center gap-3">
+                  <p v-if="successMsg" class="text-xs text-emerald-500 font-medium">{{ successMsg }}</p>
+                  <p v-if="errorMsg" class="text-xs text-destructive font-medium">{{ errorMsg }}</p>
+                  <NeonButton type="submit" glow :disabled="saving" className="py-1.5 px-4 text-sm">
+                    <template #icon-left><Save :size="16" v-if="!saving" /></template>
+                    <span v-if="saving" class="flex items-center gap-2">
+                      <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      {{ $t('admin.views.chat_config.saving') }}
+                    </span>
+                    <span v-else>{{ $t('common.save') }}</span>
+                  </NeonButton>
+                </div>
               </div>
-              <p class="text-xs text-muted-foreground mt-1 mb-3 leading-relaxed">Entrena a tu IA. Dile qué proyecto destacar cuando un reclutador pregunte por una habilidad específica (Máx. 5).</p>
+              <p class="text-xs text-muted-foreground mt-1 mb-3 leading-relaxed">Entrena a tu IA. Dile qué proyecto destacar cuando un reclutador pregunte por una habilidad específica (Máx. {{ maxRules }}).</p>
               
               <div v-if="form.ai_pitch_rules.length === 0" class="text-center p-6 bg-secondary/50 border border-dashed border-border rounded-xl">
-                <p class="text-sm text-muted-foreground">No tienes torpedos configurados. La IA usará su criterio predeterminado.</p>
+                <p class="text-sm text-muted-foreground">No tienes Agent Skills configurados. La IA usará su criterio predeterminado.</p>
               </div>
 
-              <div v-for="(rule, idx) in form.ai_pitch_rules" :key="idx" class="relative p-4 bg-background border border-border rounded-xl space-y-3" v-motion="{ initial: { opacity: 0, y: 10 }, enter: { opacity: 1, y: 0 } }">
-                <button type="button" @click="removePitchRule(idx)" class="absolute top-3 right-3 text-muted-foreground hover:text-destructive transition-colors">
-                  <X :size="16" />
-                </button>
-                <div class="space-y-1">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Condición (Si preguntan sobre...)</label>
-                  <input type="text" v-model="rule.keyword" placeholder="Ej: IoT, Monitoreo, Liderazgo" class="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary/50" />
+              <div v-for="(rule, idx) in form.ai_pitch_rules" :key="idx" class="relative p-4 bg-background hover:bg-secondary/20 transition-colors border border-border rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 group" v-motion="{ initial: { opacity: 0, y: 10 }, enter: { opacity: 1, y: 0 } }">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
+                    <Badge variant="primary" class="shrink-0 text-[10px]">Si preguntan sobre:</Badge>
+                    <span class="font-bold text-foreground truncate">{{ rule.keyword || 'Sin condición' }}</span>
+                  </div>
+                  <p class="text-sm text-muted-foreground line-clamp-2 mt-2">{{ rule.pitch || 'Sin argumento definido' }}</p>
+                  <div v-if="rule.call_to_action && rule.call_to_action !== '#'" class="mt-2 text-xs text-primary flex items-center gap-1">
+                    <LinkIcon :size="12" /> Enlaza a: {{ getLinkName(rule.call_to_action) }}
+                  </div>
                 </div>
-                <div class="space-y-1">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Acción (La IA argumentará que...)</label>
-                  <textarea v-model="rule.pitch" rows="2" placeholder="Ej: Destaca que tengo experiencia con ESP32 y que el proyecto FastAlert es el mejor ejemplo..." class="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 resize-y"></textarea>
-                </div>
-                <div class="space-y-1">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Enlace (Invitar a ver...)</label>
-                  <select v-model="rule.call_to_action" class="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary/50">
-                    <option value="#">-- Sin enlace --</option>
-                    <optgroup label="Proyectos">
-                      <option v-for="p in proyectosStore.items" :key="'p'+p.id" :value="`/proyecto/${p.id}`">{{ p.title }}</option>
-                    </optgroup>
-                    <optgroup label="Experiencias">
-                      <option v-for="e in experienciasStore.items" :key="'e'+e.id" :value="`/experiencia/${e.id}`">{{ e.company }}</option>
-                    </optgroup>
-                  </select>
+                <div class="flex items-center gap-2 shrink-0">
+                  <button type="button" @click="editPitchRule(idx)" class="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/50 hover:bg-secondary rounded-lg" title="Editar Skill">
+                    <Edit2 :size="16" />
+                  </button>
+                  <button type="button" @click="removePitchRule(idx)" class="p-2 text-muted-foreground hover:text-destructive transition-colors bg-secondary/50 hover:bg-secondary rounded-lg" title="Eliminar Skill">
+                    <Trash2 :size="16" />
+                  </button>
                 </div>
               </div>
             </div>
 
-            <div class="pt-4 border-t border-border/50 flex flex-col items-end gap-2">
-              <NeonButton type="submit" glow :disabled="saving">
-                <template #icon-left><Save :size="16" v-if="!saving" /></template>
-                <span v-if="saving" class="flex items-center gap-2">
-                  <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  {{ $t('admin.views.chat_config.saving') }}
-                </span>
-                <span v-else>{{ $t('common.save') }}</span>
+            <div class="pt-4 border-t border-border/50 flex flex-col items-center gap-2">
+              <NeonButton type="button" @click="addPitchRule" :disabled="form.ai_pitch_rules.length >= maxRules" variant="outline" className="w-full sm:w-auto">
+                <template #icon-left><Plus :size="16" /></template>
+                Agregar Skill
               </NeonButton>
-              <p v-if="successMsg" class="text-xs text-emerald-500 font-medium">{{ successMsg }}</p>
-              <p v-if="errorMsg" class="text-xs text-destructive font-medium">{{ errorMsg }}</p>
             </div>
           </form>
         </GlassCard>
@@ -112,21 +110,93 @@
         </GlassCard>
 
       </div>
+
+      <!-- Modal Editar/Crear Skill -->
+      <div v-if="showSkillModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
+        <div 
+          v-motion
+          :initial="{ opacity: 0, scale: 0.95, y: 20 }"
+          :enter="{ opacity: 1, scale: 1, y: 0 }"
+          class="w-full max-w-4xl"
+        >
+          <GlassCard class="relative shadow-2xl border-primary/20">
+            <button type="button" @click="closeSkillModal" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+              <X :size="20" />
+            </button>
+            <h2 class="text-xl font-bold mb-1">{{ editingSkillIndex >= 0 ? 'Editar Agent Skill' : 'Nuevo Agent Skill' }}</h2>
+            <p class="text-sm text-muted-foreground mb-6">Instruye a tu IA con formato Markdown para destacar tus mejores atributos.</p>
+            
+            <div class="space-y-5">
+              <div class="space-y-1">
+                <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Condición (Si preguntan sobre...)</label>
+                <input type="text" v-model="editingSkill.keyword" placeholder="Ej: IoT, Monitoreo, Liderazgo" class="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50" />
+              </div>
+              
+              <div class="space-y-1">
+                <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Enlace (Invitar a ver...)</label>
+                <select v-model="editingSkill.call_to_action" class="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50">
+                  <option value="#" class="bg-background text-foreground">-- Sin enlace --</option>
+                  <optgroup label="Proyectos" class="bg-background text-muted-foreground font-semibold">
+                    <option v-for="p in proyectosStore.items" :key="'p'+p.id" :value="`/proyecto/${p.id}`" class="bg-background text-foreground">{{ p.titulo }}</option>
+                  </optgroup>
+                  <optgroup label="Experiencias" class="bg-background text-muted-foreground font-semibold">
+                    <option v-for="e in experienciasStore.items" :key="'e'+e.id" :value="`/experiencia/${e.id}`" class="bg-background text-foreground">{{ e.empresa }}</option>
+                  </optgroup>
+                  <optgroup label="Estudios & Certificaciones" class="bg-background text-muted-foreground font-semibold">
+                    <option v-for="s in estudiosStore.items" :key="'s'+s.id" :value="`/estudios/${s.id}`" class="bg-background text-foreground">{{ s.institucion }} - {{ s.titulo }}</option>
+                  </optgroup>
+                  <optgroup label="Reconocimientos" class="bg-background text-muted-foreground font-semibold">
+                    <option v-for="r in reconocimientosStore.items" :key="'r'+r.id" :value="`/portafolio`" class="bg-background text-foreground">{{ r.titulo }}</option>
+                  </optgroup>
+                  <optgroup label="Habilitaciones" class="bg-background text-muted-foreground font-semibold">
+                    <option v-for="h in habilitacionesStore.items" :key="'h'+h.id" :value="`/portafolio`" class="bg-background text-foreground">{{ h.titulo }}</option>
+                  </optgroup>
+                  <optgroup label="Sobre Mí" class="bg-background text-muted-foreground font-semibold">
+                    <option value="/sobre-mi" class="bg-background text-foreground">Ver perfil / Sobre mí</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="space-y-1">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Acción (La IA argumentará que...)</label>
+                  <Badge variant="secondary" class="text-[10px]">Markdown mejora la precisión</Badge>
+                </div>
+                <textarea v-model="editingSkill.pitch" rows="6" placeholder="Ej: **Destaca que tengo experiencia con ESP32** y que el proyecto *FastAlert* es el mejor ejemplo..." class="w-full px-4 py-3 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 resize-y font-mono"></textarea>
+                <p class="text-[10px] text-muted-foreground mt-1">Usa asteriscos para **negritas** o *cursivas*, y guiones para viñetas.</p>
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-border/50">
+              <NeonButton type="button" variant="ghost" @click="closeSkillModal">
+                Cancelar
+              </NeonButton>
+              <NeonButton type="button" glow @click="saveSkillModal">
+                Guardar Skill
+              </NeonButton>
+            </div>
+          </GlassCard>
+        </div>
+      </div>
+
     </AdminLayout>
   
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { Bot, KeyRound, MessageSquare, Save, CheckCircle2, AlertCircle, X, Globe } from 'lucide-vue-next'
+import { Bot, KeyRound, MessageSquare, Save, CheckCircle2, AlertCircle, X, Globe, Plus, Edit2, Trash2, Link as LinkIcon } from 'lucide-vue-next'
 import { api } from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
 import { useProyectosStore } from '../../stores/proyectos'
 import { useExperienciasStore } from '../../stores/experiencias'
+import { useEstudiosStore } from '../../stores/estudios'
+import { useReconocimientosStore } from '../../stores/reconocimientos'
+import { useHabilitacionesStore } from '../../stores/habilitaciones'
 import { useI18n } from 'vue-i18n'
 
 const authStore = useAuthStore()
@@ -134,6 +204,9 @@ const { t } = useI18n()
 
 const proyectosStore = useProyectosStore()
 const experienciasStore = useExperienciasStore()
+const estudiosStore = useEstudiosStore()
+const reconocimientosStore = useReconocimientosStore()
+const habilitacionesStore = useHabilitacionesStore()
 
 const form = ref({
   chat_welcome_message: '',
@@ -143,14 +216,66 @@ const form = ref({
 const b2bVisible = ref(false)
 const b2bSaving = ref(false)
 
+const maxRules = computed(() => authStore.user?.is_premium ? 10 : 5)
+
+const showSkillModal = ref(false)
+const editingSkillIndex = ref(-1)
+const editingSkill = ref({ keyword: '', pitch: '', call_to_action: '#' })
+
 function addPitchRule() {
-  if (form.value.ai_pitch_rules.length < 5) {
-    form.value.ai_pitch_rules.push({ keyword: '', pitch: '', call_to_action: '#' })
+  if (form.value.ai_pitch_rules.length < maxRules.value) {
+    editingSkillIndex.value = -1
+    editingSkill.value = { keyword: '', pitch: '', call_to_action: '#' }
+    showSkillModal.value = true
   }
 }
 
-function removePitchRule(idx) {
+function editPitchRule(idx) {
+  editingSkillIndex.value = idx
+  editingSkill.value = { ...form.value.ai_pitch_rules[idx] }
+  showSkillModal.value = true
+}
+
+function closeSkillModal() {
+  showSkillModal.value = false
+}
+
+async function removePitchRule(idx) {
   form.value.ai_pitch_rules.splice(idx, 1)
+  await saveConfig()
+}
+
+async function saveSkillModal() {
+  if (!editingSkill.value.keyword || !editingSkill.value.pitch) {
+    // Si falta condición o pitch, no guardamos para evitar vacíos
+    return
+  }
+  if (editingSkillIndex.value >= 0) {
+    form.value.ai_pitch_rules[editingSkillIndex.value] = { ...editingSkill.value }
+  } else {
+    form.value.ai_pitch_rules.push({ ...editingSkill.value })
+  }
+  closeSkillModal()
+  await saveConfig()
+}
+
+function getLinkName(val) {
+  if (!val || val === '#') return ''
+  if (val === '/sobre-mi') return 'Sobre Mí'
+  if (val === '/portafolio') return 'Portafolio General'
+  if (val.startsWith('/proyecto/')) {
+    const id = val.split('/')[2]
+    return proyectosStore.items.find(p => p.id == id)?.titulo || 'Proyecto'
+  }
+  if (val.startsWith('/experiencia/')) {
+    const id = val.split('/')[2]
+    return experienciasStore.items.find(e => e.id == id)?.empresa || 'Experiencia'
+  }
+  if (val.startsWith('/estudios/')) {
+    const id = val.split('/')[2]
+    return estudiosStore.items.find(s => s.id == id)?.titulo || 'Estudio'
+  }
+  return val
 }
 
 const saving = ref(false)
@@ -171,6 +296,9 @@ onMounted(async () => {
     if (user) {
       if (!proyectosStore.items.length) await proyectosStore.fetchAll(`?username=${user}`)
       if (!experienciasStore.items.length) await experienciasStore.fetchAll(`?username=${user}`)
+      if (!estudiosStore.items.length) await estudiosStore.fetchAll(`?username=${user}`)
+      if (!reconocimientosStore.items.length) await reconocimientosStore.fetchAll(`?username=${user}`)
+      if (!habilitacionesStore.items.length) await habilitacionesStore.fetchAll(`?username=${user}`)
     }
   } catch (err) {
     console.error('Error loading chat config:', err)

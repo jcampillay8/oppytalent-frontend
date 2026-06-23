@@ -5,7 +5,7 @@
         <!-- Thumbnail YouTube Style -->
         <div v-if="tData.image_url" class="shrink-0 w-24 sm:w-48 h-24 sm:h-32 rounded-lg overflow-hidden border border-border/50 relative">
           <div class="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay"></div>
-          <img :src="tData.image_url" :alt="tData.empresa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img :src="tData.image_url" :alt="tData.empresa" class="w-full h-full object-cover" />
         </div>
 
         <!-- Contenedor derecho para el resto de la info -->

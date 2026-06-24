@@ -39,6 +39,11 @@
         </header>
       </GlassCard>
 
+      <div class="mb-10 rounded-2xl overflow-hidden border border-border/50 shadow-xl bg-secondary/30 p-4 md:p-8 flex justify-center items-center relative group" v-if="tData.image_url">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none"></div>
+        <img :src="tData.image_url" :alt="tData.empresa" class="max-w-full max-h-[400px] object-contain rounded-lg shadow-md relative z-10" />
+      </div>
+
       <section class="mb-10">
         <h3 class="text-2xl font-bold mb-6 pb-3 border-b border-border/50 flex items-center gap-2 text-foreground">
           <Award :size="24" class="text-emerald-500"/> {{ locale === 'en' ? 'Achievements & Responsibilities' : 'Logros y Responsabilidades' }}

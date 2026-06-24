@@ -122,9 +122,19 @@ const routes = [
     component: () => import('../views/public/EstudiosList.vue'),
   },
   {
-    path: '/estudios/:id',
+    path: '/estudio/:id',
     name: 'EstudioDetail',
     component: () => import('../views/public/EstudioDetail.vue'),
+  },
+  {
+    path: '/reconocimiento/:id',
+    name: 'ReconocimientoDetail',
+    component: () => import('../views/public/ReconocimientoDetail.vue'),
+  },
+  {
+    path: '/habilitacion/:id',
+    name: 'HabilitacionDetail',
+    component: () => import('../views/public/HabilitacionDetail.vue'),
   },
   {
     path: '/sobre-mi',

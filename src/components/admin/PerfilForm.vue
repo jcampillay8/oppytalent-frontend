@@ -84,16 +84,7 @@
           <label class="block text-sm font-medium text-muted-foreground">Descripción Personal (Markdown)</label>
           <textarea v-model="activeModel.descripcion" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 min-h-[200px] resize-y" rows="10" required></textarea>
         </div>
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Certificaciones (JSON)</label>
-            <textarea v-model="activeCertificacionesText" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 font-mono text-xs" rows="4" placeholder='[{"titulo": "Licencia A4", "entidad": "Dirección de Tránsito"}]' @blur="parseCertificaciones"></textarea>
-          </div>
-          <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Idiomas (JSON)</label>
-            <textarea v-model="activeIdiomasText" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 font-mono text-xs" rows="4" placeholder='[{"idioma": "Inglés", "nivel": "Avanzado"}]' @blur="parseIdiomas"></textarea>
-          </div>
-        </div>
+
         <div class="space-y-1.5">
           <label class="block text-sm font-medium text-muted-foreground">Habilidades / Aptitudes (separadas por comas)</label>
           <input v-model="activeHabilidadesInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Liderazgo, Ventas, Python, CRM" @blur="parseHabilidades" />

@@ -1,5 +1,5 @@
 <template>
-  <div class="block group h-full">
+  <router-link :to="'/reconocimiento/' + reconocimiento.id" class="block group h-full cursor-pointer">
     <GlassCard hoverEffect class="h-full flex flex-col transition-all duration-300 group-hover:border-pink-500/50 overflow-hidden border-border/50">
       <div class="p-5 flex flex-col flex-grow">
         <div class="flex justify-between items-start gap-4 mb-2">
@@ -30,7 +30,7 @@
         </div>
       </div>
     </GlassCard>
-  </div>
+  </router-link>
 </template>
 
 <script setup>

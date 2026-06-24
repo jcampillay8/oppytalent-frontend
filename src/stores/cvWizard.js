@@ -6,6 +6,8 @@ export const useCVWizardStore = defineStore('cvWizard', {
     pendingProyectos: [],
     pendingExperiencias: [],
     pendingEstudios: [],
+    pendingReconocimientos: [],
+    pendingHabilitaciones: [],
     datosContacto: null,
   }),
   actions: {
@@ -14,6 +16,8 @@ export const useCVWizardStore = defineStore('cvWizard', {
       this.pendingProyectos = data.proyectos || []
       this.pendingExperiencias = data.experiencias || []
       this.pendingEstudios = data.estudios || []
+      this.pendingReconocimientos = data.reconocimientos || []
+      this.pendingHabilitaciones = data.habilitaciones || []
       this.datosContacto = data.datos_contacto || null
     },
     removeProyecto(index) {
@@ -25,6 +29,12 @@ export const useCVWizardStore = defineStore('cvWizard', {
     removeEstudio(index) {
       this.pendingEstudios.splice(index, 1)
     },
+    removeReconocimiento(index) {
+      this.pendingReconocimientos.splice(index, 1)
+    },
+    removeHabilitacion(index) {
+      this.pendingHabilitaciones.splice(index, 1)
+    },
     moveItem(fromType, fromIndex, toType) {
       if (fromType === toType) return;
       
@@ -35,6 +45,10 @@ export const useCVWizardStore = defineStore('cvWizard', {
         item = this.pendingExperiencias.splice(fromIndex, 1)[0];
       } else if (fromType === 'estudio') {
         item = this.pendingEstudios.splice(fromIndex, 1)[0];
+      } else if (fromType === 'reconocimiento') {
+        item = this.pendingReconocimientos.splice(fromIndex, 1)[0];
+      } else if (fromType === 'habilitacion') {
+        item = this.pendingHabilitaciones.splice(fromIndex, 1)[0];
       }
       
       if (!item) return;
@@ -45,6 +59,10 @@ export const useCVWizardStore = defineStore('cvWizard', {
         this.pendingExperiencias.push(item);
       } else if (toType === 'estudio') {
         this.pendingEstudios.push(item);
+      } else if (toType === 'reconocimiento') {
+        this.pendingReconocimientos.push(item);
+      } else if (toType === 'habilitacion') {
+        this.pendingHabilitaciones.push(item);
       }
     },
     clearContacto() {
@@ -55,6 +73,8 @@ export const useCVWizardStore = defineStore('cvWizard', {
       this.pendingProyectos = []
       this.pendingExperiencias = []
       this.pendingEstudios = []
+      this.pendingReconocimientos = []
+      this.pendingHabilitaciones = []
       this.datosContacto = null
     }
   },
@@ -63,12 +83,16 @@ export const useCVWizardStore = defineStore('cvWizard', {
       return state.pendingProyectos.length > 0 || 
              state.pendingExperiencias.length > 0 || 
              state.pendingEstudios.length > 0 || 
+             state.pendingReconocimientos.length > 0 ||
+             state.pendingHabilitaciones.length > 0 ||
              state.datosContacto !== null
     },
     totalPending: (state) => {
       return state.pendingProyectos.length + 
              state.pendingExperiencias.length + 
              state.pendingEstudios.length + 
+             state.pendingReconocimientos.length + 
+             state.pendingHabilitaciones.length + 
              (state.datosContacto ? 1 : 0)
     }
   }

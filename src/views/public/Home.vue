@@ -17,8 +17,8 @@
             <div class="absolute inset-0 bg-primary/30 rounded-full blur-xl scale-110 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           </div>
           
-          <h2 class="text-2xl font-bold text-foreground mb-1">{{ portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...' }}</h2>
-          <p class="text-sm font-medium text-muted-foreground mb-4 leading-relaxed">{{ portfolioUser?.occupation || 'Talento OppyTalent' }}</p>
+          <h2 class="text-2xl font-bold text-foreground mb-1">{{ perfilStore.items[0]?.nombre_completo || (portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...') }}</h2>
+          <p class="text-sm font-medium text-muted-foreground mb-4 leading-relaxed">{{ perfilStore.items[0]?.ocupacion || portfolioUser?.occupation || 'Profesional' }}</p>
           
           <div class="flex flex-wrap gap-2 justify-center">
             <Badge variant="primary" class="shadow-sm">OppyTalent</Badge>

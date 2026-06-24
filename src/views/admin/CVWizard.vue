@@ -119,6 +119,56 @@
                 </button>
               </div>
             </div>
+
+            <div 
+              @dragover.prevent 
+              @dragenter.prevent="onDragEnter('reconocimiento')" 
+              @dragleave.prevent="onDragLeave('reconocimiento')" 
+              @drop.prevent="onDrop($event, 'reconocimiento')"
+              class="transition-colors rounded-lg p-2 -mx-2"
+              :class="{ 'bg-primary/5 border border-primary/20': dragTarget === 'reconocimiento' }"
+            >
+              <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Reconocimientos ({{ cvWizardStore.pendingReconocimientos.length }})</h4>
+              <div class="space-y-2 min-h-[40px] rounded-lg" :class="{ 'bg-secondary/30 border border-dashed border-border/50 flex items-center justify-center': cvWizardStore.pendingReconocimientos.length === 0 }">
+                <span v-if="cvWizardStore.pendingReconocimientos.length === 0" class="text-xs text-muted-foreground">Arrastra elementos aquí</span>
+                <button 
+                  v-for="(r, idx) in cvWizardStore.pendingReconocimientos" 
+                  :key="idx"
+                  draggable="true"
+                  @dragstart="onDragStart($event, 'reconocimiento', idx)"
+                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate cursor-grab active:cursor-grabbing"
+                  :class="(currentItemType === 'reconocimiento' && currentIndex === idx) ? 'bg-primary/10 border-primary text-foreground font-medium' : 'bg-secondary/50 border-transparent hover:bg-secondary text-muted-foreground'"
+                  @click="selectItem('reconocimiento', idx)"
+                >
+                  {{ r.titulo || 'Premio/Publicación' }}
+                </button>
+              </div>
+            </div>
+
+            <div 
+              @dragover.prevent 
+              @dragenter.prevent="onDragEnter('habilitacion')" 
+              @dragleave.prevent="onDragLeave('habilitacion')" 
+              @drop.prevent="onDrop($event, 'habilitacion')"
+              class="transition-colors rounded-lg p-2 -mx-2"
+              :class="{ 'bg-primary/5 border border-primary/20': dragTarget === 'habilitacion' }"
+            >
+              <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Habilitaciones ({{ cvWizardStore.pendingHabilitaciones.length }})</h4>
+              <div class="space-y-2 min-h-[40px] rounded-lg" :class="{ 'bg-secondary/30 border border-dashed border-border/50 flex items-center justify-center': cvWizardStore.pendingHabilitaciones.length === 0 }">
+                <span v-if="cvWizardStore.pendingHabilitaciones.length === 0" class="text-xs text-muted-foreground">Arrastra elementos aquí</span>
+                <button 
+                  v-for="(h, idx) in cvWizardStore.pendingHabilitaciones" 
+                  :key="idx"
+                  draggable="true"
+                  @dragstart="onDragStart($event, 'habilitacion', idx)"
+                  class="w-full text-left px-4 py-3 rounded-lg text-sm transition-all border-l-4 truncate cursor-grab active:cursor-grabbing"
+                  :class="(currentItemType === 'habilitacion' && currentIndex === idx) ? 'bg-primary/10 border-primary text-foreground font-medium' : 'bg-secondary/50 border-transparent hover:bg-secondary text-muted-foreground'"
+                  @click="selectItem('habilitacion', idx)"
+                >
+                  {{ h.titulo || 'Licencia/Habilitación' }}
+                </button>
+              </div>
+            </div>
           </div>
         </GlassCard>
 
@@ -165,7 +215,7 @@
                 </div>
                 <div class="space-y-2">
                   <label class="text-sm font-medium text-foreground">LinkedIn</label>
-                  <input type="url" v-model="formData.linkedin" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  <input type="text" v-model="formData.linkedin" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
                 </div>
                 <div class="space-y-2">
                   <label class="text-sm font-medium text-foreground">Sobre Mí (Resumen Personal)</label>
@@ -191,7 +241,7 @@
                   <textarea v-model="formData.descripcion" rows="5" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-y"></textarea>
                 </div>
                 <div class="space-y-2">
-                  <label class="text-sm font-medium text-foreground">Tecnologías (separadas por coma)</label>
+                  <label class="text-sm font-medium text-foreground">Tecnologías, Herramientas, Tareas y Habilidades (Separadas por coma)</label>
                   <input type="text" :value="(formData.tecnologias || []).join(', ')" @input="e => formData.tecnologias = e.target.value.split(',').map(t => t.trim())" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
                 </div>
               </template>
@@ -233,6 +283,44 @@
                 <div class="space-y-2">
                   <label class="text-sm font-medium text-foreground">Año Obtención</label>
                   <input type="number" v-model="formData.anio_obtencion" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+              </template>
+
+              <template v-if="currentItemType === 'reconocimiento'">
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Título / Nombre del Premio <span class="text-destructive">*</span></label>
+                  <input type="text" v-model="formData.titulo" required class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Institución Emisora <span class="text-destructive">*</span></label>
+                  <input type="text" v-model="formData.institucion" required class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Tipo</label>
+                  <input type="text" v-model="formData.tipo" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Fecha (YYYY-MM)</label>
+                  <input type="text" v-model="formData.fecha" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Descripción</label>
+                  <textarea v-model="formData.descripcion" rows="4" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-y"></textarea>
+                </div>
+              </template>
+
+              <template v-if="currentItemType === 'habilitacion'">
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Título de Licencia / Habilitación <span class="text-destructive">*</span></label>
+                  <input type="text" v-model="formData.titulo" required class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Tipo</label>
+                  <input type="text" v-model="formData.tipo" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-sm font-medium text-foreground">Descripción</label>
+                  <textarea v-model="formData.descripcion" rows="4" class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-y"></textarea>
                 </div>
               </template>
 
@@ -318,6 +406,8 @@ function onDrop(event, type) {
       if (type === 'proyecto') newIndex = cvWizardStore.pendingProyectos.length - 1
       else if (type === 'experiencia') newIndex = cvWizardStore.pendingExperiencias.length - 1
       else if (type === 'estudio') newIndex = cvWizardStore.pendingEstudios.length - 1
+      else if (type === 'reconocimiento') newIndex = cvWizardStore.pendingReconocimientos.length - 1
+      else if (type === 'habilitacion') newIndex = cvWizardStore.pendingHabilitaciones.length - 1
       
       selectItem(type, newIndex)
     } else {
@@ -344,7 +434,9 @@ function getTypeName(type) {
     'contacto': 'Datos Personales',
     'proyecto': 'Proyecto',
     'experiencia': 'Experiencia Laboral',
-    'estudio': 'Estudio / Certificación'
+    'estudio': 'Estudio / Certificación',
+    'reconocimiento': 'Reconocimiento / Premio',
+    'habilitacion': 'Habilitación / Licencia'
   }
   return map[type] || type
 }
@@ -366,6 +458,10 @@ function selectItem(type, index) {
     formData.value = { ...cvWizardStore.pendingExperiencias[index] }
   } else if (type === 'estudio') {
     formData.value = { ...cvWizardStore.pendingEstudios[index] }
+  } else if (type === 'reconocimiento') {
+    formData.value = { ...cvWizardStore.pendingReconocimientos[index] }
+  } else if (type === 'habilitacion') {
+    formData.value = { ...cvWizardStore.pendingHabilitaciones[index] }
   }
 }
 
@@ -378,6 +474,10 @@ function autoSelectNext() {
     selectItem('experiencia', 0)
   } else if (cvWizardStore.pendingEstudios.length > 0) {
     selectItem('estudio', 0)
+  } else if (cvWizardStore.pendingReconocimientos.length > 0) {
+    selectItem('reconocimiento', 0)
+  } else if (cvWizardStore.pendingHabilitaciones.length > 0) {
+    selectItem('habilitacion', 0)
   } else {
     currentItemType.value = null
     currentIndex.value = -1
@@ -398,6 +498,10 @@ function removeItemFromStore() {
     cvWizardStore.removeExperiencia(currentIndex.value)
   } else if (currentItemType.value === 'estudio') {
     cvWizardStore.removeEstudio(currentIndex.value)
+  } else if (currentItemType.value === 'reconocimiento') {
+    cvWizardStore.removeReconocimiento(currentIndex.value)
+  } else if (currentItemType.value === 'habilitacion') {
+    cvWizardStore.removeHabilitacion(currentIndex.value)
   }
 }
 
@@ -418,9 +522,21 @@ async function saveCurrentItem() {
     else if (currentItemType.value === 'experiencia') {
       let p_inicio = formData.value.periodo_inicio || new Date().toISOString().split('T')[0]
       if (p_inicio.length === 7) p_inicio += '-01'
+      else if (p_inicio.length === 4) p_inicio += '-01-01'
       
       let p_fin = formData.value.periodo_fin || null
-      if (p_fin && p_fin.length === 7) p_fin += '-01'
+      if (p_fin) {
+        if (p_fin.toLowerCase().includes('actual') || p_fin.toLowerCase().includes('fecha') || p_fin.toLowerCase().includes('present')) {
+          p_fin = null
+        } else if (p_fin.length === 7) {
+          p_fin += '-01'
+        } else if (p_fin.length === 4) {
+          p_fin += '-12-31'
+        } else if (p_fin.length !== 10) {
+          // Si no es de longitud 7, 4 ni 10, y no es fecha, para evitar error 422
+          p_fin = null
+        }
+      }
 
       const dataToSave = {
         empresa: formData.value.empresa,
@@ -443,13 +559,18 @@ async function saveCurrentItem() {
     }
     else if (currentItemType.value === 'contacto') {
       const currentPerfiles = await api.getPerfil()
+      let linkedinUrl = formData.value.linkedin || ''
+      if (linkedinUrl && !linkedinUrl.startsWith('http://') && !linkedinUrl.startsWith('https://')) {
+        linkedinUrl = 'https://' + linkedinUrl
+      }
+
       const dataToSave = {
         nombre_completo: formData.value.nombre || '',
         ocupacion: formData.value.ocupacion || '',
         email: formData.value.email || '',
         telefono: formData.value.telefono || '',
         ciudad: formData.value.ubicacion || '',
-        linkedin: formData.value.linkedin || '',
+        linkedin: linkedinUrl,
         descripcion: formData.value.sobre_mi || 'Perfil importado desde CV',
         habilidades: habilidadesInput.value.split(',').map(h => h.trim()).filter(Boolean)
       }
@@ -465,6 +586,22 @@ async function saveCurrentItem() {
       } else {
         await api.createPerfil(dataToSave)
       }
+    } else if (currentItemType.value === 'reconocimiento') {
+      const dataToSave = {
+        titulo: formData.value.titulo,
+        institucion: formData.value.institucion,
+        tipo: formData.value.tipo || 'Reconocimiento',
+        fecha: formData.value.fecha || null,
+        descripcion: formData.value.descripcion || 'Detalle del reconocimiento'
+      }
+      await api.createReconocimiento(dataToSave)
+    } else if (currentItemType.value === 'habilitacion') {
+      const dataToSave = {
+        titulo: formData.value.titulo,
+        tipo: formData.value.tipo || 'Habilitación',
+        descripcion: formData.value.descripcion || 'Detalle de la habilitación'
+      }
+      await api.createHabilitacion(dataToSave)
     }
     
     removeItemFromStore()

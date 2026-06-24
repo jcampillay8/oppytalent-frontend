@@ -213,7 +213,10 @@
             <form @submit.prevent="handleCVUpload" class="space-y-6">
               <div 
                 class="border-2 border-dashed rounded-xl p-8 text-center transition-colors relative"
-                :class="selectedFile ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/50 hover:bg-secondary/50 cursor-pointer'"
+                :class="isDragging ? 'border-primary bg-primary/10' : (selectedFile ? 'border-primary bg-primary/5' : 'border-border/50 hover:border-primary/50 hover:bg-secondary/50 cursor-pointer')"
+                @dragover.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="onDrop"
               >
                 <input 
                   type="file" 
@@ -221,7 +224,6 @@
                   accept=".pdf,application/pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.md,.csv,.json,.xml,.png,.jpg,.jpeg,.zip,.html,.epub,audio/*,image/*" 
                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
                   @change="onFileChange" 
-                  required 
                 />
                 <div v-if="!selectedFile" class="flex flex-col items-center gap-3">
                   <UploadCloud :size="32" class="text-muted-foreground" />
@@ -347,9 +349,22 @@ function handleLogout() {
 const showCVUpload = ref(false)
 const selectedFile = ref(null)
 const uploadingCV = ref(false)
+const isDragging = ref(false)
+
+function onDrop(event) {
+  isDragging.value = false
+  if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+    handleFile(event.dataTransfer.files[0])
+  }
+}
 
 function onFileChange(event) {
-  const file = event.target.files[0]
+  if (event.target.files && event.target.files.length > 0) {
+    handleFile(event.target.files[0])
+  }
+}
+
+function handleFile(file) {
   const allowedExtensions = ['.pdf', '.docx', '.txt', '.md', '.png', '.jpg', '.jpeg']
   
   if (file) {

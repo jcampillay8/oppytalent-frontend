@@ -28,14 +28,14 @@
           class="px-2 py-1 rounded text-xs font-bold transition-all"
           :class="locale === 'es' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white hover:bg-white/10'"
         >
-          ES
+          🇪🇸 ES
         </button>
         <button 
           @click="changeLang('en')" 
           class="px-2 py-1 rounded text-xs font-bold transition-all"
           :class="locale === 'en' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white hover:bg-white/10'"
         >
-          EN
+          🇺🇸 EN
         </button>
       </div>
 
@@ -69,8 +69,8 @@
       <div class="flex items-center justify-between">
         <span class="text-sm font-medium text-zinc-400">Idioma</span>
         <div class="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
-          <button @click="changeLang('es')" class="px-3 py-1 rounded text-sm font-bold transition-all" :class="locale === 'es' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white'">ES</button>
-          <button @click="changeLang('en')" class="px-3 py-1 rounded text-sm font-bold transition-all" :class="locale === 'en' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white'">EN</button>
+          <button @click="changeLang('es')" class="px-3 py-1 rounded text-sm font-bold transition-all" :class="locale === 'es' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white'">🇪🇸 ES</button>
+          <button @click="changeLang('en')" class="px-3 py-1 rounded text-sm font-bold transition-all" :class="locale === 'en' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white'">🇺🇸 EN</button>
         </div>
       </div>
       

@@ -36,13 +36,15 @@
             <input v-model="form.ocupacion" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Ej: Ingeniero Civil Industrial" />
           </div>
         </div>
-        <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">URL de Imagen de perfil</label>
-          <ImageUploader v-model="form.image_url" />
-        </div>
-        <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">URL del Avatar navbar</label>
-          <ImageUploader v-model="form.avatar_url" />
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1 space-y-1.5">
+            <label class="block text-sm font-medium text-muted-foreground">URL de Imagen de perfil</label>
+            <ImageUploader v-model="form.image_url" />
+          </div>
+          <div class="flex-1 space-y-1.5">
+            <label class="block text-sm font-medium text-muted-foreground">URL del Avatar navbar</label>
+            <ImageUploader v-model="form.avatar_url" />
+          </div>
         </div>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 space-y-1.5">

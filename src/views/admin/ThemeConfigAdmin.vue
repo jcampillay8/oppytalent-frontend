@@ -1,14 +1,6 @@
 <template>
-  
-    <AdminLayout>
-      <div class="mb-8">
-        <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-          <Palette :size="32" class="text-primary" /> {{ $t('admin.views.theme_config.title') }}
-        </h1>
-        <p class="text-muted-foreground mt-1">{{ $t('admin.views.theme_config.description') }}</p>
-      </div>
-
-      <GlassCard class="p-6 md:p-8 w-full">
+  <div class="w-full">
+    <GlassCard class="p-6 md:p-8 w-full">
         <form @submit.prevent="saveConfig" class="space-y-12">
           
           <!-- SECCIÓN: TEMA VISUAL -->
@@ -146,14 +138,12 @@
             </NeonButton>
           </div>
         </form>
-      </GlassCard>
-    </AdminLayout>
-  
+    </GlassCard>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import { Palette, Check, Save, LayoutDashboard } from 'lucide-vue-next'

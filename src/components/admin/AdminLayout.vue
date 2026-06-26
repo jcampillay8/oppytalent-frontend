@@ -220,7 +220,7 @@ import { useRoute } from 'vue-router'
 import { 
   LayoutDashboard, FolderKanban, Briefcase, GraduationCap, 
   User, Layers, MessageSquare, LineChart, Settings, 
-  Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu, Award, ShieldCheck, ChevronDown, Network
+  Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu, Award, ShieldCheck, ChevronDown, Network, Share2
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
@@ -282,13 +282,12 @@ const menuItems = computed(() => {
         { path: `${base}/habilitaciones`, label: t('admin.sidebar.certifications'), icon: ShieldCheck, color: '#6366f1', rgb: '99,102,241' },
       ]
     },
-    { path: `${base}/secciones`, label: 'Secciones', icon: Layers, color: '#f43f5e', rgb: '244,63,94' },
-    { path: `${base}/frases`, label: t('admin.sidebar.quotes'), icon: MessageSquare, color: '#8b5cf6', rgb: '139,92,246' },
-    { path: `${base}/chat-logs`, label: t('admin.sidebar.metrics'), icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
-    { path: `${base}/chat-config`, label: t('admin.sidebar.ai_config'), icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
+    { path: `${base}/compartir`, label: 'Compartir Perfil', icon: Share2, color: '#f59e0b', rgb: '245,158,11' },
     { path: '/network', label: 'Mi Red', icon: Network, color: '#10b981', rgb: '16,185,129' },
-    { path: `${base}/theme-config`, label: t('admin.sidebar.theme_config', 'Apariencia'), icon: Palette, color: '#f43f5e', rgb: '244,63,94' },
     { path: `${base}/storage`, label: t('admin.sidebar.storage', 'Plan y Consumo'), icon: Database, color: '#10b981', rgb: '16,185,129' },
+    { path: `${base}/chat-config`, label: t('admin.sidebar.ai_config', 'Personaliza IA'), icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
+    { path: `${base}/chat-logs`, label: t('admin.sidebar.metrics', 'Métricas Chat AI'), icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
+    { path: `${base}/apariencia`, label: 'Apariencia y Contenido', icon: Palette, color: '#f43f5e', rgb: '244,63,94' }
   ]
 })
 </script>

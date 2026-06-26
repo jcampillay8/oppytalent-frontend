@@ -1,10 +1,5 @@
 <template>
-  
-    <AdminLayout>
-      <div class="mb-8">
-        <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.sections.title') }}</h1>
-        <p class="text-muted-foreground mt-1">{{ $t('admin.views.sections.description') }}</p>
-      </div>
+  <div class="w-full">
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <GlassCard 
@@ -39,12 +34,10 @@
           </div>
         </GlassCard>
       </div>
-    </AdminLayout>
-  
+  </div>
 </template>
 
 <script setup>
-import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import { useSectionConfig } from '../../composables/useSectionConfig'
 import { api } from '../../services/api'

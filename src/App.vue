@@ -156,6 +156,9 @@
                     <button @click="goToMyPortfolio(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
                       <Briefcase :size="16" /> Mi Portafolio
                     </button>
+                    <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}/compartir`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-primary font-medium" @click="close">
+                      <Share2 :size="16" /> Compartir
+                    </router-link>
                     <router-link to="/network" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
                       <Users :size="16" /> Mi Red Profesional
                       <span v-if="networkStore.pendingCount > 0" class="ml-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ networkStore.pendingCount }}</span>
@@ -310,7 +313,7 @@ import AnimatedDropdown from './components/ui/AnimatedDropdown.vue'
 import SearchSpotlight from './components/ui/SearchSpotlight.vue'
 import { useChatP2PStore } from './stores/chat_p2p'
 import { api } from './services/api'
-import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard, Bell, Network } from 'lucide-vue-next'
+import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard, Bell, Network, Share2 } from 'lucide-vue-next'
 
 const { locale } = useI18n()
 
@@ -394,7 +397,7 @@ const adminRoutes = [
   'EstudiosAdmin', 'ReconocimientosAdmin', 'HabilitacionesAdmin', 
   'PerfilAdmin', 'SeccionesAdmin', 'FrasesAdmin', 
   'ChatLogsAdmin', 'ChatConfigAdmin', 'ThemeConfigAdmin', 
-  'PlanConsumoAdmin', 'RBACAdmin', 'NetworkHub'
+  'PlanConsumoAdmin', 'RBACAdmin', 'NetworkHub', 'ShareAdmin'
 ]
 const isAdminRoute = computed(() => adminRoutes.includes(route.name))
 

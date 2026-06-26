@@ -208,15 +208,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/:username/secciones',
-    name: 'SeccionesAdmin',
-    component: () => import('../views/admin/SeccionesAdmin.vue'),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/:username/frases',
-    name: 'FrasesAdmin',
-    component: () => import('../views/admin/FrasesAdmin.vue'),
+    path: '/:username/apariencia',
+    name: 'AparienciaAdmin',
+    component: () => import('../views/admin/AparienciaAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {
@@ -232,12 +226,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/:username/theme-config',
-    name: 'ThemeConfigAdmin',
-    component: () => import('../views/admin/ThemeConfigAdmin.vue'),
-    meta: { requiresAuth: true },
-  },
-  {
     path: '/:username/storage',
     name: 'PlanConsumoAdmin',
     component: () => import('../views/admin/PlanConsumoAdmin.vue'),
@@ -247,6 +235,12 @@ const routes = [
     path: '/:username/rbac',
     name: 'RBACAdmin',
     component: () => import('../views/admin/RBACAdmin.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/:username/compartir',
+    name: 'ShareAdmin',
+    component: () => import('../views/admin/ShareAdmin.vue'),
     meta: { requiresAuth: true },
   },
   {

@@ -15,10 +15,12 @@
       <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="handleFileChange" />
       
       <!-- Si ya hay una imagen -->
-      <div v-if="modelValue && !uploading" class="w-full h-[160px] relative group">
-        <img :src="parsedImageUrl" alt="Preview" class="w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white">
-          <span class="text-3xl mb-2">🔄</span>
+      <div v-if="modelValue && !uploading" class="w-full h-[160px] relative group flex items-center justify-center bg-black/5 rounded-xl overflow-hidden">
+        <img :src="parsedImageUrl" alt="Preview" class="max-w-full max-h-full object-contain drop-shadow-md" />
+        <div class="absolute inset-0 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all text-foreground">
+          <div class="bg-primary/10 text-primary p-3 rounded-full mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21v-5h5"/></svg>
+          </div>
           <p class="text-sm font-medium">Haz clic para cambiar la imagen</p>
         </div>
       </div>

@@ -49,8 +49,8 @@
               >
                 <div class="flex flex-row items-start gap-4 w-full">
                 <!-- Imagen grande al estilo YouTube (si existe) -->
-                <div v-if="e.image_url" class="shrink-0 w-24 sm:w-48 h-24 sm:h-32 rounded-lg overflow-hidden border border-border/50">
-                  <img :src="e.image_url" alt="" class="w-full h-full object-cover" />
+                <div v-if="e.image_url" class="shrink-0 w-24 sm:w-48 h-24 sm:h-32 rounded-lg overflow-hidden border border-border/50 bg-secondary/30 flex items-center justify-center p-2">
+                  <img :src="e.image_url" alt="" class="max-w-full max-h-full object-contain drop-shadow-sm" />
                 </div>
 
                 <!-- Contenedor derecho para el resto de la info -->

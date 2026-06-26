@@ -41,14 +41,14 @@ export const api = {
   me() {
     return request('/user/profile')
   },
-  
+
   updateGeminiKey(api_key) {
     return request('/user/gemini-key', {
       method: 'PUT',
       body: JSON.stringify({ api_key })
     })
   },
-  
+
   // RBAC & Impersonation
   impersonate(role_id) {
     return request('/auth/impersonate', {
@@ -94,6 +94,12 @@ export const api = {
   },
   getUserByUsername(username) {
     return request(`/user/${encodeURIComponent(username)}`)
+  },
+  updateCustomSlug(slug) {
+    return request('/user/slug', {
+      method: 'PUT',
+      body: JSON.stringify({ slug })
+    })
   },
   updateChatConfig(data) {
     return request('/user/chat-config', {
@@ -299,12 +305,12 @@ export const api = {
     const user = localStorage.getItem('currentPortfolioUser');
     return request('/chat/', { method: 'POST', body: JSON.stringify({ username: user, messages }) })
   },
-  
+
   // Storage & OAuth
   getGoogleAuthUrl() {
     return request('/storage/google/login')
   },
-  
+
   uploadImage(file) {
     return new Promise((resolve, reject) => {
       new Compressor(file, {
@@ -316,7 +322,7 @@ export const api = {
           // Ensure the file is saved as .webp to match the compression
           const filename = file.name.replace(/\.[^/.]+$/, "") + ".webp";
           formData.append('file', result, filename)
-          
+
           const token = localStorage.getItem('token')
           fetch('/api/v1/images/upload', {
             method: 'POST',
@@ -382,7 +388,7 @@ export const api = {
   sendChatMessage: (conversationId, content) => request(`/chat-p2p/conversations/${conversationId}/messages`, { method: 'POST', body: JSON.stringify({ content }) }),
   markChatAsRead: (conversationId) => request(`/chat-p2p/conversations/${conversationId}/read`, { method: 'PUT' }),
   getChatUnreadCount: () => request('/chat-p2p/unread-count'),
-  
+
   // --- Networking ---
   sendConnectionRequest: (userId) => request(`/network/connect/${userId}`, { method: 'POST' }),
   acceptConnection: (connectionId) => request(`/network/accept/${connectionId}`, { method: 'PUT' }),

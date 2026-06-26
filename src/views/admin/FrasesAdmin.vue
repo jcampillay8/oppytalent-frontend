@@ -1,18 +1,11 @@
 <template>
-  
-    <AdminLayout>
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            {{ $t('admin.views.quotes.title') }}
-          </h1>
-          <p class="text-muted-foreground mt-1">{{ $t('admin.views.quotes.description') }}</p>
-        </div>
-        <NeonButton @click="openForm(null)" glow variant="primary">
-          <template #icon-left><Plus :size="18" /></template>
-          {{ $t('admin.titles.new_quote') }}
-        </NeonButton>
-      </div>
+  <div class="w-full">
+    <div class="flex flex-col sm:flex-row justify-end items-start sm:items-center mb-6 gap-4">
+      <NeonButton @click="openForm(null)" glow variant="primary">
+        <template #icon-left><Plus :size="18" /></template>
+        {{ $t('admin.titles.new_quote') }}
+      </NeonButton>
+    </div>
 
       <!-- Banner Informativo UI/UX -->
       <div class="mb-8 p-5 bg-primary/5 border border-primary/20 rounded-xl flex items-start gap-4 shadow-sm relative overflow-hidden group">
@@ -99,13 +92,11 @@
           </GlassCard>
         </TransitionGroup>
       </div>
-    </AdminLayout>
-  
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import AdminLayout from '../../components/admin/AdminLayout.vue'
 import FraseForm from '../../components/admin/FraseForm.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'

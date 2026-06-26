@@ -4,60 +4,7 @@
     <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
     <div class="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-500/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-    <!-- Navbar Premium -->
-    <nav class="fixed top-0 left-0 right-0 h-16 bg-background/70 backdrop-blur-xl border-b border-border/50 z-50 flex items-center justify-between px-6">
-      <div class="flex items-center gap-8">
-        <router-link to="/home" class="text-xl font-black tracking-tighter text-foreground decoration-none flex items-center gap-2">
-          Oppy<span class="text-primary">Talent</span>
-        </router-link>
-        
-        <!-- Search bar (Only visually for networking, B2B is separate) -->
-        <div class="relative hidden md:block w-80 group">
-          <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search class="h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          </div>
-          <input 
-            type="text" 
-            placeholder="Buscar talentos o proyectos..." 
-            class="w-full h-10 pl-10 pr-4 bg-secondary/50 border border-border rounded-full focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm text-foreground placeholder:text-muted-foreground"
-          />
-        </div>
-      </div>
 
-      <div class="flex items-center gap-4">
-        <button v-if="currentUser?.is_recruiter" @click="router.push('/b2b')" class="hidden md:flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-full hover:shadow-lg hover:shadow-emerald-500/20 transition-all">
-          <Briefcase size="14"/> Portal B2B
-        </button>
-
-        <!-- Dropdown -->
-        <div class="relative" v-if="currentUser">
-          <button @click.stop="isDropdownOpen = !isDropdownOpen" class="flex items-center gap-2 hover:bg-secondary p-1 pr-3 rounded-full transition-colors border border-border/50">
-            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm overflow-hidden border border-border">
-              <img v-if="currentUser.userImage || currentUser.avatar_url" :src="currentUser.userImage || currentUser.avatar_url" class="w-full h-full object-cover" />
-              <span v-else>{{ (currentUser.firstName || currentUser.username || 'U').charAt(0).toUpperCase() }}</span>
-            </div>
-            <ChevronDown size="14" class="text-muted-foreground" />
-          </button>
-
-          <div v-if="isDropdownOpen" @click.stop class="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-xl py-2 z-50 animate-in slide-in-from-top-2">
-            <div class="px-4 py-2 border-b border-border/50 mb-2">
-              <p class="text-sm font-bold truncate">{{ currentUser.firstName || currentUser.username }}</p>
-              <p class="text-xs text-muted-foreground truncate">{{ currentUser.username }}</p>
-            </div>
-            <router-link to="/admin" @click="isDropdownOpen = false" class="flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary transition-colors">
-              <Settings size="16" class="text-muted-foreground"/> Configuración
-            </router-link>
-            <button @click="goToMyPortfolio" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary transition-colors text-left">
-              <Briefcase size="16" class="text-muted-foreground"/> Mi Portafolio
-            </button>
-            <div class="h-px bg-border/50 my-2"></div>
-            <button @click="logout" class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:bg-red-400/10 transition-colors text-left">
-              <LogOut size="16" /> Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
 
     <!-- Main Grid -->
     <main class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
@@ -302,7 +249,7 @@ import { useRouter } from 'vue-router'
 import { api } from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
 import { 
-  Search, ChevronDown, Settings, LogOut, Briefcase, Eye, 
+  Briefcase, Eye, 
   Bot, MessageSquare, Swords, Sparkles, ExternalLink, Heart,
   Activity, Lightbulb, Users, UserPlus
 } from 'lucide-vue-next'
@@ -311,12 +258,10 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const currentUser = ref(null)
-const isDropdownOpen = ref(false)
 const demandData = ref(null)
 const talentFeedback = ref([])
 
 onMounted(async () => {
-  document.addEventListener('click', closeDropdown)
   try {
     currentUser.value = await api.me()
   } catch (error) {
@@ -337,12 +282,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  document.removeEventListener('click', closeDropdown)
 })
-
-function closeDropdown() {
-  isDropdownOpen.value = false
-}
 
 function goToMyPortfolio() {
   if (currentUser.value?.username) {
@@ -353,10 +293,7 @@ function goToMyPortfolio() {
   router.push('/portafolio')
 }
 
-function logout() {
-  authStore.logout()
-  router.push('/login')
-}
+
 </script>
 
 <style scoped>

@@ -353,7 +353,7 @@ watch(() => route.path, async () => {
   }
 }, { immediate: true })
 
-const appRoutes = ['Landing', 'Features', 'TalentInfo', 'B2BInfo', 'Pricing', 'AboutOppy', 'LoginUser', 'RegisterUser', 'HomeFeed', 'AuthCallback']
+const appRoutes = ['Landing', 'Features', 'TalentInfo', 'B2BInfo', 'Pricing', 'AboutOppy', 'LoginUser', 'RegisterUser', 'AuthCallback']
 const isAppLayout = computed(() => appRoutes.includes(route.name))
 
 const adminRoutes = [
@@ -365,7 +365,7 @@ const adminRoutes = [
 ]
 const isAdminRoute = computed(() => adminRoutes.includes(route.name))
 
-const fullHeightRoutes = ['UserPortfolio', 'AI Assistant', 'Inbox']
+const fullHeightRoutes = ['UserPortfolio', 'AI Assistant', 'Inbox', 'HomeFeed']
 const isFullHeightRoute = computed(() => fullHeightRoutes.includes(route.name))
 
 const searchQuery = ref('')

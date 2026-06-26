@@ -1,27 +1,42 @@
 <template>
-  <router-link :to="`/estudio/${estudio.id}`" class="block outline-none group h-full">
-    <GlassCard hoverEffect class="h-full flex flex-col transition-all duration-300 group-hover:border-blue-500/50 overflow-hidden border-border/50">
-      <div v-if="tData.image_url" class="w-full h-48 overflow-hidden relative shrink-0">
-        <div class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay"></div>
-        <img :src="tData.image_url" :alt="tData.institucion" class="w-full h-full object-cover" />
-      </div>
-      
-      <div class="p-5 flex flex-col flex-grow">
-        <div class="flex justify-between items-start gap-4 mb-2">
-          <div>
-            <h3 class="text-lg font-bold text-foreground group-hover:text-blue-500 transition-colors line-clamp-2">{{ tData.titulo }}</h3>
-            <span class="text-sm font-medium text-blue-500/80 block mt-0.5">{{ tData.institucion }}</span>
-          </div>
-          <span class="text-xs font-medium text-muted-foreground whitespace-nowrap pt-1 bg-secondary px-2 py-0.5 rounded-full border border-border/50">{{ formatPeriod(tData.fecha_inicio, tData.fecha_fin) }}</span>
+  <router-link :to="`/estudio/${estudio.id}`" class="block outline-none group h-full w-full">
+    <GlassCard hoverEffect class="h-full border-border/50 transition-all duration-300 group-hover:border-amber-500/50">
+      <div class="flex flex-row items-start gap-4 w-full h-full">
+        <!-- Thumbnail -->
+        <div v-if="tData.image_url" class="shrink-0 w-24 sm:w-48 h-24 sm:h-32 rounded-lg overflow-hidden border border-border/50 relative bg-white dark:bg-white/5 p-2 flex items-center justify-center">
+          <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 mix-blend-overlay pointer-events-none"></div>
+          <img :src="tData.image_url" :alt="tData.institucion" class="w-full h-full object-contain drop-shadow-sm relative z-0" />
         </div>
-        
-        <p class="text-sm text-muted-foreground mb-4 line-clamp-3">{{ truncate(tData.descripcion, 200) }}</p>
-        
-        <div class="mt-auto pt-3 border-t border-border/50 flex justify-between items-center">
-          <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">
-            {{ tData.tipo_estudio || 'Estudio' }}
-          </span>
-          <a v-if="tData.enlace_credencial" :href="tData.enlace_credencial" target="_blank" @click.stop class="text-xs text-blue-500 hover:text-blue-400 font-medium">Ver Credencial &rarr;</a>
+
+        <!-- Contenedor derecho -->
+        <div class="flex-1 flex flex-col justify-between min-w-0 h-full">
+          
+          <div class="flex flex-col gap-1 sm:gap-2 min-w-0 w-full">
+            <div class="flex items-center gap-3">
+              <div class="p-2 rounded-md bg-amber-500/10 text-amber-500 shrink-0 hidden sm:flex">
+                <GraduationCap :size="18" />
+              </div>
+              <h3 class="font-bold text-lg text-foreground group-hover:text-amber-500 transition-colors truncate" :title="tData.titulo">{{ tData.titulo }}</h3>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-3 text-sm text-muted-foreground mt-1 flex-wrap">
+              <span class="flex items-center gap-1 font-medium"><Building2 :size="14" /> {{ tData.institucion }}</span>
+              <span class="hidden sm:inline">&middot;</span>
+              <span class="flex items-center gap-1 bg-secondary px-2 py-0.5 rounded-full border border-border/50 text-[10px] sm:text-xs">
+                <Calendar :size="12" /> {{ formatPeriod(tData.fecha_inicio, tData.fecha_fin) }}
+              </span>
+            </div>
+
+            <p class="text-xs sm:text-sm text-muted-foreground mt-2 line-clamp-2 hidden sm:block">{{ truncate(tData.descripcion, 150) }}</p>
+          </div>
+
+          <div class="mt-auto pt-3 sm:mt-4 flex items-center justify-between">
+            <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+              {{ tData.tipo_estudio || 'Estudio' }}
+            </span>
+            <a v-if="tData.enlace_credencial" :href="tData.enlace_credencial" target="_blank" @click.stop class="text-xs text-amber-500 hover:text-amber-400 font-medium">Ver Credencial &rarr;</a>
+          </div>
+
         </div>
       </div>
     </GlassCard>
@@ -32,6 +47,7 @@
 import { useTranslatedData } from '../../composables/useTranslatedData'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { GraduationCap, Building2, Calendar } from 'lucide-vue-next'
 import GlassCard from '../ui/GlassCard.vue'
 
 const props = defineProps({

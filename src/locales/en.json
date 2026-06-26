@@ -20,12 +20,12 @@
     "disclaimer_2": " anytime."
   },
   "portfolio": {
-    "proyectos": "Projects",
+    "proyectos": "Personal & Work Projects",
     "experiencia": "Work Experience",
-    "estudios": "Studies & Certifications",
+    "estudios": "Studies, Courses & Certifications",
     "frases": "Quotes",
-    "reconocimientos": "Recognitions & Awards",
-    "habilitaciones": "Licenses & Certifications",
+    "reconocimientos": "Recognitions & Publications",
+    "habilitaciones": "Availability & Licenses",
     "read_more": "Read More",
     "credential": "View Credential"
   },

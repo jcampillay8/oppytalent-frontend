@@ -42,8 +42,8 @@
           </div>
 
           <!-- Estudios -->
-          <div v-else-if="currentTab === 'estudios'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div v-if="!estudios.length" class="col-span-full text-center py-10 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">
+          <div v-else-if="currentTab === 'estudios'" class="grid grid-cols-1 gap-6 relative">
+            <div v-if="!estudios.length" class="text-center py-10 text-muted-foreground bg-secondary/30 rounded-xl border border-dashed border-border/50">
               No se encontraron estudios.
             </div>
             <EstudioCard v-for="e in estudios" :key="e.id" :estudio="e" />

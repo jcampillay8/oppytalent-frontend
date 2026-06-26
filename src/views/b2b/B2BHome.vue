@@ -90,11 +90,14 @@
               <div class="w-14 h-14 bg-secondary rounded-full flex items-center justify-center text-xl font-bold border border-border text-foreground">
                 {{ res.first_name ? res.first_name[0] : res.username[0].toUpperCase() }}
               </div>
-              <div>
-                <h3 class="text-lg font-bold text-foreground">
-                  {{ res.first_name }} {{ res.last_name }}
-                </h3>
-                <p class="text-sm text-primary font-medium">@{{ res.username }}</p>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-bold text-foreground truncate">
+                    {{ res.first_name }} {{ res.last_name }}
+                  </h3>
+                  <DegreeBadge v-if="res.degree" :degree="res.degree" />
+                </div>
+                <p class="text-sm text-primary font-medium truncate">@{{ res.username }}</p>
               </div>
             </div>
             
@@ -102,19 +105,25 @@
               Perfil altamente compatible basado en tu criterio de búsqueda vectorial.
             </p>
             
-            <!-- Select Checkbox Indicator -->
-            <div v-if="results.length > 1" class="mt-4 flex justify-between items-center">
-              <span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-                Haz clic para seleccionar
-              </span>
-              <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
-                :class="selectedCandidates.includes(res.usuario_id) ? 'border-primary bg-primary' : 'border-muted-foreground/30 group-hover:border-primary/50'"
-              >
-                <Check v-if="selectedCandidates.includes(res.usuario_id)" size="14" class="text-primary-foreground" />
+            <!-- Select Checkbox Indicator & Connection -->
+            <div class="mt-4 flex justify-between items-center pt-3 border-t border-border/50">
+              <div @click.stop class="z-10">
+                <ConnectionButton :userId="res.usuario_id" :initialStatus="res.degree ? 'ACCEPTED' : null" />
               </div>
-            </div>
-            <div v-else class="mt-4 flex justify-between items-center">
-              <span class="text-xs text-primary font-medium">¡Match Directo!</span>
+              
+              <div v-if="results.length > 1" class="flex items-center gap-2" @click="toggleSelection(res.usuario_id)">
+                <span class="text-xs text-muted-foreground group-hover:text-foreground transition-colors hidden sm:block">
+                  Seleccionar
+                </span>
+                <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+                  :class="selectedCandidates.includes(res.usuario_id) ? 'border-primary bg-primary' : 'border-muted-foreground/30 group-hover:border-primary/50'"
+                >
+                  <Check v-if="selectedCandidates.includes(res.usuario_id)" size="14" class="text-primary-foreground" />
+                </div>
+              </div>
+              <div v-else class="flex items-center">
+                <span class="text-xs text-primary font-medium">¡Match Directo!</span>
+              </div>
             </div>
           </div>
         </div>
@@ -140,6 +149,8 @@ import { useAuthStore } from '../../stores/auth'
 import { api } from '../../services/api'
 import { Search, Zap, Check, Swords, SearchX } from 'lucide-vue-next'
 import { toast } from 'vue3-toastify'
+import DegreeBadge from '../../components/ui/DegreeBadge.vue'
+import ConnectionButton from '../../components/ui/ConnectionButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -179,6 +190,16 @@ async function handleSearch() {
   try {
     const data = await api.searchTalent(searchQuery.value)
     results.value = data || []
+    
+    // Fetch degrees for all results
+    for (const res of results.value) {
+      try {
+        const degreeData = await api.getConnectionDegree(res.usuario_id)
+        res.degree = degreeData.degree
+      } catch (e) {
+        res.degree = null
+      }
+    }
   } catch (error) {
     toast.error('Error al realizar la búsqueda semántica.')
     console.error(error)

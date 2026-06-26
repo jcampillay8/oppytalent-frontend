@@ -220,7 +220,7 @@ import { useRoute } from 'vue-router'
 import { 
   LayoutDashboard, FolderKanban, Briefcase, GraduationCap, 
   User, Layers, MessageSquare, LineChart, Settings, 
-  Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu, Award, ShieldCheck, ChevronDown
+  Palette, Database, LogOut, ChevronLeft, ChevronRight, X, Menu, Award, ShieldCheck, ChevronDown, Network
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
@@ -262,7 +262,11 @@ function toggleMenu(id) {
 const isActive = (path) => route.path === path || route.path.startsWith(path + '/')
 
 const menuItems = computed(() => {
-  const base = `/${route.params.username || 'admin'}`
+  let userParam = route.params.username
+  if (!userParam && authStore.user?.username) {
+    userParam = authStore.user.username.split('@')[0]
+  }
+  const base = `/${userParam || 'admin'}`
   return [
     { path: `${base}/dashboard`, label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
     { path: `${base}/perfil`, label: t('admin.sidebar.profile'), icon: User, color: '#06b6d4', rgb: '6,182,212' },
@@ -282,6 +286,7 @@ const menuItems = computed(() => {
     { path: `${base}/frases`, label: t('admin.sidebar.quotes'), icon: MessageSquare, color: '#8b5cf6', rgb: '139,92,246' },
     { path: `${base}/chat-logs`, label: t('admin.sidebar.metrics'), icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
     { path: `${base}/chat-config`, label: t('admin.sidebar.ai_config'), icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
+    { path: '/network', label: 'Mi Red', icon: Network, color: '#10b981', rgb: '16,185,129' },
     { path: `${base}/theme-config`, label: t('admin.sidebar.theme_config', 'Apariencia'), icon: Palette, color: '#f43f5e', rgb: '244,63,94' },
     { path: `${base}/storage`, label: t('admin.sidebar.storage', 'Plan y Consumo'), icon: Database, color: '#10b981', rgb: '16,185,129' },
   ]

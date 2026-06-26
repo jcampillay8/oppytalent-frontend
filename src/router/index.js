@@ -146,6 +146,12 @@ const routes = [
     name: 'Contactame',
     component: () => import('../views/public/Contactame.vue'),
   },
+  {
+    path: '/network',
+    name: 'NetworkHub',
+    component: () => import('../views/private/NetworkHub.vue'),
+    meta: { requiresAuth: true }
+  },
 
   {
     path: '/:username/dashboard',

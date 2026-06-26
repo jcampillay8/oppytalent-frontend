@@ -70,6 +70,7 @@
             <router-link to="/contactame" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
               <Mail :size="16" /> {{ $t('nav.contact') }}
             </router-link>
+
             <router-link to="/sobre-mi" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
               <img v-if="avatarUrl" :src="avatarUrl" alt="" class="h-6 w-6 rounded-full border border-border object-cover" />
               <User v-else :size="16" />
@@ -91,8 +92,13 @@
                 @click="contactTalent" 
                 class="hidden sm:flex items-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors shadow-sm"
               >
-                <MessageSquare :size="14" /> Contactar
+                <MessageSquare :size="14" /> Chat {{ portfolioOwnerName || portfolioUsername }}
               </button>
+              <ConnectionButton 
+                v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== portfolioUsername && portfolioUserObj"
+                :userId="portfolioUserObj.id"
+                class="hidden sm:flex"
+              />
 
               <router-link :to="`/${authStore.user?.username?.split('@')[0] || 'admin'}/inbox`" class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Mensajes">
                 <MessageSquare :size="18" />
@@ -107,6 +113,7 @@
               <button class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Notificaciones">
                 <Bell :size="18" />
               </button>
+
             </template>
 
             <!-- Separator -->
@@ -149,6 +156,10 @@
                     <button @click="goToMyPortfolio(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
                       <Briefcase :size="16" /> Mi Portafolio
                     </button>
+                    <router-link to="/network" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
+                      <Users :size="16" /> Mi Red Profesional
+                      <span v-if="networkStore.pendingCount > 0" class="ml-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ networkStore.pendingCount }}</span>
+                    </router-link>
                   </template>
 
                   <div class="h-px bg-border my-1"></div>
@@ -224,9 +235,14 @@
             </button>
             
             <!-- Mobile Contactar (Authenticated) -->
-            <button v-if="authStore.token && isPortfolioView && authStore.user?.username.split('@')[0] !== portfolioUsername" @click="closeMenu(); contactTalent()" class="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground px-4 py-3 rounded-lg font-medium shadow-sm">
-              <MessageSquare :size="18" /> Contactar
+            <button v-if="authStore.token && isPortfolioView && authStore.user?.username.split('@')[0] !== portfolioUsername" @click="closeMenu(); contactTalent()" class="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground px-4 py-3 rounded-lg font-medium shadow-sm mb-2">
+              <MessageSquare :size="18" /> Chat {{ portfolioOwnerName || portfolioUsername }}
             </button>
+            <ConnectionButton 
+              v-if="authStore.token && isPortfolioView && authStore.user?.username.split('@')[0] !== portfolioUsername && portfolioUserObj"
+              :userId="portfolioUserObj.id"
+              class="w-full py-3 justify-center mb-2"
+            />
 
             <!-- Inbox Link for Mobile -->
             <router-link v-if="authStore.token" :to="`/${authStore.user?.username?.split('@')[0] || 'admin'}/inbox`" class="flex items-center justify-between px-2 py-2 text-muted-foreground" @click="closeMenu">
@@ -243,6 +259,14 @@
               </div>
             </button>
 
+            <!-- Network Link for Mobile -->
+            <router-link v-if="authStore.token" to="/network" class="flex items-center justify-between px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <div class="flex items-center gap-3">
+                <Users :size="20" /> Red Profesional
+              </div>
+              <span v-if="networkStore.pendingCount > 0" class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">{{ networkStore.pendingCount }}</span>
+            </router-link>
+
             <router-link :to="chatLink" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
               <MessageSquare :size="20" /> {{ $t('nav.chat') }}
             </router-link>
@@ -252,6 +276,7 @@
             <router-link to="/contactame" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
               <Mail :size="20" /> {{ $t('nav.contact') }}
             </router-link>
+
             <router-link to="/sobre-mi" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
               <User :size="20" /> {{ $t('nav.about', { name: portfolioOwnerName }) }}
             </router-link>
@@ -277,13 +302,15 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePerfilStore } from './stores/perfil'
 import { useAuthStore } from './stores/auth'
+import { useNetworkStore } from './stores/network'
 import { useThemeStore } from './stores/useThemeStore'
 import ChatWidget from './components/public/ChatWidget.vue'
+import ConnectionButton from './components/ui/ConnectionButton.vue'
 import AnimatedDropdown from './components/ui/AnimatedDropdown.vue'
 import SearchSpotlight from './components/ui/SearchSpotlight.vue'
 import { useChatP2PStore } from './stores/chat_p2p'
 import { api } from './services/api'
-import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard, Bell } from 'lucide-vue-next'
+import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard, Bell, Network } from 'lucide-vue-next'
 
 const { locale } = useI18n()
 
@@ -292,6 +319,7 @@ const router = useRouter()
 const perfilStore = usePerfilStore()
 const authStore = useAuthStore()
 const chatStore = useChatP2PStore()
+const networkStore = useNetworkStore()
 
 const isHunter = computed(() => authStore.user?.role_name?.toUpperCase() === 'HUNTER')
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
@@ -335,17 +363,22 @@ onMounted(async () => {
   watch(() => authStore.token, (newToken) => {
     if (newToken) {
       chatStore.startPolling()
+      networkStore.startPolling()
     } else {
       chatStore.stopPolling()
+      networkStore.stopPolling()
     }
   }, { immediate: true })
 })
+
+const portfolioUserObj = ref(null)
 
 watch(() => route.path, async () => {
   const username = route.params.username || localStorage.getItem('currentPortfolioUser')
   if (username) {
     try {
       const user = await api.getUserByUsername(username)
+      portfolioUserObj.value = user
       portfolioOwnerName.value = user.firstName || user.username
       // Fetch only the profile of the target user
       await perfilStore.fetchAll(`?username=${username}`)
@@ -361,7 +394,7 @@ const adminRoutes = [
   'EstudiosAdmin', 'ReconocimientosAdmin', 'HabilitacionesAdmin', 
   'PerfilAdmin', 'SeccionesAdmin', 'FrasesAdmin', 
   'ChatLogsAdmin', 'ChatConfigAdmin', 'ThemeConfigAdmin', 
-  'PlanConsumoAdmin', 'RBACAdmin'
+  'PlanConsumoAdmin', 'RBACAdmin', 'NetworkHub'
 ]
 const isAdminRoute = computed(() => adminRoutes.includes(route.name))
 
@@ -472,7 +505,8 @@ async function contactTalent() {
   
   try {
     await api.startChatConversation(targetUsername)
-    router.push(`/inbox?chat=${targetUsername}`)
+    const myUser = authStore.user?.username?.split('@')[0] || 'admin'
+    router.push(`/${myUser}/inbox?chat=${targetUsername}`)
   } catch (err) {
     console.error("Error iniciando chat:", err)
   }

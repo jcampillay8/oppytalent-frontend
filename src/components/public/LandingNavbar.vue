@@ -67,11 +67,16 @@
           class="hidden sm:flex mr-2"
         >
           <template #icon-left><MessageSquare :size="16" /></template>
-          Contactar
+          Chat {{ targetUserObj?.first_name || route.params.username }}
         </NeonButton>
+        
+        <ConnectionButton 
+          v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username && targetUserObj"
+          :userId="targetUserObj.id"
+          class="hidden sm:flex mr-2"
+        />
 
-        <!-- Bell Icon -->
-        <router-link to="/inbox" class="relative p-2 text-zinc-300 hover:text-white transition-colors">
+        <router-link :to="`/${authStore.user?.username.split('@')[0] || 'admin'}/inbox`" class="relative p-2 text-zinc-300 hover:text-white transition-colors" title="Mensajes">
           <Bell :size="20" />
           <span 
             v-if="chatStore.unreadCount > 0"
@@ -80,6 +85,8 @@
             {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
           </span>
         </router-link>
+
+
         
         <router-link :to="`/${authStore.user?.username.split('@')[0]}/dashboard`">
           <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">Dashboard</NeonButton>
@@ -135,17 +142,28 @@
           glow
           class="w-full py-3 justify-center"
         >
-          Contactar
+          Chat {{ targetUserObj?.first_name || route.params.username }}
         </NeonButton>
+        <ConnectionButton 
+          v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username && targetUserObj"
+          :userId="targetUserObj.id"
+          class="w-full py-3 justify-center mb-2"
+        />
 
         <router-link @click="isMobileMenuOpen = false" :to="`/${authStore.user?.username.split('@')[0]}/dashboard`" class="w-full">
           <NeonButton glow variant="outline" class="w-full py-3 justify-center">Ir al Dashboard</NeonButton>
         </router-link>
         
-        <router-link @click="isMobileMenuOpen = false" to="/inbox" class="w-full">
+        <router-link @click="isMobileMenuOpen = false" :to="`/${authStore.user?.username.split('@')[0] || 'admin'}/inbox`" class="w-full">
           <NeonButton variant="outline" class="w-full py-3 justify-center flex items-center gap-2">
             Mensajes
             <span v-if="chatStore.unreadCount > 0" class="bg-destructive text-white text-xs px-2 py-0.5 rounded-full">{{ chatStore.unreadCount }}</span>
+          </NeonButton>
+        </router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/network" class="w-full">
+          <NeonButton variant="outline" class="w-full py-3 justify-center flex items-center gap-2">
+            Red
+            <span v-if="networkStore.pendingCount > 0" class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">{{ networkStore.pendingCount }}</span>
           </NeonButton>
         </router-link>
       </div>
@@ -155,12 +173,14 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import { Menu, X, Bell, MessageSquare } from 'lucide-vue-next'
+import { Menu, X, Bell, MessageSquare, Users } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import NeonButton from '../ui/NeonButton.vue'
+import ConnectionButton from '../ui/ConnectionButton.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useChatP2PStore } from '../../stores/chat_p2p'
+import { useNetworkStore } from '../../stores/network'
 import { api } from '../../services/api'
 
 const isMobileMenuOpen = ref(false)
@@ -170,10 +190,24 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const chatStore = useChatP2PStore()
+const networkStore = useNetworkStore()
 
 const isPortfolioView = computed(() => {
   return route.name === 'UserPortfolio' || !!route.params.username
 })
+
+const targetUserObj = ref(null)
+watch(() => route.params.username, async (newVal) => {
+  if (newVal && newVal !== authStore.user?.username?.split('@')[0]) {
+    try {
+      targetUserObj.value = await api.getUserByUsername(newVal)
+    } catch (e) {
+      targetUserObj.value = null
+    }
+  } else {
+    targetUserObj.value = null
+  }
+}, { immediate: true })
 
 async function contactTalent() {
   const targetUsername = route.params.username
@@ -181,7 +215,8 @@ async function contactTalent() {
   
   try {
     await api.startChatConversation(targetUsername)
-    router.push(`/inbox?chat=${targetUsername}`)
+    const myUser = authStore.user?.username?.split('@')[0] || 'admin'
+    router.push(`/${myUser}/inbox?chat=${targetUsername}`)
   } catch (err) {
     console.error("Error iniciando chat:", err)
   }
@@ -191,8 +226,10 @@ onMounted(() => {
   watch(() => authStore.token, (newToken) => {
     if (newToken) {
       chatStore.startPolling()
+      networkStore.startPolling()
     } else {
       chatStore.stopPolling()
+      networkStore.stopPolling()
     }
   }, { immediate: true })
 })

@@ -381,5 +381,16 @@ export const api = {
   getChatMessages: (conversationId) => request(`/chat-p2p/conversations/${conversationId}/messages`),
   sendChatMessage: (conversationId, content) => request(`/chat-p2p/conversations/${conversationId}/messages`, { method: 'POST', body: JSON.stringify({ content }) }),
   markChatAsRead: (conversationId) => request(`/chat-p2p/conversations/${conversationId}/read`, { method: 'PUT' }),
-  getChatUnreadCount: () => request('/chat-p2p/unread-count')
+  getChatUnreadCount: () => request('/chat-p2p/unread-count'),
+  
+  // --- Networking ---
+  sendConnectionRequest: (userId) => request(`/network/connect/${userId}`, { method: 'POST' }),
+  acceptConnection: (connectionId) => request(`/network/accept/${connectionId}`, { method: 'PUT' }),
+  rejectConnection: (connectionId) => request(`/network/reject/${connectionId}`, { method: 'PUT' }),
+  getConnections: () => request('/network/connections'),
+  getPendingConnections: () => request('/network/pending'),
+  getConnectionStatus: (targetUserId) => request(`/network/status/${targetUserId}`),
+  getConnectionDegree: (targetUserId) => request(`/network/degrees/${targetUserId}`),
+  getNetworkFeed: () => request('/network/feed'),
+  getNetworkSuggestions: () => request('/network/suggestions')
 }

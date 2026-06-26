@@ -72,72 +72,45 @@
           <button class="text-sm font-medium text-primary hover:underline">Ver todos</button>
         </div>
 
-        <!-- Fake Project Showcase Cards -->
+        <!-- Network Feed Cards -->
         <div class="space-y-6">
-          <div class="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
-            <div class="flex justify-between items-start mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold border border-emerald-500/30">
-                  A
-                </div>
-                <div>
-                  <h4 class="font-bold text-foreground text-sm">Ana Martínez</h4>
-                  <p class="text-xs text-muted-foreground">Frontend Developer</p>
-                </div>
-              </div>
-              <span class="text-[10px] uppercase tracking-wider font-bold text-primary bg-primary/10 px-2 py-1 rounded-full">
-                Destacado
-              </span>
-            </div>
-            
-            <h3 class="text-lg font-bold mb-2">E-commerce con Nuxt 3 y Supabase</h3>
-            <p class="text-sm text-muted-foreground line-clamp-3 mb-4">
-              Implementación completa de un e-commerce utilizando SSR con Nuxt 3. La base de datos y la autenticación están manejadas por Supabase, logrando un perfomance de 99 en Lighthouse.
-            </p>
-            
-            <div class="flex gap-2 mb-4">
-              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Vue.js</span>
-              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Supabase</span>
-              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Tailwind</span>
-            </div>
-            
-            <div class="flex gap-3 border-t border-border/50 pt-4">
-              <button class="flex-1 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
-                <ExternalLink size="16" /> Ver Demo
-              </button>
-              <button class="py-2 px-4 border border-border hover:border-primary text-muted-foreground hover:text-primary text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
-                <Heart size="16" /> 24
-              </button>
-            </div>
+          <div v-if="loadingFeed" class="flex justify-center py-10">
+            <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          
+          <div v-else-if="feedEvents.length === 0" class="bg-card border border-dashed border-border/50 rounded-2xl p-10 text-center">
+            <Network size="48" class="mx-auto text-muted-foreground/50 mb-4" />
+            <h3 class="text-lg font-bold">Tu feed está tranquilo</h3>
+            <p class="text-sm text-muted-foreground mt-2">Conecta con más talentos en la sección Mi Red para ver sus actualizaciones aquí.</p>
           </div>
 
-          <div class="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+          <div v-for="event in feedEvents" :key="event.id" class="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
             <div class="flex justify-between items-start mb-4">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold border border-blue-500/30">
-                  C
+                <div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold border border-border overflow-hidden cursor-pointer" @click="router.push(`/${event.user.username.split('@')[0]}`)">
+                  <img v-if="event.user.user_image" :src="event.user.user_image" class="w-full h-full object-cover" />
+                  <span v-else>{{ event.user.first_name ? event.user.first_name[0] : event.user.username[0].toUpperCase() }}</span>
                 </div>
                 <div>
-                  <h4 class="font-bold text-foreground text-sm">Carlos Dev</h4>
-                  <p class="text-xs text-muted-foreground">Data Engineer</p>
+                  <h4 class="font-bold text-foreground text-sm flex items-center gap-2 cursor-pointer hover:text-primary transition-colors" @click="router.push(`/${event.user.username.split('@')[0]}`)">
+                    {{ event.user.first_name || event.user.username.split('@')[0] }} {{ event.user.last_name || '' }}
+                    <DegreeBadge v-if="event.user.degree > 0" :degree="event.user.degree" />
+                  </h4>
+                  <p class="text-xs text-muted-foreground">{{ formatEventTime(event.created_at) }}</p>
                 </div>
               </div>
             </div>
             
-            <h3 class="text-lg font-bold mb-2">Pipeline ETL en tiempo real con Kafka</h3>
-            <p class="text-sm text-muted-foreground line-clamp-3 mb-4">
-              Arquitectura de procesamiento de datos en streaming utilizando Apache Kafka y Python. Procesa más de 10k eventos por segundo y los ingesta en un data warehouse.
+            <p class="text-base text-foreground mb-4">
+              <span v-if="event.event_type === 'NEW_PROJECT'">🚀 ha añadido un nuevo <strong>proyecto</strong> a su portafolio.</span>
+              <span v-else-if="event.event_type === 'NEW_EXPERIENCE'">💼 ha actualizado su <strong>experiencia laboral</strong>.</span>
+              <span v-else-if="event.event_type === 'NEW_CERTIFICATION'">🏆 ha obtenido un nuevo <strong>reconocimiento o certificación</strong>.</span>
+              <span v-else-if="event.event_type === 'NEW_STUDY'">🎓 ha añadido un nuevo <strong>estudio</strong> a su perfil.</span>
             </p>
             
-            <div class="flex gap-2 mb-4">
-              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Python</span>
-              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">Kafka</span>
-              <span class="text-xs px-2 py-1 bg-secondary rounded-md text-foreground border border-border">AWS</span>
-            </div>
-            
             <div class="flex gap-3 border-t border-border/50 pt-4">
-              <button class="flex-1 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
-                <ExternalLink size="16" /> Ver Repositorio
+              <button @click="router.push(`/${event.user.username.split('@')[0]}`)" class="flex-1 py-2 bg-secondary hover:bg-primary/10 text-foreground hover:text-primary text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
+                <ExternalLink size="16" /> Visitar Portafolio
               </button>
             </div>
           </div>
@@ -251,8 +224,9 @@ import { useAuthStore } from '../../stores/auth'
 import { 
   Briefcase, Eye, 
   Bot, MessageSquare, Swords, Sparkles, ExternalLink, Heart,
-  Activity, Lightbulb, Users, UserPlus
+  Activity, Lightbulb, Users, UserPlus, Network
 } from 'lucide-vue-next'
+import DegreeBadge from '../../components/ui/DegreeBadge.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -260,6 +234,17 @@ const authStore = useAuthStore()
 const currentUser = ref(null)
 const demandData = ref(null)
 const talentFeedback = ref([])
+const feedEvents = ref([])
+const loadingFeed = ref(true)
+
+function formatEventTime(dateString) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffHours = Math.floor((now - date) / (1000 * 60 * 60))
+  if (diffHours < 1) return 'Hace un momento'
+  if (diffHours < 24) return `Hace ${diffHours} h`
+  return `Hace ${Math.floor(diffHours / 24)} d`
+}
 
 onMounted(async () => {
   try {
@@ -278,6 +263,15 @@ onMounted(async () => {
     talentFeedback.value = await api.getTalentFeedback()
   } catch (error) {
     console.error('Error fetching talent feedback:', error)
+  }
+
+  try {
+    loadingFeed.value = true
+    feedEvents.value = await api.getNetworkFeed()
+  } catch (error) {
+    console.error('Error fetching network feed:', error)
+  } finally {
+    loadingFeed.value = false
   }
 })
 

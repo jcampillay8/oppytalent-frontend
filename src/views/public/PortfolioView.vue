@@ -8,12 +8,17 @@
         <img :src="perfil.avatar_url" class="w-full h-full object-cover" alt="Profile avatar" />
       </div>
 
-      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4 flex items-center justify-center flex-wrap gap-2">
         {{ perfil?.nombre_completo || 'Usuario de OppyTalent' }}
+        <DegreeBadge v-if="connectionDegree" :degree="connectionDegree" />
       </h1>
-      <p class="text-lg md:text-xl text-primary font-medium mb-8">
+      <p class="text-lg md:text-xl text-primary font-medium mb-6">
         {{ perfil?.ocupacion || 'Profesional' }}
       </p>
+
+      <div class="flex items-center justify-center gap-4 mb-8" v-if="targetUser && authStore.user?.id !== targetUser.id">
+        <ConnectionButton :userId="targetUser.id" :initialStatus="connectionDegree ? 'ACCEPTED' : null" />
+      </div>
       
       <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mt-4 flex items-center justify-center gap-3 mb-4">
         <AppWindow :size="40" class="text-primary hidden sm:block" />
@@ -45,6 +50,11 @@ import { computed, onMounted } from 'vue'
 import { Loader2, AppWindow } from 'lucide-vue-next'
 import PortfolioTabsLayout from '../../components/public/PortfolioTabsLayout.vue'
 import PortfolioBentoLayout from '../../components/public/PortfolioBentoLayout.vue'
+import DegreeBadge from '../../components/ui/DegreeBadge.vue'
+import ConnectionButton from '../../components/ui/ConnectionButton.vue'
+import { api } from '../../services/api'
+import { useAuthStore } from '../../stores/auth'
+import { ref } from 'vue'
 
 import { useProyectosStore } from '../../stores/proyectos'
 import { useExperienciasStore } from '../../stores/experiencias'
@@ -62,6 +72,10 @@ const reconocimientosStore = useReconocimientosStore()
 const habilitacionesStore = useHabilitacionesStore()
 const perfilStore = usePerfilStore()
 const themeStore = useThemeStore()
+const authStore = useAuthStore()
+
+const targetUser = ref(null)
+const connectionDegree = ref(null)
 
 const { defaults, fetchConfigs } = useSectionConfig()
 
@@ -105,6 +119,15 @@ onMounted(async () => {
     await fetchConfigs(username)
     // Layout
     await themeStore.fetchThemeForUser(username)
+    
+    // Fetch Target User & Degree
+    try {
+      targetUser.value = await api.getUserByUsername(username)
+      if (authStore.user && targetUser.value.id !== authStore.user.id) {
+        const res = await api.getConnectionDegree(targetUser.value.id)
+        connectionDegree.value = res.degree
+      }
+    } catch(e) {}
     
     // Data
     Promise.all([

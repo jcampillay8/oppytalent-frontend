@@ -129,7 +129,8 @@
               <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border shadow-sm text-lg z-10 overflow-hidden" 
                    :class="msg.sender_id === authStore.user?.id ? 'bg-primary text-primary-foreground border-primary/20' : 'bg-secondary border-border/50 text-muted-foreground'">
                 <template v-if="msg.sender_id === authStore.user?.id">
-                  <img v-if="authStore.user?.userImage || authStore.user?.avatar_url" :src="authStore.user?.userImage || authStore.user?.avatar_url" class="w-full h-full object-cover" />
+                  <img v-if="perfilStore.items?.[0]?.avatar_url" :src="perfilStore.items[0].avatar_url" class="w-full h-full object-cover" />
+                  <img v-else-if="authStore.user?.userImage || authStore.user?.avatar_url" :src="authStore.user?.userImage || authStore.user?.avatar_url" class="w-full h-full object-cover" />
                   <User v-else :size="20" />
                 </template>
                 <template v-else>
@@ -186,11 +187,13 @@ import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
 import { useAuthStore } from '../../stores/auth'
 import { useChatP2PStore } from '../../stores/chat_p2p'
+import { usePerfilStore } from '../../stores/perfil'
 import { api } from '../../services/api'
 import dayjs from 'dayjs'
 
 const authStore = useAuthStore()
 const chatStore = useChatP2PStore()
+const perfilStore = usePerfilStore()
 const route = useRoute()
 
 const activeChat = ref(null)
@@ -201,9 +204,12 @@ const sending = ref(false)
 const messagesContainer = ref(null)
 const messageInput = ref(null)
 
-let pollInterval = null
+let pollInterval = null // Deprecated, kept for reference
 
 onMounted(async () => {
+  if (!perfilStore.items.length && !perfilStore.loading) {
+    perfilStore.fetchAll()
+  }
   await chatStore.fetchConversations()
   
   if (route.query.chat) {
@@ -214,32 +220,29 @@ onMounted(async () => {
     }
   }
 
-  // Polling de mensajes activos
-  pollInterval = setInterval(async () => {
-    // Si no hay chat activo, actualizamos la lista
-    if (!activeChat.value) {
-      await chatStore.fetchConversations()
-    } else {
-      // Si hay chat activo, actualizamos mensajes (silent)
+  // En lugar de Polling, nos suscribimos al callback de WebSocket
+  chatStore.onNewMessageCallback = async (data) => {
+    // Si tenemos un chat activo y el mensaje es para este chat
+    if (activeChat.value && data.conversation_id === activeChat.value.id) {
       try {
         const newMsgs = await api.getChatMessages(activeChat.value.id)
         if (newMsgs && newMsgs.length > messages.value.length) {
           messages.value = newMsgs
           scrollToBottom()
-          // Mark as read si entran nuevos
+          // Mark as read si entran nuevos y no son nuestros
           if (newMsgs[newMsgs.length - 1].sender_id !== authStore.user?.id) {
             await api.markChatAsRead(activeChat.value.id)
             chatStore.fetchUnreadCount()
-            chatStore.fetchConversations() // Para actualizar la lista lateral
+            chatStore.fetchConversations()
           }
         }
       } catch(e) {}
     }
-  }, 5000)
+  };
 })
 
 onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
+  chatStore.onNewMessageCallback = null;
 })
 
 async function selectChat(conv) {

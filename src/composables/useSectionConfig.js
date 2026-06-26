@@ -2,10 +2,11 @@ import { reactive } from 'vue'
 import { api } from '../services/api'
 
 const defaults = reactive({
-  tags: false,
   proyectos: true,
   experiencia: true,
-  estudios: true
+  estudios: true,
+  reconocimientos: true,
+  habilitaciones: true
 })
 
 let loaded = false

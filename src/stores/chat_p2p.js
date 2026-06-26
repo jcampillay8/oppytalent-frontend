@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia'
 import { api } from '../services/api'
+import { useAuthStore } from './auth'
 
 export const useChatP2PStore = defineStore('chatP2P', {
   state: () => ({
     conversations: [],
     unreadCount: 0,
     loading: false,
-    intervalId: null
+    ws: null,
+    onNewMessageCallback: null
   }),
   actions: {
     async fetchConversations() {
@@ -35,17 +37,48 @@ export const useChatP2PStore = defineStore('chatP2P', {
         // Silently fail for background polling
       }
     },
-    startPolling(intervalMs = 5000) {
-      this.stopPolling()
+    startPolling() {
       this.fetchUnreadCount()
-      this.intervalId = setInterval(() => {
-        this.fetchUnreadCount()
-      }, intervalMs)
+      if (this.ws) return;
+      
+      const authStore = useAuthStore()
+      if (!authStore.token) return;
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      const wsUrl = `${protocol}//${host}/api/v1/chat-p2p/ws?token=${authStore.token}`;
+      
+      this.ws = new WebSocket(wsUrl);
+
+      this.ws.onmessage = async (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'new_message') {
+            await this.fetchConversations();
+            await this.fetchUnreadCount();
+            if (this.onNewMessageCallback) {
+              this.onNewMessageCallback(data);
+            }
+          }
+        } catch(e) {
+          console.error("WS error parsing message", e);
+        }
+      };
+
+      this.ws.onclose = () => {
+        this.ws = null;
+        // Opcional: reconexión automática si el usuario sigue logueado
+        setTimeout(() => {
+          if (authStore.token) {
+            this.startPolling();
+          }
+        }, 5000);
+      };
     },
     stopPolling() {
-      if (this.intervalId) {
-        clearInterval(this.intervalId)
-        this.intervalId = null
+      if (this.ws) {
+        this.ws.close();
+        this.ws = null;
       }
     }
   }

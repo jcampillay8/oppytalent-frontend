@@ -49,7 +49,7 @@ import GlassCard from '../../components/ui/GlassCard.vue'
 import { useSectionConfig } from '../../composables/useSectionConfig'
 import { api } from '../../services/api'
 import { onMounted } from 'vue'
-import { Filter, FolderKanban, Briefcase, GraduationCap } from 'lucide-vue-next'
+import { FolderKanban, Briefcase, GraduationCap, Award, ShieldCheck } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue3-toastify'
 
@@ -74,9 +74,10 @@ const updateToggle = async (key, value) => {
 }
 
 const secciones = [
-  { key: 'tags', label: 'Tags / Filtros', desc: 'Barra de filtros por etiquetas', icon: Filter, colorClass: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' },
-  { key: 'proyectos', label: 'Proyectos', desc: 'Galería de proyectos destacados', icon: FolderKanban, colorClass: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
-  { key: 'experiencia', label: 'Experiencia', desc: 'Lista de experiencia laboral', icon: Briefcase, colorClass: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
-  { key: 'estudios', label: 'Estudios & Certificaciones', desc: 'Sección académica y diplomas', icon: GraduationCap, colorClass: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
+  { key: 'proyectos', label: 'Proyectos Propios y Laborales', desc: 'Galería de proyectos y repositorios', icon: FolderKanban, colorClass: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+  { key: 'experiencia', label: 'Experiencia Laboral', desc: 'Historial y trayectoria profesional', icon: Briefcase, colorClass: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+  { key: 'estudios', label: 'Estudios, Cursos & Certificaciones', desc: 'Formación académica y técnica', icon: GraduationCap, colorClass: 'bg-amber-500/10 text-amber-500 border-amber-500/20' },
+  { key: 'reconocimientos', label: 'Reconocimientos & Publicaciones', desc: 'Hitos, premios y publicaciones', icon: Award, colorClass: 'bg-pink-500/10 text-pink-500 border-pink-500/20' },
+  { key: 'habilitaciones', label: 'Disponibilidad & Licencias', desc: 'Permisos especiales y flexibilidad', icon: ShieldCheck, colorClass: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20' }
 ]
 </script>

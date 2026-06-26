@@ -94,8 +94,8 @@
                 <MessageSquare :size="14" /> Contactar
               </button>
 
-              <router-link to="/inbox" class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1">
-                <Bell :size="18" />
+              <router-link :to="`/${authStore.user?.username?.split('@')[0] || 'admin'}/inbox`" class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Mensajes">
+                <MessageSquare :size="18" />
                 <span 
                   v-if="chatStore.unreadCount > 0"
                   class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-[10px] font-bold text-white rounded-full shadow-md animate-in zoom-in"
@@ -103,6 +103,10 @@
                   {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
                 </span>
               </router-link>
+
+              <button class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Notificaciones">
+                <Bell :size="18" />
+              </button>
             </template>
 
             <!-- Separator -->
@@ -225,12 +229,19 @@
             </button>
 
             <!-- Inbox Link for Mobile -->
-            <router-link v-if="authStore.token" to="/inbox" class="flex items-center justify-between px-2 py-2 text-muted-foreground" @click="closeMenu">
+            <router-link v-if="authStore.token" :to="`/${authStore.user?.username?.split('@')[0] || 'admin'}/inbox`" class="flex items-center justify-between px-2 py-2 text-muted-foreground" @click="closeMenu">
               <div class="flex items-center gap-3">
-                <Bell :size="20" /> Mensajes
+                <MessageSquare :size="20" /> Mensajes
               </div>
               <span v-if="chatStore.unreadCount > 0" class="bg-destructive text-white text-xs px-2 py-0.5 rounded-full">{{ chatStore.unreadCount }}</span>
             </router-link>
+
+            <!-- Notifications Link for Mobile -->
+            <button v-if="authStore.token" class="flex items-center justify-between px-2 py-2 text-muted-foreground w-full text-left" @click="closeMenu">
+              <div class="flex items-center gap-3">
+                <Bell :size="20" /> Notificaciones
+              </div>
+            </button>
 
             <router-link :to="chatLink" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
               <MessageSquare :size="20" /> {{ $t('nav.chat') }}
@@ -347,8 +358,10 @@ const isAppLayout = computed(() => appRoutes.includes(route.name))
 
 const adminRoutes = [
   'Dashboard', 'CVWizard', 'ProyectosAdmin', 'ExperienciasAdmin', 
-  'EstudiosAdmin', 'PerfilAdmin', 'SeccionesAdmin', 'FrasesAdmin', 
-  'ChatLogsAdmin', 'ChatConfigAdmin', 'ThemeConfigAdmin', 'StorageConfigAdmin'
+  'EstudiosAdmin', 'ReconocimientosAdmin', 'HabilitacionesAdmin', 
+  'PerfilAdmin', 'SeccionesAdmin', 'FrasesAdmin', 
+  'ChatLogsAdmin', 'ChatConfigAdmin', 'ThemeConfigAdmin', 
+  'PlanConsumoAdmin', 'RBACAdmin'
 ]
 const isAdminRoute = computed(() => adminRoutes.includes(route.name))
 

@@ -23,20 +23,16 @@
         </div>
 
         <!-- Sidebar Help / Quote -->
-        <div class="bg-card/50 border border-border/50 p-5 rounded-xl mt-auto relative overflow-hidden group">
+        <div v-if="tFrase" class="bg-card/50 border border-border/50 p-5 rounded-xl mt-auto relative overflow-hidden group">
           <!-- Decoración de vidrio -->
           <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-white/10 to-transparent opacity-50 rounded-bl-full pointer-events-none"></div>
           
           <h3 class="text-sm font-bold text-primary mb-3 flex items-center gap-2">
             <Quote :size="16" /> {{ $t('portfolio.frases') }}
           </h3>
-          <blockquote class="text-sm italic text-muted-foreground leading-relaxed relative z-10" v-if="tFrase">
+          <blockquote class="text-sm italic text-muted-foreground leading-relaxed relative z-10">
             "{{ tFrase.texto }}"
             <footer class="mt-3 text-xs font-bold text-primary text-right not-italic">— {{ tFrase.autor }}</footer>
-          </blockquote>
-          <blockquote class="text-sm italic text-muted-foreground leading-relaxed relative z-10" v-else>
-            "Cada gran proyecto comienza con un primer paso. Pronto compartiré aquí las frases y filosofías que inspiran mi carrera."
-            <footer class="mt-3 text-xs font-bold text-primary text-right not-italic">— {{ portfolioUser ? (portfolioUser.firstName || portfolioUser.username) : 'Talento OppyTalent' }}</footer>
           </blockquote>
         </div>
       </aside>
@@ -341,6 +337,13 @@ onMounted(async () => {
         experienciasStore.fetchAll()
         estudiosStore.fetchAll()
         await frasesStore.fetchAll()
+        
+        if (frasesStore.items.length > 0) {
+          const randomIndex = Math.floor(Math.random() * frasesStore.items.length)
+          randomFrase.value = frasesStore.items[randomIndex]
+        } else {
+          randomFrase.value = null
+        }
       } catch (error) {
         router.push('/home')
       }
@@ -356,6 +359,8 @@ onMounted(async () => {
   if (frasesStore.items.length > 0) {
     const randomIndex = Math.floor(Math.random() * frasesStore.items.length)
     randomFrase.value = frasesStore.items[randomIndex]
+  } else {
+    randomFrase.value = null
   }
 
   nextTick(() => {

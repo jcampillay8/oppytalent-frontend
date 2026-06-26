@@ -14,14 +14,42 @@
             <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Estadísticas Principales</h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Perfil -->
+              <router-link to="/admin/perfil" class="block outline-none">
+                <GlassCard hoverEffect class="h-full cursor-pointer group">
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
+                        <User :size="20" />
+                      </div>
+                      <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+                        Perfil Base
+                        <button @click.prevent="openInfo('Perfil Base', 'En esta sección debes completar tus datos fundamentales:', ['Tu información personal (Nombre, Edad, etc.)', 'Tu rol principal o titular profesional', 'Tus datos de contacto', 'Una foto profesional y presentable'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
+                          <Info :size="18" />
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="text-4xl font-extrabold text-foreground mb-1">{{ perfilStore.items.length > 0 ? '100%' : '0%' }}</div>
+                  <div class="text-xs text-muted-foreground">Completitud &rarr;</div>
+                </GlassCard>
+              </router-link>
+
               <!-- Proyectos -->
               <router-link to="/admin/proyectos" class="block outline-none">
                 <GlassCard hoverEffect class="h-full cursor-pointer group">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 rounded-lg bg-primary/10 text-primary border border-primary/20">
-                      <FolderKanban :size="20" />
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg bg-primary/10 text-primary border border-primary/20">
+                        <FolderKanban :size="20" />
+                      </div>
+                      <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+                        Proyectos Propios y Laborales
+                        <button @click.prevent="openInfo('Proyectos Propios y Laborales', 'Aquí puedes detallar y mostrar todo lo que has construido:', ['Proyectos en los que has participado laboralmente', 'Repositorios de código o proyectos personales', 'Casos de éxito con resultados demostrables', 'Enlaces a las plataformas o demos en vivo'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
+                          <Info :size="18" />
+                        </button>
+                      </span>
                     </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Proyectos</span>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ proyectosStore.items.length }}</div>
                   <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
@@ -31,11 +59,18 @@
               <!-- Experiencia -->
               <router-link to="/admin/experiencias" class="block outline-none">
                 <GlassCard hoverEffect class="h-full cursor-pointer group">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                      <Briefcase :size="20" />
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                        <Briefcase :size="20" />
+                      </div>
+                      <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+                        Experiencia Laboral
+                        <button @click.prevent="openInfo('Experiencia Laboral', 'Documenta tu historial y trayectoria profesional:', ['Tus trabajos anteriores y actuales', 'Los roles y cargos que has ocupado', 'Tus responsabilidades principales en cada puesto', 'Logros profesionales e hitos importantes'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
+                          <Info :size="18" />
+                        </button>
+                      </span>
                     </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Experiencia</span>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ experienciasStore.items.length }}</div>
                   <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
@@ -45,38 +80,39 @@
               <!-- Estudios -->
               <router-link to="/admin/estudios" class="block outline-none">
                 <GlassCard hoverEffect class="h-full cursor-pointer group">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
-                      <GraduationCap :size="20" />
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                        <GraduationCap :size="20" />
+                      </div>
+                      <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+                        Estudios, Cursos & Certificaciones
+                        <button @click.prevent="openInfo('Estudios, Cursos & Certificaciones', 'Añade tu formación académica y conocimientos adquiridos:', ['Educación formal (Universidad, Instituto, etc.)', 'Bootcamps y academias intensivas', 'Cursos online relevantes para tu carrera', 'Certificaciones técnicas oficiales emitidas'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
+                          <Info :size="18" />
+                        </button>
+                      </span>
                     </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Estudios</span>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ estudiosStore.items.length }}</div>
                   <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
                 </GlassCard>
               </router-link>
 
-              <!-- Perfil -->
-              <router-link to="/admin/perfil" class="block outline-none">
-                <GlassCard hoverEffect class="h-full cursor-pointer group">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 rounded-lg bg-cyan-500/10 text-cyan-500 border border-cyan-500/20">
-                      <User :size="20" />
-                    </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Perfil Base</span>
-                  </div>
-                  <div class="text-4xl font-extrabold text-foreground mb-1">{{ perfilStore.items.length > 0 ? '100%' : '0%' }}</div>
-                  <div class="text-xs text-muted-foreground">Completitud &rarr;</div>
-                </GlassCard>
-              </router-link>
               <!-- Reconocimientos -->
               <router-link to="/admin/reconocimientos" class="block outline-none">
                 <GlassCard hoverEffect class="h-full cursor-pointer group">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 rounded-lg bg-pink-500/10 text-pink-500 border border-pink-500/20">
-                      <Award :size="20" />
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg bg-pink-500/10 text-pink-500 border border-pink-500/20">
+                        <Award :size="20" />
+                      </div>
+                      <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+                        Reconocimientos & Publicaciones
+                        <button @click.prevent="openInfo('Reconocimientos & Publicaciones', 'Destaca aquellos hitos que te diferencian del resto:', ['Premios o galardones que se te han otorgado', 'Publicaciones en revistas científicas o de difusión', 'Tu propio Podcast, canal de YouTube o Blog', 'Si has escrito o publicado algún libro'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
+                          <Info :size="18" />
+                        </button>
+                      </span>
                     </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Reconocimientos</span>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ reconocimientosStore.items.length }}</div>
                   <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
@@ -86,11 +122,18 @@
               <!-- Habilitaciones -->
               <router-link to="/admin/habilitaciones" class="block outline-none">
                 <GlassCard hoverEffect class="h-full cursor-pointer group">
-                  <div class="flex items-center gap-3 mb-4">
-                    <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
-                      <ShieldCheck :size="20" />
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                        <ShieldCheck :size="20" />
+                      </div>
+                      <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
+                        Disponibilidad & Licencias
+                        <button @click.prevent="openInfo('Disponibilidad & Licencias', 'Indica tu flexibilidad y permisos especiales:', ['Disponibilidad para traslado o viajes', 'Disponibilidad para horarios nocturnos o turnos rotativos (7x7, 4x3)', 'Jornadas Part-time o Full-time', 'Licencias de conducir (B, C, maquinaria pesada)', 'Permisos especiales (buzo, soldador, primeros auxilios)'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
+                          <Info :size="18" />
+                        </button>
+                      </span>
                     </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Habilitaciones</span>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ habilitacionesStore.items.length }}</div>
                   <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
@@ -252,6 +295,42 @@
         </div>
       </div>
 
+      <!-- Info Modal -->
+      <div v-if="showInfoModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" @click.self="showInfoModal = false">
+        <div 
+          v-motion
+          :initial="{ opacity: 0, scale: 0.95, y: 20 }"
+          :enter="{ opacity: 1, scale: 1, y: 0 }"
+          class="w-full max-w-md"
+        >
+          <GlassCard class="relative">
+            <div class="flex items-start gap-4 mb-4">
+              <div class="p-2 rounded-full bg-primary/10 text-primary shrink-0">
+                <Info :size="24" />
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-foreground leading-tight">{{ infoModalTitle }}</h3>
+              </div>
+            </div>
+            
+            <p v-if="infoModalDescription" class="text-foreground font-medium text-sm mb-3">
+              {{ infoModalDescription }}
+            </p>
+            
+            <ul class="space-y-2 mb-6 ml-1">
+              <li v-for="(item, idx) in infoModalContent" :key="idx" class="flex items-start gap-2 text-muted-foreground text-[14px]">
+                <div class="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0"></div>
+                <span class="leading-snug">{{ item }}</span>
+              </li>
+            </ul>
+
+            <div class="flex justify-end">
+              <NeonButton @click="showInfoModal = false">Entendido</NeonButton>
+            </div>
+          </GlassCard>
+        </div>
+      </div>
+
     </AdminLayout>
   
 </template>
@@ -266,7 +345,7 @@ import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import { 
   FolderKanban, Briefcase, GraduationCap, User, Rocket, 
-  MessageSquare, FileText, UploadCloud, LogOut, CheckCircle2, Award, ShieldCheck
+  MessageSquare, FileText, UploadCloud, LogOut, CheckCircle2, Award, ShieldCheck, Info
 } from 'lucide-vue-next'
 
 import { useAuthStore } from '../../stores/auth'
@@ -384,6 +463,18 @@ function closeCVModal() {
   if (uploadingCV.value) return
   showCVUpload.value = false
   selectedFile.value = null
+}
+
+const showInfoModal = ref(false)
+const infoModalTitle = ref('')
+const infoModalDescription = ref('')
+const infoModalContent = ref([])
+
+function openInfo(title, description, items) {
+  infoModalTitle.value = title
+  infoModalDescription.value = description
+  infoModalContent.value = items
+  showInfoModal.value = true
 }
 
 async function handleCVUpload() {

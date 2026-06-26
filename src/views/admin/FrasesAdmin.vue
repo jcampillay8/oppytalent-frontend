@@ -1,15 +1,29 @@
 <template>
   
     <AdminLayout>
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.quotes.title') }}</h1>
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+            {{ $t('admin.views.quotes.title') }}
+          </h1>
           <p class="text-muted-foreground mt-1">{{ $t('admin.views.quotes.description') }}</p>
         </div>
         <NeonButton @click="openForm(null)" glow variant="primary">
           <template #icon-left><Plus :size="18" /></template>
           {{ $t('admin.titles.new_quote') }}
         </NeonButton>
+      </div>
+
+      <!-- Banner Informativo UI/UX -->
+      <div class="mb-8 p-5 bg-primary/5 border border-primary/20 rounded-xl flex items-start gap-4 shadow-sm relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+        <Info class="text-primary shrink-0 mt-0.5" :size="22" />
+        <div class="text-sm text-foreground/90 leading-relaxed">
+          <strong class="text-primary block mb-1">¿Para qué sirve esta sección?</strong>
+          Aquí puedes agregar frases célebres, poemas, citas inspiradoras o pensamientos que reflejen tu filosofía profesional. 
+          Estas citas <strong>se mostrarán aleatoriamente en la ventana del Asistente IA</strong> de tu portafolio público, 
+          permitiendo que los visitantes conecten de forma más personal contigo.
+        </div>
       </div>
 
       <div v-if="showForm" class="mb-8" v-motion :initial="{ opacity: 0, y: -20 }" :enter="{ opacity: 1, y: 0 }">
@@ -95,7 +109,7 @@ import AdminLayout from '../../components/admin/AdminLayout.vue'
 import FraseForm from '../../components/admin/FraseForm.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
-import { Plus, X, Loader2, MessageSquare, Quote, Edit2, Trash2 } from 'lucide-vue-next'
+import { Plus, X, Loader2, MessageSquare, Quote, Edit2, Trash2, Info } from 'lucide-vue-next'
 import { useFrasesStore } from '../../stores/frases'
 import { useI18n } from 'vue-i18n'
 

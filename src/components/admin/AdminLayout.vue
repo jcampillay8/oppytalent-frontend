@@ -265,7 +265,6 @@ const menuItems = computed(() => {
   const base = `/${route.params.username || 'admin'}`
   return [
     { path: `${base}/dashboard`, label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
-    { path: `${base}/inbox`, id: 'inbox', label: 'Mensajes', icon: MessageSquare, color: '#eab308', rgb: '234,179,8' },
     { path: `${base}/perfil`, label: t('admin.sidebar.profile'), icon: User, color: '#06b6d4', rgb: '6,182,212' },
     {
       label: 'Mi Trayectoria',

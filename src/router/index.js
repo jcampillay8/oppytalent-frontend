@@ -154,7 +154,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/inbox',
+    path: '/:username/inbox',
     name: 'Inbox',
     component: () => import('../views/admin/Inbox.vue'),
     meta: { requiresAuth: true },

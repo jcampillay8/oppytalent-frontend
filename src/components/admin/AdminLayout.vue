@@ -85,11 +85,24 @@
             </div>
             
             <span
-              class="font-medium text-sm whitespace-nowrap transition-all duration-300"
+              class="font-medium text-sm whitespace-nowrap transition-all duration-300 flex-1"
               :class="isCollapsed && !isOpenMobile ? 'opacity-0 w-0' : 'opacity-100'"
             >
               {{ item.label }}
             </span>
+            
+            <!-- Unread Badge -->
+            <div 
+              v-if="item.id === 'inbox' && chatStore.unreadCount > 0 && (!isCollapsed || isOpenMobile)"
+              class="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center justify-center min-w-[20px] shadow-sm animate-pulse"
+            >
+              {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
+            </div>
+            <!-- Collapsed Badge Indicator -->
+            <div 
+              v-if="item.id === 'inbox' && chatStore.unreadCount > 0 && isCollapsed && !isOpenMobile"
+              class="absolute top-2 right-2 w-2.5 h-2.5 bg-destructive rounded-full animate-pulse shadow-sm"
+            ></div>
           </router-link>
 
           <!-- Dropdown Group -->
@@ -211,11 +224,17 @@ import {
 } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
+import { useChatP2PStore } from '../../stores/chat_p2p'
 
 const { t } = useI18n()
 
 const route = useRoute()
 const authStore = useAuthStore()
+const chatStore = useChatP2PStore()
+
+onMounted(() => {
+  chatStore.startPolling()
+})
 
 // Forzar que el AdminPanel siempre muestre los datos del usuario logueado
 if (authStore.user?.username) {
@@ -246,6 +265,7 @@ const menuItems = computed(() => {
   const base = `/${route.params.username || 'admin'}`
   return [
     { path: `${base}/dashboard`, label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
+    { path: `${base}/inbox`, id: 'inbox', label: 'Mensajes', icon: MessageSquare, color: '#eab308', rgb: '234,179,8' },
     { path: `${base}/perfil`, label: t('admin.sidebar.profile'), icon: User, color: '#06b6d4', rgb: '6,182,212' },
     {
       label: 'Mi Trayectoria',

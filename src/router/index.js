@@ -151,6 +151,12 @@ const routes = [
     path: '/:username/dashboard',
     name: 'Dashboard',
     component: () => import('../views/admin/Dashboard.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/inbox',
+    name: 'Inbox',
+    component: () => import('../views/admin/Inbox.vue'),
     meta: { requiresAuth: true },
   },
   {

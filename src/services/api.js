@@ -374,4 +374,12 @@ export const api = {
   deleteHabilitacion(id) {
     return request(`/habilitaciones/${id}`, { method: 'DELETE' })
   },
+
+  // --- Chat P2P ---
+  getChatConversations: () => request('/chat-p2p/conversations'),
+  startChatConversation: (target_username) => request('/chat-p2p/conversations', { method: 'POST', body: JSON.stringify({ target_username }) }),
+  getChatMessages: (conversationId) => request(`/chat-p2p/conversations/${conversationId}/messages`),
+  sendChatMessage: (conversationId, content) => request(`/chat-p2p/conversations/${conversationId}/messages`, { method: 'POST', body: JSON.stringify({ content }) }),
+  markChatAsRead: (conversationId) => request(`/chat-p2p/conversations/${conversationId}/read`, { method: 'PUT' }),
+  getChatUnreadCount: () => request('/chat-p2p/unread-count')
 }

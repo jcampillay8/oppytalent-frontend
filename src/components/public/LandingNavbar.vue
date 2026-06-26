@@ -39,13 +39,52 @@
         </button>
       </div>
 
-      <!-- Auth Buttons -->
-      <router-link to="/login" class="text-zinc-300 font-medium hover:text-white transition-colors text-sm hidden sm:block ml-2">
-        Iniciar Sesión
-      </router-link>
-      <router-link to="/register">
-        <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">Registrarse</NeonButton>
-      </router-link>
+      <!-- Auth / User Controls -->
+      <template v-if="!authStore.isAuthenticated">
+        <!-- Contactar Button (Unauthenticated) -->
+        <router-link v-if="isPortfolioView" to="/login">
+          <NeonButton variant="outline" size="sm" class="hidden sm:flex mr-2 border-primary/50 text-primary hover:bg-primary/10">
+            <template #icon-left><MessageSquare :size="16" /></template>
+            Contactar
+          </NeonButton>
+        </router-link>
+
+        <router-link to="/login" class="text-zinc-300 font-medium hover:text-white transition-colors text-sm hidden sm:block ml-2">
+          Iniciar Sesión
+        </router-link>
+        <router-link to="/register">
+          <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">Registrarse</NeonButton>
+        </router-link>
+      </template>
+      <template v-else>
+        <!-- Contactar Button (Only shown in Portfolio View) -->
+        <NeonButton 
+          v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username"
+          @click="contactTalent" 
+          variant="primary" 
+          glow 
+          size="sm"
+          class="hidden sm:flex mr-2"
+        >
+          <template #icon-left><MessageSquare :size="16" /></template>
+          Contactar
+        </NeonButton>
+
+        <!-- Bell Icon -->
+        <router-link to="/inbox" class="relative p-2 text-zinc-300 hover:text-white transition-colors">
+          <Bell :size="20" />
+          <span 
+            v-if="chatStore.unreadCount > 0"
+            class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-[10px] font-bold text-white rounded-full shadow-md animate-in zoom-in"
+          >
+            {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
+          </span>
+        </router-link>
+        
+        <router-link :to="`/${authStore.user?.username.split('@')[0]}/dashboard`">
+          <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">Dashboard</NeonButton>
+        </router-link>
+      </template>
 
       <!-- Mobile Menu Toggle -->
       <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="lg:hidden p-2 text-zinc-300 hover:text-white">
@@ -74,12 +113,40 @@
         </div>
       </div>
       
-      <div class="flex flex-col gap-3 mt-2">
+      <div class="flex flex-col gap-3 mt-2" v-if="!authStore.isAuthenticated">
         <router-link @click="isMobileMenuOpen = false" to="/login" class="w-full text-center py-3 rounded-lg border border-white/10 text-zinc-300 font-medium hover:bg-white/5 transition-colors">
           Iniciar Sesión
         </router-link>
         <router-link @click="isMobileMenuOpen = false" to="/register" class="w-full">
           <NeonButton glow variant="primary" class="w-full py-3 justify-center">Registrarse</NeonButton>
+        </router-link>
+        <router-link v-if="isPortfolioView" @click="isMobileMenuOpen = false" to="/login" class="w-full mt-2">
+          <NeonButton variant="outline" class="w-full py-3 justify-center border-primary/50 text-primary">
+            Contactar
+          </NeonButton>
+        </router-link>
+      </div>
+      <div class="flex flex-col gap-3 mt-2" v-else>
+        <!-- Contactar for Mobile (Authenticated) -->
+        <NeonButton 
+          v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username"
+          @click="() => { contactTalent(); isMobileMenuOpen = false }" 
+          variant="primary" 
+          glow
+          class="w-full py-3 justify-center"
+        >
+          Contactar
+        </NeonButton>
+
+        <router-link @click="isMobileMenuOpen = false" :to="`/${authStore.user?.username.split('@')[0]}/dashboard`" class="w-full">
+          <NeonButton glow variant="outline" class="w-full py-3 justify-center">Ir al Dashboard</NeonButton>
+        </router-link>
+        
+        <router-link @click="isMobileMenuOpen = false" to="/inbox" class="w-full">
+          <NeonButton variant="outline" class="w-full py-3 justify-center flex items-center gap-2">
+            Mensajes
+            <span v-if="chatStore.unreadCount > 0" class="bg-destructive text-white text-xs px-2 py-0.5 rounded-full">{{ chatStore.unreadCount }}</span>
+          </NeonButton>
         </router-link>
       </div>
     </div>
@@ -87,13 +154,48 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Menu, X } from 'lucide-vue-next'
+import { ref, onMounted, computed, watch } from 'vue'
+import { Menu, X, Bell, MessageSquare } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import NeonButton from '../ui/NeonButton.vue'
+import { useAuthStore } from '../../stores/auth'
+import { useChatP2PStore } from '../../stores/chat_p2p'
+import { api } from '../../services/api'
 
 const isMobileMenuOpen = ref(false)
 const { locale } = useI18n()
+
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const chatStore = useChatP2PStore()
+
+const isPortfolioView = computed(() => {
+  return route.name === 'UserPortfolio' || !!route.params.username
+})
+
+async function contactTalent() {
+  const targetUsername = route.params.username
+  if (!targetUsername) return
+  
+  try {
+    await api.startChatConversation(targetUsername)
+    router.push(`/inbox?chat=${targetUsername}`)
+  } catch (err) {
+    console.error("Error iniciando chat:", err)
+  }
+}
+
+onMounted(() => {
+  watch(() => authStore.token, (newToken) => {
+    if (newToken) {
+      chatStore.startPolling()
+    } else {
+      chatStore.stopPolling()
+    }
+  }, { immediate: true })
+})
 
 function changeLang(lang) {
   locale.value = lang

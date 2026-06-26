@@ -20,9 +20,6 @@
           <h2 class="text-2xl font-bold text-foreground mb-1">{{ perfilStore.items[0]?.nombre_completo || (portfolioUser ? `${portfolioUser.firstName || portfolioUser.username} ${portfolioUser.lastName || ''}` : 'Cargando...') }}</h2>
           <p class="text-sm font-medium text-muted-foreground mb-4 leading-relaxed">{{ perfilStore.items[0]?.ocupacion || portfolioUser?.occupation || 'Profesional' }}</p>
           
-          <div class="flex flex-wrap gap-2 justify-center">
-            <Badge variant="primary" class="shadow-sm">OppyTalent</Badge>
-          </div>
         </div>
 
         <!-- Sidebar Help / Quote -->
@@ -189,7 +186,7 @@ import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../../stores/auth'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { Bot, User, Send, Quote, RotateCcw, FolderKanban } from 'lucide-vue-next'
+import { Bot, User, Send, Quote, RotateCcw, FolderKanban, MessageSquare } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()

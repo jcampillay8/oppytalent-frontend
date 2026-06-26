@@ -78,7 +78,36 @@
           </nav>
 
           <!-- User Menu & Lang -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-3">
+            <!-- P2P Inbox/Contact Controls -->
+            <template v-if="!authStore.token && isPortfolioView">
+              <button @click="router.push('/login')" class="hidden sm:flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-3 py-1.5 rounded-md text-sm font-medium transition-colors">
+                <MessageSquare :size="14" /> Contactar
+              </button>
+            </template>
+            <template v-else-if="authStore.token">
+              <button 
+                v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== portfolioUsername" 
+                @click="contactTalent" 
+                class="hidden sm:flex items-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-md text-sm font-medium transition-colors shadow-sm"
+              >
+                <MessageSquare :size="14" /> Contactar
+              </button>
+
+              <router-link to="/inbox" class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1">
+                <Bell :size="18" />
+                <span 
+                  v-if="chatStore.unreadCount > 0"
+                  class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-destructive text-[10px] font-bold text-white rounded-full shadow-md animate-in zoom-in"
+                >
+                  {{ chatStore.unreadCount > 99 ? '99+' : chatStore.unreadCount }}
+                </span>
+              </router-link>
+            </template>
+
+            <!-- Separator -->
+            <div class="hidden sm:block h-5 w-px bg-border/60 mx-1"></div>
+
             <button @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'" class="h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
               {{ currentLang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN' }}
             </button>
@@ -141,6 +170,12 @@
               </template>
             </AnimatedDropdown>
 
+            <template v-if="!authStore.token">
+              <router-link to="/login" class="text-sm font-medium text-foreground hover:text-primary transition-colors ml-2 hidden sm:block">
+                Iniciar Sesión
+              </router-link>
+            </template>
+
             <button class="md:hidden p-2 text-foreground hover:text-primary transition-colors" @click="isMenuOpen = !isMenuOpen">
               <Menu :size="24" />
             </button>
@@ -179,6 +214,24 @@
 
           <!-- Mobile Menu Talent -->
           <template v-else>
+            <!-- Mobile Contactar (Unauthenticated) -->
+            <button v-if="!authStore.token && isPortfolioView" @click="closeMenu(); router.push('/login')" class="flex items-center justify-center gap-2 w-full bg-primary/10 text-primary px-4 py-3 rounded-lg font-medium border border-primary/20">
+              <MessageSquare :size="18" /> Contactar
+            </button>
+            
+            <!-- Mobile Contactar (Authenticated) -->
+            <button v-if="authStore.token && isPortfolioView && authStore.user?.username.split('@')[0] !== portfolioUsername" @click="closeMenu(); contactTalent()" class="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground px-4 py-3 rounded-lg font-medium shadow-sm">
+              <MessageSquare :size="18" /> Contactar
+            </button>
+
+            <!-- Inbox Link for Mobile -->
+            <router-link v-if="authStore.token" to="/inbox" class="flex items-center justify-between px-2 py-2 text-muted-foreground" @click="closeMenu">
+              <div class="flex items-center gap-3">
+                <Bell :size="20" /> Mensajes
+              </div>
+              <span v-if="chatStore.unreadCount > 0" class="bg-destructive text-white text-xs px-2 py-0.5 rounded-full">{{ chatStore.unreadCount }}</span>
+            </router-link>
+
             <router-link :to="chatLink" class="flex items-center gap-3 px-2 py-2 text-muted-foreground" @click="closeMenu">
               <MessageSquare :size="20" /> {{ $t('nav.chat') }}
             </router-link>
@@ -217,8 +270,9 @@ import { useThemeStore } from './stores/useThemeStore'
 import ChatWidget from './components/public/ChatWidget.vue'
 import AnimatedDropdown from './components/ui/AnimatedDropdown.vue'
 import SearchSpotlight from './components/ui/SearchSpotlight.vue'
+import { useChatP2PStore } from './stores/chat_p2p'
 import { api } from './services/api'
-import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard } from 'lucide-vue-next'
+import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard, Bell } from 'lucide-vue-next'
 
 const { locale } = useI18n()
 
@@ -226,6 +280,7 @@ const route = useRoute()
 const router = useRouter()
 const perfilStore = usePerfilStore()
 const authStore = useAuthStore()
+const chatStore = useChatP2PStore()
 
 const isHunter = computed(() => authStore.user?.role_name?.toUpperCase() === 'HUNTER')
 const avatarUrl = computed(() => perfilStore.items[0]?.avatar_url || null)
@@ -233,6 +288,9 @@ const isMenuOpen = ref(false)
 const isDropdownOpen = ref(false)
 const portfolioOwnerName = ref('el Talento')
 const currentLang = computed(() => locale.value)
+
+const isPortfolioView = computed(() => route.name === 'UserPortfolio' || !!route.params.username)
+const portfolioUsername = computed(() => route.params.username || localStorage.getItem('currentPortfolioUser'))
 
 const authUserAvatar = computed(() => authStore.user?.userImage || authStore.user?.avatar_url)
 const authUserInitials = computed(() => {
@@ -262,6 +320,14 @@ onMounted(async () => {
       availableRoles.value = await api.getRoles()
     } catch(e) {}
   }
+  
+  watch(() => authStore.token, (newToken) => {
+    if (newToken) {
+      chatStore.startPolling()
+    } else {
+      chatStore.stopPolling()
+    }
+  }, { immediate: true })
 })
 
 watch(() => route.path, async () => {
@@ -286,7 +352,7 @@ const adminRoutes = [
 ]
 const isAdminRoute = computed(() => adminRoutes.includes(route.name))
 
-const fullHeightRoutes = ['UserPortfolio', 'AI Assistant']
+const fullHeightRoutes = ['UserPortfolio', 'AI Assistant', 'Inbox']
 const isFullHeightRoute = computed(() => fullHeightRoutes.includes(route.name))
 
 const searchQuery = ref('')
@@ -384,6 +450,18 @@ async function handleQuickImpersonate(roleId) {
     router.push('/b2b');
   } catch(e) {
     alert("Error al impersonar: " + e.message);
+  }
+}
+
+async function contactTalent() {
+  const targetUsername = portfolioUsername.value
+  if (!targetUsername) return
+  
+  try {
+    await api.startChatConversation(targetUsername)
+    router.push(`/inbox?chat=${targetUsername}`)
+  } catch (err) {
+    console.error("Error iniciando chat:", err)
   }
 }
 

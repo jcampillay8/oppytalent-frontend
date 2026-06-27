@@ -16,30 +16,42 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+        <!-- View Toggle -->
+        <div class="flex justify-center mb-8 gap-2" v-motion :initial="{ opacity: 0 }" :enter="{ opacity: 1, transition: { delay: 100 } }">
+          <button @click="viewMode = 'grid'" :class="['p-2.5 rounded-lg border transition-all', viewMode === 'grid' ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white']" aria-label="Vista de cuadrícula">
+            <LayoutGrid :size="20" />
+          </button>
+          <button @click="viewMode = 'list'" :class="['p-2.5 rounded-lg border transition-all', viewMode === 'list' ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white']" aria-label="Vista de lista">
+            <ListIcon :size="20" />
+          </button>
+        </div>
+
+        <div :class="[viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full' : 'flex flex-col gap-4 w-full max-w-4xl mx-auto']">
           <div 
             v-for="(demo, index) in demos" 
             :key="demo.username"
             v-motion
             :initial="{ opacity: 0, scale: 0.95, y: 20 }"
-            :enter="{ opacity: 1, scale: 1, y: 0, transition: { delay: 150 + index * 50 } }"
+            :enter="{ opacity: 1, scale: 1, y: 0, transition: { delay: 150 + (viewMode === 'grid' ? index * 50 : index * 30) } }"
             class="group"
           >
             <router-link :to="`/${demo.username}`" class="block h-full">
-              <div class="h-full relative overflow-hidden rounded-2xl bg-zinc-900/40 border border-white/5 backdrop-blur-md p-6 flex flex-col items-center text-center transition-all duration-300 hover:bg-white/10 hover:border-primary/50 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.3)] hover:-translate-y-1">
+              <div :class="['h-full relative overflow-hidden rounded-2xl bg-zinc-900/40 border border-white/5 backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:border-primary/50 hover:shadow-[0_0_30px_-5px_rgba(56,189,248,0.3)] hover:-translate-y-1', viewMode === 'grid' ? 'flex flex-col items-center text-center p-6' : 'flex flex-col sm:flex-row items-center text-center sm:text-left p-4 sm:p-5 gap-4 sm:gap-6']">
                 <!-- Icono -->
-                <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-transform duration-300">
-                  <component :is="demo.icon" :size="32" stroke-width="1.5" />
+                <div :class="['rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-transform duration-300', viewMode === 'grid' ? 'w-16 h-16 mb-4' : 'w-14 h-14 shrink-0 mb-2 sm:mb-0']">
+                  <component :is="demo.icon" :size="viewMode === 'grid' ? 32 : 26" stroke-width="1.5" />
                 </div>
                 
                 <!-- Titulo -->
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">{{ demo.ocupacion }}</h3>
-                <p class="text-sm text-zinc-400 font-light mb-6 flex-1">
-                  Ver demo interactiva
-                </p>
+                <div :class="['flex-1 w-full', viewMode === 'list' ? 'sm:w-auto' : '']">
+                  <h3 :class="['font-bold text-white group-hover:text-primary transition-colors', viewMode === 'grid' ? 'text-xl mb-2' : 'text-lg sm:text-xl mb-1']">{{ demo.ocupacion }}</h3>
+                  <p :class="['text-sm text-zinc-400 font-light', viewMode === 'grid' ? 'mb-6' : 'mb-4 sm:mb-0']">
+                    Ver demo interactiva
+                  </p>
+                </div>
                 
                 <!-- Boton sutil -->
-                <div class="w-full py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold uppercase tracking-wider text-zinc-300 group-hover:bg-primary/20 group-hover:text-primary group-hover:border-primary/30 transition-colors flex items-center justify-center gap-2">
+                <div :class="['rounded-lg bg-white/5 border border-white/10 text-xs font-semibold uppercase tracking-wider text-zinc-300 group-hover:bg-primary/20 group-hover:text-primary group-hover:border-primary/30 transition-colors flex items-center justify-center gap-2', viewMode === 'grid' ? 'w-full py-2 mt-auto' : 'w-full sm:w-auto py-2.5 px-6']">
                   Visitar Perfil <ArrowRight :size="14" />
                 </div>
               </div>
@@ -63,7 +75,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import AuroraBackground from '../../components/ui/AuroraBackground.vue'
 import LandingNavbar from '../../components/public/LandingNavbar.vue'
 import Badge from '../../components/ui/Badge.vue'
@@ -71,6 +83,8 @@ import NeonButton from '../../components/ui/NeonButton.vue'
 import { 
   ArrowRight, 
   Sparkles,
+  LayoutGrid,
+  List as ListIcon,
   HeartPulse,
   Building2,
   Scale,
@@ -85,6 +99,8 @@ import {
   TestTube,
   ChefHat
 } from 'lucide-vue-next'
+
+const viewMode = ref('list')
 
 const demos = [
   { username: 'demo-arquitecto', ocupacion: 'Arquitecto', icon: Building2 },

@@ -5,9 +5,9 @@
       <div class="mb-10">
         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
           <Share2 class="text-primary" :size="36" />
-          Compartir Perfil
+          {{ $t('admin_share.share_1') }}
         </h1>
-        <p class="text-muted-foreground mt-2">Difunde tu IA y portafolio con reclutadores y contactos.</p>
+        <p class="text-muted-foreground mt-2">{{ $t('admin_share.share_2') }}</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -15,7 +15,7 @@
         <!-- Enlace y Redes -->
         <div class="bg-card border border-border rounded-2xl p-6 shadow-sm">
           <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
-            <LinkIcon class="text-primary" :size="20" /> Tu Enlace Público
+            <LinkIcon class="text-primary" :size="20" /> {{ $t('admin_share.share_3') }}
           </h2>
           <div class="flex items-center gap-2 mb-6">
             <div class="bg-secondary flex-1 px-4 py-3 rounded-xl border border-border text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap">
@@ -27,13 +27,13 @@
             </button>
           </div>
 
-          <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Compartir en Redes</h3>
+          <h3 class="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">{{ $t('admin_share.share_4') }}</h3>
           <div class="grid grid-cols-2 gap-3">
             <button @click="shareLinkedIn" class="flex items-center justify-center gap-2 bg-[#0077b5] text-white px-4 py-3 rounded-xl font-bold hover:bg-[#005582] transition-colors">
-              <Linkedin :size="18" /> LinkedIn
+              <Linkedin :size="18" /> {{ $t('admin_share.share_5') }}
             </button>
             <button @click="shareWhatsApp" class="flex items-center justify-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-xl font-bold hover:bg-[#1da851] transition-colors">
-              <MessageCircle :size="18" /> WhatsApp
+              <MessageCircle :size="18" /> {{ $t('admin_share.share_6') }}
             </button>
           </div>
         </div>
@@ -41,24 +41,24 @@
         <!-- Generador de Código QR -->
         <div class="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col items-center text-center">
           <h2 class="text-xl font-bold flex items-center gap-2 mb-2">
-            <QrCode class="text-primary" :size="20" /> Código QR
+            <QrCode class="text-primary" :size="20" /> {{ $t('admin_share.share_7') }}
           </h2>
-          <p class="text-sm text-muted-foreground mb-6">Escanea para abrir tu portafolio. Ideal para imprimir en tu CV físico.</p>
+          <p class="text-sm text-muted-foreground mb-6">{{ $t('admin_share.share_8') }}</p>
           
           <div class="bg-white p-4 rounded-xl border border-border/50 shadow-inner mb-4 inline-block" id="qr-container">
             <qrcode-vue :value="profileUrl" :size="150" level="H" foreground="#000000" />
           </div>
           <button @click="downloadQR" class="flex items-center justify-center gap-2 border border-border bg-secondary hover:bg-secondary/80 px-6 py-2.5 rounded-xl font-medium transition-colors text-sm">
-            <Download :size="16" /> Descargar QR
+            <Download :size="16" /> {{ $t('admin_share.share_9') }}
           </button>
         </div>
 
         <!-- Firma de Correo -->
         <div class="bg-card border border-border rounded-2xl p-6 shadow-sm lg:col-span-2">
           <h2 class="text-xl font-bold flex items-center gap-2 mb-4">
-            <Mail class="text-primary" :size="20" /> Firma de Correo Electrónico
+            <Mail class="text-primary" :size="20" /> {{ $t('admin_share.share_10') }}
           </h2>
-          <p class="text-sm text-muted-foreground mb-4">Copia esta firma y pégala en Gmail, Outlook o Apple Mail.</p>
+          <p class="text-sm text-muted-foreground mb-4">{{ $t('admin_share.share_11') }}</p>
           
           <div class="border border-border rounded-xl overflow-hidden mb-4 bg-background">
             <div ref="signatureRef" class="p-5 flex items-center gap-4" style="font-family: Arial, sans-serif; color: #333; background: #fff;">
@@ -71,7 +71,7 @@
                 <p style="margin: 2px 0 2px 0; font-size: 12px; color: #666;">{{ occupation }}</p>
                 <p v-if="userPhone" style="margin: 0 0 6px 0; font-size: 12px; color: #666;">{{ userPhone }}</p>
                 <a :href="profileUrl" style="display: inline-block; text-decoration: none; background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold;">
-                  🗣️ Habla con mi Asistente IA
+                  {{ $t('admin_share.share_12') }}
                 </a>
               </div>
             </div>
@@ -92,25 +92,25 @@
               <div class="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center mb-3 text-amber-500">
                 <Lock :size="24" />
               </div>
-              <h3 class="font-bold text-lg mb-1">Personaliza tu Enlace</h3>
-              <p class="text-sm text-muted-foreground mb-4">Mejora a un plan Premium para cambiar tu enlace público por uno más profesional y fácil de recordar.</p>
+              <h3 class="font-bold text-lg mb-1">{{ $t('admin_share.share_13') }}</h3>
+              <p class="text-sm text-muted-foreground mb-4">{{ $t('admin_share.share_14') }}</p>
               <button class="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-bold text-sm shadow-sm hover:shadow-primary/25 transition-all">
-                Ver Planes Premium
+                {{ $t('admin_share.share_15') }}
               </button>
             </div>
           </div>
 
           <div :class="{ 'opacity-40 select-none': !isPremium }">
             <h2 class="text-xl font-bold flex items-center gap-2 mb-2">
-              <PenTool class="text-primary" :size="20" /> Personalizar Slug
+              <PenTool class="text-primary" :size="20" /> {{ $t('admin_share.share_16') }}
             </h2>
             <p class="text-sm text-muted-foreground mb-6">
-              El <strong>Slug</strong> es el texto final de tu enlace (ej: <span class="bg-secondary px-1 py-0.5 rounded text-xs">/juan-perez</span>). Hazlo único.
+              {{ $t('admin_share.share_17') }} <strong>{{ $t('admin_share.share_18') }}</strong> {{ $t('admin_share.share_19') }} <span class="bg-secondary px-1 py-0.5 rounded text-xs">{{ $t('admin_share.share_20') }}</span>{{ $t('admin_share.share_21') }}
             </p>
 
             <div class="flex flex-col gap-2">
               <div class="flex items-center gap-2">
-                <span class="text-muted-foreground font-medium shrink-0">oppytalent.com/</span>
+                <span class="text-muted-foreground font-medium shrink-0">{{ $t('admin_share.share_22') }}</span>
                 <input 
                   type="text" 
                   v-model="customSlug" 
@@ -120,7 +120,7 @@
                 />
                 <button :disabled="!isPremium || !customSlug" @click="saveSlug" class="bg-primary text-primary-foreground px-6 py-2 rounded-xl font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 flex gap-2 items-center">
                   <Check v-if="savingSlugSuccess" :size="16" />
-                  Guardar
+                  {{ $t('admin_share.share_23') }}
                 </button>
               </div>
               <p v-if="slugError" class="text-red-500 text-sm mt-1">{{ slugError }}</p>
@@ -134,6 +134,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { ref, computed, onMounted } from 'vue'
 import { Share2, Link as LinkIcon, Copy, Check, Linkedin, MessageCircle, QrCode, Download, Mail, Lock, PenTool } from 'lucide-vue-next'
 import AdminLayout from '../../components/admin/AdminLayout.vue'

@@ -191,7 +191,7 @@
             class="font-medium text-sm whitespace-nowrap transition-all duration-300"
             :class="isCollapsed && !isOpenMobile ? 'opacity-0 w-0' : 'opacity-100'"
           >
-            Cerrar Sesión
+            {{ $t('admin.sidebar.logout') }}
           </span>
         </button>
       </div>
@@ -271,7 +271,7 @@ const menuItems = computed(() => {
     { path: `${base}/dashboard`, label: t('admin.sidebar.dashboard'), icon: LayoutDashboard, color: '#3b82f6', rgb: '59,130,246' },
     { path: `${base}/perfil`, label: t('admin.sidebar.profile'), icon: User, color: '#06b6d4', rgb: '6,182,212' },
     {
-      label: 'Mi Trayectoria',
+      label: t('admin.sidebar.my_trajectory'),
       icon: Briefcase,
       id: 'trayectoria',
       children: [
@@ -282,12 +282,12 @@ const menuItems = computed(() => {
         { path: `${base}/habilitaciones`, label: t('admin.sidebar.certifications'), icon: ShieldCheck, color: '#6366f1', rgb: '99,102,241' },
       ]
     },
-    { path: `${base}/compartir`, label: 'Compartir Perfil', icon: Share2, color: '#f59e0b', rgb: '245,158,11' },
-    { path: '/network', label: 'Mi Red', icon: Network, color: '#10b981', rgb: '16,185,129' },
+    { path: `${base}/compartir`, label: t('admin.sidebar.share_profile'), icon: Share2, color: '#f59e0b', rgb: '245,158,11' },
+    { path: '/network', label: t('admin.sidebar.my_network'), icon: Network, color: '#10b981', rgb: '16,185,129' },
     { path: `${base}/storage`, label: t('admin.sidebar.storage', 'Plan y Consumo'), icon: Database, color: '#10b981', rgb: '16,185,129' },
     { path: `${base}/chat-config`, label: t('admin.sidebar.ai_config', 'Personaliza IA'), icon: Settings, color: '#8b5cf6', rgb: '139,92,246' },
     { path: `${base}/chat-logs`, label: t('admin.sidebar.metrics', 'Métricas Chat AI'), icon: LineChart, color: '#14b8a6', rgb: '20,184,166' },
-    { path: `${base}/apariencia`, label: 'Apariencia y Contenido', icon: Palette, color: '#f43f5e', rgb: '244,63,94' }
+    { path: `${base}/apariencia`, label: t('admin.sidebar.appearance'), icon: Palette, color: '#f43f5e', rgb: '244,63,94' }
   ]
 })
 </script>

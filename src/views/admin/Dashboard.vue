@@ -4,14 +4,14 @@
       <!-- ESTADO ACTIVO: Dashboard Normal -->
       <template v-if="!isPortfolioEmpty && !isLoading">
         <div class="mb-8">
-          <h1 class="text-3xl font-extrabold tracking-tight text-foreground mb-2">Dashboard</h1>
-          <p class="text-muted-foreground">¡Hola, <span class="text-primary">{{ authStore.user?.username }}</span>! 👋 Tu centro de comando de IA.</p>
+          <h1 class="text-3xl font-extrabold tracking-tight text-foreground mb-2">{{ $t('admin.sidebar.dashboard') }}</h1>
+          <p class="text-muted-foreground">{{ $t('dash_v2.dash_v2_1') }} <span class="text-primary">{{ authStore.user?.username }}</span>{{ $t('dash_v2.dash_v2_2') }}</p>
         </div>
         <div class="flex flex-col gap-6">
           
           <!-- Cuadrícula de Estadísticas -->
           <div class="flex flex-col gap-4">
-            <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Estadísticas Principales</h2>
+            <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground">{{ $t('dash_v2.dash_v2_3') }}</h2>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <!-- Perfil -->
@@ -23,7 +23,7 @@
                         <User :size="20" />
                       </div>
                       <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
-                        Perfil Base
+                        {{ $t('admin.sidebar.profile') }}
                         <button @click.prevent="openInfo('Perfil Base', 'En esta sección debes completar tus datos fundamentales:', ['Tu información personal (Nombre, Edad, etc.)', 'Tu rol principal o titular profesional', 'Tus datos de contacto', 'Una foto profesional y presentable'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
                           <Info :size="18" />
                         </button>
@@ -31,7 +31,7 @@
                     </div>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ perfilStore.items.length > 0 ? '100%' : '0%' }}</div>
-                  <div class="text-xs text-muted-foreground">Completitud &rarr;</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_4') }}</div>
                 </GlassCard>
               </router-link>
 
@@ -44,7 +44,7 @@
                         <FolderKanban :size="20" />
                       </div>
                       <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
-                        Proyectos Propios y Laborales
+                        {{ $t('admin.sidebar.projects') }}
                         <button @click.prevent="openInfo('Proyectos Propios y Laborales', 'Aquí puedes detallar y mostrar todo lo que has construido:', ['Proyectos en los que has participado laboralmente', 'Repositorios de código o proyectos personales', 'Casos de éxito con resultados demostrables', 'Enlaces a las plataformas o demos en vivo'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
                           <Info :size="18" />
                         </button>
@@ -52,7 +52,7 @@
                     </div>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ proyectosStore.items.length }}</div>
-                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_5') }}</div>
                 </GlassCard>
               </router-link>
 
@@ -65,7 +65,7 @@
                         <Briefcase :size="20" />
                       </div>
                       <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
-                        Experiencia Laboral
+                        {{ $t('admin.sidebar.experience') }}
                         <button @click.prevent="openInfo('Experiencia Laboral', 'Documenta tu historial y trayectoria profesional:', ['Tus trabajos anteriores y actuales', 'Los roles y cargos que has ocupado', 'Tus responsabilidades principales en cada puesto', 'Logros profesionales e hitos importantes'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
                           <Info :size="18" />
                         </button>
@@ -73,7 +73,7 @@
                     </div>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ experienciasStore.items.length }}</div>
-                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_6') }}</div>
                 </GlassCard>
               </router-link>
 
@@ -86,7 +86,7 @@
                         <GraduationCap :size="20" />
                       </div>
                       <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
-                        Estudios, Cursos & Certificaciones
+                        {{ $t('admin.sidebar.studies') }}
                         <button @click.prevent="openInfo('Estudios, Cursos & Certificaciones', 'Añade tu formación académica y conocimientos adquiridos:', ['Educación formal (Universidad, Instituto, etc.)', 'Bootcamps y academias intensivas', 'Cursos online relevantes para tu carrera', 'Certificaciones técnicas oficiales emitidas'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
                           <Info :size="18" />
                         </button>
@@ -94,7 +94,7 @@
                     </div>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ estudiosStore.items.length }}</div>
-                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_7') }}</div>
                 </GlassCard>
               </router-link>
 
@@ -107,7 +107,7 @@
                         <Award :size="20" />
                       </div>
                       <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
-                        Reconocimientos & Publicaciones
+                        {{ $t('admin.sidebar.recognitions') }}
                         <button @click.prevent="openInfo('Reconocimientos & Publicaciones', 'Destaca aquellos hitos que te diferencian del resto:', ['Premios o galardones que se te han otorgado', 'Publicaciones en revistas científicas o de difusión', 'Tu propio Podcast, canal de YouTube o Blog', 'Si has escrito o publicado algún libro'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
                           <Info :size="18" />
                         </button>
@@ -115,7 +115,7 @@
                     </div>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ reconocimientosStore.items.length }}</div>
-                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_8') }}</div>
                 </GlassCard>
               </router-link>
 
@@ -128,7 +128,7 @@
                         <ShieldCheck :size="20" />
                       </div>
                       <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1.5">
-                        Disponibilidad & Licencias
+                        {{ $t('admin.sidebar.certifications') }}
                         <button @click.prevent="openInfo('Disponibilidad & Licencias', 'Indica tu flexibilidad y permisos especiales:', ['Disponibilidad para traslado o viajes', 'Disponibilidad para horarios nocturnos o turnos rotativos (7x7, 4x3)', 'Jornadas Part-time o Full-time', 'Licencias de conducir (B, C, maquinaria pesada)', 'Permisos especiales (buzo, soldador, primeros auxilios)'])" class="text-muted-foreground hover:text-primary transition-colors focus:outline-none ml-1">
                           <Info :size="18" />
                         </button>
@@ -136,7 +136,7 @@
                     </div>
                   </div>
                   <div class="text-4xl font-extrabold text-foreground mb-1">{{ habilitacionesStore.items.length }}</div>
-                  <div class="text-xs text-muted-foreground">Ver detalles &rarr;</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_9') }}</div>
                 </GlassCard>
               </router-link>
 
@@ -147,10 +147,10 @@
                     <div class="p-2 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20">
                       <ShieldCheck :size="20" />
                     </div>
-                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">Seguridad RBAC</span>
+                    <span class="font-medium text-muted-foreground group-hover:text-foreground transition-colors">{{ $t('dash_v2.dash_v2_10') }}</span>
                   </div>
-                  <div class="text-2xl font-extrabold text-foreground mb-1">Roles & Permisos</div>
-                  <div class="text-xs text-muted-foreground">Gestionar accesos &rarr;</div>
+                  <div class="text-2xl font-extrabold text-foreground mb-1">{{ $t('dash_v2.dash_v2_11') }}</div>
+                  <div class="text-xs text-muted-foreground">{{ $t('dash_v2.dash_v2_12') }}</div>
                 </GlassCard>
               </router-link>
             </div>
@@ -158,7 +158,7 @@
 
         <!-- Chart Panel -->
         <div class="mt-8">
-          <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground mb-4">Interacciones de IA (Chat) - Últimos 14 días</h2>
+          <h2 class="text-sm font-semibold tracking-wide uppercase text-muted-foreground mb-4">{{ $t('dash_v2.dash_v2_13') }}</h2>
           <GlassCard>
             <div class="h-64 flex items-end gap-1 sm:gap-2 p-2">
               <div 
@@ -336,6 +336,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { onMounted, computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { toast } from 'vue3-toastify'

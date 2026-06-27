@@ -7,11 +7,11 @@
       <!-- HEADER -->
       <section class="w-full max-w-4xl mx-auto px-6 text-center mb-16" v-motion-slide-visible-once-bottom>
         <Badge variant="outline" class="mb-6 border-purple-500/30 text-purple-400 bg-purple-500/10 uppercase tracking-wider backdrop-blur-sm px-3 py-1 text-xs font-semibold">
-          El Origen
+          {{ $t('public_about.about_1') }}
         </Badge>
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight mb-6 text-white drop-shadow-sm">
-          Nacido de la frustración.<br />
-          Construido para el <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">futuro.</span>
+          {{ $t('public_about.about_2') }}<br />
+          {{ $t('public_about.about_3') }} <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">{{ $t('public_about.about_4') }}</span>
         </h1>
       </section>
 
@@ -22,39 +22,39 @@
           <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
           
           <div class="relative z-10 text-zinc-300 space-y-6 text-lg leading-relaxed font-light">
-            <p class="font-medium text-white text-xl">Hola, soy Jaime Campillay.</p>
+            <p class="font-medium text-white text-xl">{{ $t('public_about.about_5') }}</p>
             
             <p>
-              Hace un tiempo me encontré en una situación que probablemente conoces muy bien: <strong>estaba desempleado, buscando trabajo y enviando decenas de currículums en PDF que caían en un agujero negro.</strong>
+              {{ $t('public_about.about_6') }} <strong>{{ $t('public_about.about_7') }}</strong>
             </p>
             
             <p>
-              Como desarrollador y arquitecto de software, la frustración era doble. Sabía que tenía el talento, conocía las tecnologías (Vue, FastAPI, Inteligencia Artificial, Bases de Datos Vectoriales), pero no tenía cómo demostrar mi verdadero impacto en una simple hoja A4 estática. El sistema de reclutamiento tradicional me estaba limitando.
+              {{ $t('public_about.about_8') }}
             </p>
             
             <p>
-              <strong>Así que decidí hackear el sistema.</strong>
+              <strong>{{ $t('public_about.about_9') }}</strong>
             </p>
             
             <p>
-              Me propuse construir la herramienta definitiva para mí mismo: un portafolio interactivo, hermoso, y equipado con mi propio "Clon Digital" alimentado por IA. Un asistente que pudiera responder preguntas técnicas de los reclutadores 24/7 mientras yo dormía o estudiaba.
+              {{ $t('public_about.about_10') }}
             </p>
             
             <p>
-              Cuando vi el resultado, me di cuenta de algo más grande: <span class="text-white font-medium">yo no era el único con este problema.</span> Había miles de profesionales talentosos en Latinoamérica y el mundo siendo ignorados por culpa de un ATS (sistema automático) o un PDF aburrido.
+              {{ $t('public_about.about_11') }} <span class="text-white font-medium">{{ $t('public_about.about_12') }}</span> {{ $t('public_about.about_13') }}
             </p>
             
             <p>
-              Decidí <strong>democratizar</strong> la tecnología. Adapté mi código, creé OppyTalent y lo abrí al mundo.
+              {{ $t('public_about.about_14') }} <strong>{{ $t('public_about.about_15') }}</strong> {{ $t('public_about.about_16') }}
             </p>
             
             <p>
-              Seré completamente honesto contigo: construir esto es mi mejor currículum. Si esta plataforma crece, mi visibilidad crece y mis oportunidades también. Al usar OppyTalent, no solo estás elevando tu propia carrera profesional, estás apoyando el trabajo de un desarrollador independiente que busca cambiar las reglas del juego.
+              {{ $t('public_about.about_17') }}
             </p>
             
             <p class="font-medium text-purple-400 pt-4">
-              Bienvenidos a la revolución del talento.<br />
-              Bienvenidos a OppyTalent.
+              {{ $t('public_about.about_18') }}<br />
+              {{ $t('public_about.about_19') }}
             </p>
           </div>
 
@@ -63,17 +63,17 @@
             <div class="flex items-center gap-4">
               <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 p-[2px]">
                 <div class="w-full h-full bg-zinc-900 rounded-full flex items-center justify-center text-xl font-bold text-white">
-                  JC
+                  {{ $t('public_about.about_20') }}
                 </div>
               </div>
               <div>
-                <h3 class="text-white font-bold text-lg">Jaime Campillay</h3>
-                <p class="text-zinc-500 text-sm">Fundador & Arquitecto de Software</p>
+                <h3 class="text-white font-bold text-lg">{{ $t('public_about.about_21') }}</h3>
+                <p class="text-zinc-500 text-sm">{{ $t('public_about.about_22') }}</p>
               </div>
             </div>
             <router-link to="/jcampillayworks">
               <NeonButton variant="outline" class="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-sm py-2">
-                Hablar con mi Clon Digital
+                {{ $t('public_about.about_23') }}
               </NeonButton>
             </router-link>
           </div>
@@ -82,7 +82,7 @@
 
       <!-- VALORES CORE Y ROADMAP -->
       <section class="w-full max-w-6xl mx-auto px-6 mb-24">
-        <h2 class="text-3xl font-bold text-center mb-12" v-motion-slide-visible-once-bottom>Pilares del Proyecto</h2>
+        <h2 class="text-3xl font-bold text-center mb-12" v-motion-slide-visible-once-bottom>{{ $t('public_about.about_24') }}</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Transparencia -->
@@ -90,9 +90,9 @@
             <div class="bg-purple-500/10 w-12 h-12 rounded-2xl flex items-center justify-center text-purple-400 mb-6">
               <Heart :size="24" />
             </div>
-            <h3 class="text-xl font-bold mb-3 text-white">Transparencia Radical</h3>
+            <h3 class="text-xl font-bold mb-3 text-white">{{ $t('public_about.about_25') }}</h3>
             <p class="text-zinc-400 text-sm leading-relaxed">
-              Construimos en público. Hablamos claro sobre cómo funciona la Inteligencia Artificial (cero alucinaciones, puro RAG) y no ocultamos nuestra historia.
+              {{ $t('public_about.about_26') }}
             </p>
           </div>
 
@@ -101,9 +101,9 @@
             <div class="bg-indigo-500/10 w-12 h-12 rounded-2xl flex items-center justify-center text-indigo-400 mb-6">
               <ShieldCheck :size="24" />
             </div>
-            <h3 class="text-xl font-bold mb-3 text-white">Privacidad y Control</h3>
+            <h3 class="text-xl font-bold mb-3 text-white">{{ $t('public_about.about_27') }}</h3>
             <p class="text-zinc-400 text-sm leading-relaxed">
-              Tus datos son tuyos. Promovemos el modelo <strong>Bring Your Own Key (BYOK)</strong> con encriptación AES-256 para que tengas el control absoluto de tus costos y privacidad de IA.
+              {{ $t('public_about.about_28') }} <strong>{{ $t('public_about.about_29') }}</strong> {{ $t('public_about.about_30') }}
             </p>
           </div>
 
@@ -112,9 +112,9 @@
             <div class="bg-pink-500/10 w-12 h-12 rounded-2xl flex items-center justify-center text-pink-400 mb-6">
               <Trophy :size="24" />
             </div>
-            <h3 class="text-xl font-bold mb-3 text-white">Disrupción Constante</h3>
+            <h3 class="text-xl font-bold mb-3 text-white">{{ $t('public_about.about_31') }}</h3>
             <p class="text-zinc-400 text-sm leading-relaxed">
-              De un proyecto personal a ser considerado para iniciativas globales de innovación como los <strong>NTT DATA eAwards</strong>. Construimos herramientas que desafían el status quo.
+              {{ $t('public_about.about_32') }} <strong>{{ $t('public_about.about_33') }}</strong>{{ $t('public_about.about_34') }}
             </p>
           </div>
         </div>
@@ -122,19 +122,19 @@
 
       <!-- CTA -->
       <section class="w-full max-w-4xl mx-auto px-6 text-center" v-motion-slide-visible-once-bottom>
-        <h2 class="text-3xl font-bold mb-6 text-white">Únete a la Revolución</h2>
+        <h2 class="text-3xl font-bold mb-6 text-white">{{ $t('public_about.about_35') }}</h2>
         <p class="text-lg text-zinc-400 mb-8 max-w-2xl mx-auto">
-          Ya sea que busques destacar en tu próxima entrevista o descubrir talento oculto, hay un lugar para ti en OppyTalent.
+          {{ $t('public_about.about_36') }}
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <router-link to="/register" class="w-full sm:w-auto">
             <NeonButton glow variant="primary" class="w-full bg-purple-600 hover:bg-purple-500 border-purple-400 px-8 py-3">
-              Crear mi Cuenta Gratis
+              {{ $t('public_about.about_37') }}
             </NeonButton>
           </router-link>
           <router-link to="/features" class="w-full sm:w-auto">
             <NeonButton variant="outline" class="w-full text-zinc-300 border-white/10 hover:bg-white/5 px-8 py-3">
-              Ver Funcionalidades
+              {{ $t('public_about.about_38') }}
             </NeonButton>
           </router-link>
         </div>
@@ -149,6 +149,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import LandingNavbar from '../../components/public/LandingNavbar.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'

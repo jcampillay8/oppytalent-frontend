@@ -10,11 +10,11 @@
 
       <!-- Desktop Navigation -->
       <nav class="hidden lg:flex items-center gap-6">
-        <router-link to="/features" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Funcionalidades</router-link>
-        <router-link to="/talent-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Para Talentos</router-link>
-        <router-link to="/b2b-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Para Empresas</router-link>
-        <router-link to="/pricing" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Precios</router-link>
-        <router-link to="/about" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Sobre OppyTalent</router-link>
+        <router-link to="/features" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.features') }}</router-link>
+        <router-link to="/talent-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.talent') }}</router-link>
+        <router-link to="/b2b-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.b2b') }}</router-link>
+        <router-link to="/pricing" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.pricing') }}</router-link>
+        <router-link to="/about" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.about') }}</router-link>
       </nav>
     </div>
 
@@ -41,23 +41,21 @@
 
       <!-- Auth / User Controls -->
       <template v-if="!authStore.isAuthenticated">
-        <!-- Contactar Button (Unauthenticated) -->
         <router-link v-if="isPortfolioView" to="/login">
           <NeonButton variant="outline" size="sm" class="hidden sm:flex mr-2 border-primary/50 text-primary hover:bg-primary/10">
             <template #icon-left><MessageSquare :size="16" /></template>
-            Contactar
+            {{ $t('public_nav.contact') }}
           </NeonButton>
         </router-link>
 
         <router-link to="/login" class="text-zinc-300 font-medium hover:text-white transition-colors text-sm hidden sm:block ml-2">
-          Iniciar Sesión
+          {{ $t('public_nav.login') }}
         </router-link>
         <router-link to="/register">
-          <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">Registrarse</NeonButton>
+          <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">{{ $t('public_nav.register') }}</NeonButton>
         </router-link>
       </template>
       <template v-else>
-        <!-- Contactar Button (Only shown in Portfolio View) -->
         <NeonButton 
           v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username"
           @click="contactTalent" 
@@ -67,7 +65,7 @@
           class="hidden sm:flex mr-2"
         >
           <template #icon-left><MessageSquare :size="16" /></template>
-          Chat {{ targetUserObj?.first_name || route.params.username }}
+          {{ $t('public_nav.chat') }} {{ targetUserObj?.first_name || route.params.username }}
         </NeonButton>
         
         <ConnectionButton 
@@ -89,7 +87,7 @@
 
         
         <router-link :to="`/${authStore.user?.username.split('@')[0]}/dashboard`">
-          <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">Dashboard</NeonButton>
+          <NeonButton glow variant="primary" size="sm" class="hidden sm:flex">{{ $t('public_nav.dashboard') }}</NeonButton>
         </router-link>
       </template>
 
@@ -103,17 +101,17 @@
     <!-- Mobile Menu Overlay -->
     <div v-if="isMobileMenuOpen" class="absolute top-full left-0 w-full bg-[#050505]/95 backdrop-blur-2xl border-b border-white/10 flex flex-col p-6 gap-6 lg:hidden animate-in slide-in-from-top-2">
       <nav class="flex flex-col gap-4 text-lg">
-        <router-link @click="isMobileMenuOpen = false" to="/features" class="text-zinc-300 hover:text-white transition-colors">Funcionalidades</router-link>
-        <router-link @click="isMobileMenuOpen = false" to="/talent-info" class="text-zinc-300 hover:text-white transition-colors">Para Talentos</router-link>
-        <router-link @click="isMobileMenuOpen = false" to="/b2b-info" class="text-zinc-300 hover:text-white transition-colors">Para Empresas</router-link>
-        <router-link @click="isMobileMenuOpen = false" to="/pricing" class="text-zinc-300 hover:text-white transition-colors">Precios</router-link>
-        <router-link @click="isMobileMenuOpen = false" to="/about" class="text-zinc-300 hover:text-white transition-colors">Sobre OppyTalent</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/features" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.features') }}</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/talent-info" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.talent') }}</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/b2b-info" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.b2b') }}</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/pricing" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.pricing') }}</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/about" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.about') }}</router-link>
       </nav>
       
       <div class="h-px bg-white/10 w-full"></div>
       
       <div class="flex items-center justify-between">
-        <span class="text-sm font-medium text-zinc-400">Idioma</span>
+        <span class="text-sm font-medium text-zinc-400">{{ $t('public_nav.language') }}</span>
         <div class="flex items-center gap-1 bg-white/5 rounded-lg p-1 border border-white/10">
           <button @click="changeLang('es')" class="px-3 py-1 rounded text-sm font-bold transition-all" :class="locale === 'es' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white'">🇪🇸 ES</button>
           <button @click="changeLang('en')" class="px-3 py-1 rounded text-sm font-bold transition-all" :class="locale === 'en' ? 'bg-primary text-white' : 'text-zinc-400 hover:text-white'">🇺🇸 EN</button>
@@ -122,19 +120,18 @@
       
       <div class="flex flex-col gap-3 mt-2" v-if="!authStore.isAuthenticated">
         <router-link @click="isMobileMenuOpen = false" to="/login" class="w-full text-center py-3 rounded-lg border border-white/10 text-zinc-300 font-medium hover:bg-white/5 transition-colors">
-          Iniciar Sesión
+          {{ $t('public_nav.login') }}
         </router-link>
         <router-link @click="isMobileMenuOpen = false" to="/register" class="w-full">
-          <NeonButton glow variant="primary" class="w-full py-3 justify-center">Registrarse</NeonButton>
+          <NeonButton glow variant="primary" class="w-full py-3 justify-center">{{ $t('public_nav.register') }}</NeonButton>
         </router-link>
         <router-link v-if="isPortfolioView" @click="isMobileMenuOpen = false" to="/login" class="w-full mt-2">
           <NeonButton variant="outline" class="w-full py-3 justify-center border-primary/50 text-primary">
-            Contactar
+            {{ $t('public_nav.contact') }}
           </NeonButton>
         </router-link>
       </div>
       <div class="flex flex-col gap-3 mt-2" v-else>
-        <!-- Contactar for Mobile (Authenticated) -->
         <NeonButton 
           v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username"
           @click="() => { contactTalent(); isMobileMenuOpen = false }" 
@@ -142,7 +139,7 @@
           glow
           class="w-full py-3 justify-center"
         >
-          Chat {{ targetUserObj?.first_name || route.params.username }}
+          {{ $t('public_nav.chat') }} {{ targetUserObj?.first_name || route.params.username }}
         </NeonButton>
         <ConnectionButton 
           v-if="isPortfolioView && authStore.user?.username.split('@')[0] !== route.params.username && targetUserObj"
@@ -151,18 +148,18 @@
         />
 
         <router-link @click="isMobileMenuOpen = false" :to="`/${authStore.user?.username.split('@')[0]}/dashboard`" class="w-full">
-          <NeonButton glow variant="outline" class="w-full py-3 justify-center">Ir al Dashboard</NeonButton>
+          <NeonButton glow variant="outline" class="w-full py-3 justify-center">{{ $t('public_nav.dashboard') }}</NeonButton>
         </router-link>
         
         <router-link @click="isMobileMenuOpen = false" :to="`/${authStore.user?.username.split('@')[0] || 'admin'}/inbox`" class="w-full">
           <NeonButton variant="outline" class="w-full py-3 justify-center flex items-center gap-2">
-            Mensajes
+            {{ $t('public_nav.messages') }}
             <span v-if="chatStore.unreadCount > 0" class="bg-destructive text-white text-xs px-2 py-0.5 rounded-full">{{ chatStore.unreadCount }}</span>
           </NeonButton>
         </router-link>
         <router-link @click="isMobileMenuOpen = false" to="/network" class="w-full">
           <NeonButton variant="outline" class="w-full py-3 justify-center flex items-center gap-2">
-            Red
+            {{ $t('public_nav.network') }}
             <span v-if="networkStore.pendingCount > 0" class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">{{ networkStore.pendingCount }}</span>
           </NeonButton>
         </router-link>

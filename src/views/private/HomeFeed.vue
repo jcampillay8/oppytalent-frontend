@@ -25,7 +25,7 @@
             <p class="text-xs text-muted-foreground mt-1">{{ currentUser?.occupation || 'Talento Tech' }}</p>
             
             <button @click="goToMyPortfolio" class="w-full mt-5 py-2 bg-secondary hover:bg-primary hover:text-primary-foreground text-foreground text-sm font-medium rounded-xl transition-all border border-border hover:border-primary flex justify-center items-center gap-2">
-              <Eye size="16" /> Ver mi vitrina
+              <Eye size="16" /> {{ $t('admin_home_feed.home_feed_1') }}
             </button>
           </div>
         </div>
@@ -33,31 +33,31 @@
         <!-- Métricas del Clon Digital -->
         <div class="bg-card border border-border rounded-2xl p-5 shadow-sm">
           <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-            <Bot class="text-primary" size="18" /> Rendimiento de mi Clon IA
+            <Bot class="text-primary" size="18" /> {{ $t('admin_home_feed.home_feed_2') }}
           </h3>
           <div class="space-y-4">
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                <MessageSquare size="14"/> Interacciones
+                <MessageSquare size="14"/> {{ $t('admin_home_feed.home_feed_3') }}
               </div>
               <span class="font-bold text-foreground">12</span>
             </div>
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                <Eye size="14"/> Vistas de Perfil
+                <Eye size="14"/> {{ $t('admin_home_feed.home_feed_4') }}
               </div>
               <span class="font-bold text-foreground">48</span>
             </div>
             <div class="flex justify-between items-center">
               <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                <Swords size="14"/> Citaciones B2B
+                <Swords size="14"/> {{ $t('admin_home_feed.home_feed_5') }}
               </div>
               <span class="font-bold text-emerald-500">2</span>
             </div>
           </div>
           <div class="mt-4 p-3 bg-secondary/50 rounded-xl border border-border/50">
             <p class="text-xs text-muted-foreground leading-relaxed">
-              <span class="font-bold text-foreground">Tip:</span> Tu clon digital tiene un 85% de completitud. Agrega más proyectos para mejorar tus respuestas automáticas.
+              <span class="font-bold text-foreground">{{ $t('admin_home_feed.home_feed_6') }}</span> {{ $t('admin_home_feed.home_feed_7') }}
             </p>
           </div>
         </div>
@@ -67,9 +67,9 @@
       <section class="lg:col-span-6 space-y-6">
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
-            <Sparkles class="text-yellow-500" size="24" /> Inspiración y Proyectos
+            <Sparkles class="text-yellow-500" size="24" /> {{ $t('admin_home_feed.home_feed_8') }}
           </h1>
-          <button class="text-sm font-medium text-primary hover:underline">Ver todos</button>
+          <button class="text-sm font-medium text-primary hover:underline">{{ $t('admin_home_feed.home_feed_9') }}</button>
         </div>
 
         <!-- Network Feed Cards -->
@@ -80,8 +80,8 @@
           
           <div v-else-if="feedEvents.length === 0" class="bg-card border border-dashed border-border/50 rounded-2xl p-10 text-center">
             <Network size="48" class="mx-auto text-muted-foreground/50 mb-4" />
-            <h3 class="text-lg font-bold">Tu feed está tranquilo</h3>
-            <p class="text-sm text-muted-foreground mt-2">Conecta con más talentos en la sección Mi Red para ver sus actualizaciones aquí.</p>
+            <h3 class="text-lg font-bold">{{ $t('admin_home_feed.home_feed_10') }}</h3>
+            <p class="text-sm text-muted-foreground mt-2">{{ $t('admin_home_feed.home_feed_11') }}</p>
           </div>
 
           <div v-for="event in feedEvents" :key="event.id" class="bg-card border border-border rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-300">
@@ -102,15 +102,15 @@
             </div>
             
             <p class="text-base text-foreground mb-4">
-              <span v-if="event.event_type === 'NEW_PROJECT'">🚀 ha añadido un nuevo <strong>proyecto</strong> a su portafolio.</span>
-              <span v-else-if="event.event_type === 'NEW_EXPERIENCE'">💼 ha actualizado su <strong>experiencia laboral</strong>.</span>
-              <span v-else-if="event.event_type === 'NEW_CERTIFICATION'">🏆 ha obtenido un nuevo <strong>reconocimiento o certificación</strong>.</span>
-              <span v-else-if="event.event_type === 'NEW_STUDY'">🎓 ha añadido un nuevo <strong>estudio</strong> a su perfil.</span>
+              <span v-if="event.event_type === 'NEW_PROJECT'">{{ $t('admin_home_feed.home_feed_12') }} <strong>{{ $t('admin_home_feed.home_feed_13') }}</strong> {{ $t('admin_home_feed.home_feed_14') }}</span>
+              <span v-else-if="event.event_type === 'NEW_EXPERIENCE'">{{ $t('admin_home_feed.home_feed_15') }} <strong>{{ $t('admin_home_feed.home_feed_16') }}</strong>.</span>
+              <span v-else-if="event.event_type === 'NEW_CERTIFICATION'">{{ $t('admin_home_feed.home_feed_17') }} <strong>{{ $t('admin_home_feed.home_feed_18') }}</strong>.</span>
+              <span v-else-if="event.event_type === 'NEW_STUDY'">{{ $t('admin_home_feed.home_feed_19') }} <strong>{{ $t('admin_home_feed.home_feed_20') }}</strong> {{ $t('admin_home_feed.home_feed_21') }}</span>
             </p>
             
             <div class="flex gap-3 border-t border-border/50 pt-4">
               <button @click="router.push(`/${event.user.username.split('@')[0]}`)" class="flex-1 py-2 bg-secondary hover:bg-primary/10 text-foreground hover:text-primary text-sm font-medium rounded-xl transition-all flex justify-center items-center gap-2">
-                <ExternalLink size="16" /> Visitar Portafolio
+                <ExternalLink size="16" /> {{ $t('admin_home_feed.home_feed_22') }}
               </button>
             </div>
           </div>
@@ -125,12 +125,12 @@
           <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[40px] rounded-full pointer-events-none"></div>
           
           <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2 relative z-10">
-            <Activity class="text-primary" size="18" /> Radar de la Demanda
+            <Activity class="text-primary" size="18" /> {{ $t('admin_home_feed.home_feed_23') }}
           </h3>
           
           <div v-if="demandData" class="space-y-4 relative z-10">
             <p class="text-sm text-muted-foreground leading-relaxed">
-              La IA de OppyTalent analizó <strong>+{{ demandData.total_searches }} búsquedas</strong> de Headhunters esta semana en tu área.
+              {{ $t('admin_home_feed.home_feed_24') }} <strong>+{{ demandData.total_searches }} búsquedas</strong> {{ $t('admin_home_feed.home_feed_25') }}
             </p>
             
             <div v-for="(insight, i) in demandData.insights" :key="i" class="space-y-2">
@@ -159,10 +159,10 @@
         <div v-if="talentFeedback && talentFeedback.length > 0" class="bg-card border border-primary/30 rounded-2xl p-5 shadow-sm relative overflow-hidden group">
           <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
           <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-            <Swords class="text-primary" size="18" /> Feedback de Batalla B2B
+            <Swords class="text-primary" size="18" /> {{ $t('admin_home_feed.home_feed_26') }}
           </h3>
           <p class="text-xs text-muted-foreground mb-4">
-            ¡Tu Clon Digital fue evaluado en <strong>{{ talentFeedback.length }}</strong> paneles técnicos recientemente!
+            {{ $t('admin_home_feed.home_feed_27') }} <strong>{{ talentFeedback.length }}</strong> {{ $t('admin_home_feed.home_feed_28') }}
           </p>
           
           <div class="space-y-4">
@@ -179,16 +179,16 @@
         <!-- Networking Sugerido -->
         <div class="bg-card border border-border rounded-2xl p-5 shadow-sm">
           <h3 class="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-            <Users class="text-primary" size="18" /> Conecta con Talentos
+            <Users class="text-primary" size="18" /> {{ $t('admin_home_feed.home_feed_29') }}
           </h3>
           
           <div class="space-y-4">
             <div class="flex items-center justify-between group">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold text-xs border border-purple-500/30">M</div>
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold text-xs border border-purple-500/30">{{ $t('admin_home_feed.home_feed_30') }}</div>
                 <div>
-                  <p class="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer">Martín UX</p>
-                  <p class="text-[10px] text-muted-foreground">Diseñador UI/UX</p>
+                  <p class="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer">{{ $t('admin_home_feed.home_feed_31') }}</p>
+                  <p class="text-[10px] text-muted-foreground">{{ $t('admin_home_feed.home_feed_32') }}</p>
                 </div>
               </div>
               <button class="w-8 h-8 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground flex items-center justify-center text-muted-foreground transition-all">
@@ -198,10 +198,10 @@
 
             <div class="flex items-center justify-between group">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs border border-amber-500/30">S</div>
+                <div class="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs border border-amber-500/30">{{ $t('admin_home_feed.home_feed_33') }}</div>
                 <div>
-                  <p class="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer">Sofía QA</p>
-                  <p class="text-[10px] text-muted-foreground">Automation Engineer</p>
+                  <p class="text-sm font-bold text-foreground group-hover:text-primary transition-colors cursor-pointer">{{ $t('admin_home_feed.home_feed_34') }}</p>
+                  <p class="text-[10px] text-muted-foreground">{{ $t('admin_home_feed.home_feed_35') }}</p>
                 </div>
               </div>
               <button class="w-8 h-8 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground flex items-center justify-center text-muted-foreground transition-all">
@@ -227,6 +227,8 @@ import {
   Activity, Lightbulb, Users, UserPlus, Network
 } from 'lucide-vue-next'
 import DegreeBadge from '../../components/ui/DegreeBadge.vue'
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()

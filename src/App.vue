@@ -141,26 +141,26 @@
                   <!-- Dropdown Hunter -->
                   <template v-if="isHunter">
                     <router-link to="/b2b/admin" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
-                      <Building2 :size="16" /> Mi Empresa
+                      <Building2 :size="16" /> {{ $t('app_dropdown.my_company') }}
                     </router-link>
                     <button class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
-                      <CreditCard :size="16" /> Suscripción y Créditos
+                      <CreditCard :size="16" /> {{ $t('app_dropdown.subscription') }}
                     </button>
                   </template>
 
                   <!-- Dropdown Talent -->
                   <template v-else>
                     <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
-                      <Bot :size="16" /> Mi Chat IA
+                      <Bot :size="16" /> {{ $t('app_dropdown.my_ai_chat') }}
                     </router-link>
                     <button @click="goToMyPortfolio(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors">
-                      <Briefcase :size="16" /> Mi Portafolio
+                      <Briefcase :size="16" /> {{ $t('app_dropdown.my_portfolio') }}
                     </button>
                     <router-link :to="`/${authStore.user?.username?.split('@')[0] || ''}/compartir`" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors text-primary font-medium" @click="close">
-                      <Share2 :size="16" /> Compartir
+                      <Share2 :size="16" /> {{ $t('app_dropdown.share') }}
                     </router-link>
                     <router-link to="/network" class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-secondary transition-colors" @click="close">
-                      <Users :size="16" /> Mi Red Profesional
+                      <Users :size="16" /> {{ $t('app_dropdown.my_network') }}
                       <span v-if="networkStore.pendingCount > 0" class="ml-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ networkStore.pendingCount }}</span>
                     </router-link>
                   </template>
@@ -169,7 +169,7 @@
                   
                   <!-- Impersonation Dropdown Section -->
                   <div v-if="authStore.user?.permissions?.includes('can_impersonate')" class="px-2 py-1">
-                    <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-1">Probar como...</div>
+                    <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1 px-1">{{ $t('app_dropdown.impersonate_as') }}</div>
                     <button 
                       v-for="role in availableRoles" 
                       :key="role.id"
@@ -182,7 +182,7 @@
                   <div v-if="authStore.user?.permissions?.includes('can_impersonate')" class="h-px bg-border my-1"></div>
 
                   <button @click="handleLogout(); close()" class="flex items-center gap-2 w-full text-left px-3 py-2 text-sm rounded-lg text-destructive hover:bg-destructive/10 transition-colors">
-                    <LogOut :size="16" /> Cerrar Sesión
+                    <LogOut :size="16" /> {{ $t('app_dropdown.logout') }}
                   </button>
                 </div>
               </template>
@@ -190,7 +190,7 @@
 
             <template v-if="!authStore.token">
               <router-link to="/login" class="text-sm font-medium text-foreground hover:text-primary transition-colors ml-2 hidden sm:block">
-                Iniciar Sesión
+                {{ $t('app_dropdown.login') }}
               </router-link>
             </template>
 

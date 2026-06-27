@@ -2,9 +2,9 @@
   <AdminLayout>
     <div class="mb-8">
       <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-        <Palette :size="32" class="text-primary" /> Apariencia y Contenido
+        <Palette :size="32" class="text-primary" /> {{ $t('admin_apariencia.apariencia_1') }}
       </h1>
-      <p class="text-muted-foreground mt-1">Personaliza el diseño, la estructura y los mensajes de tu vitrina profesional.</p>
+      <p class="text-muted-foreground mt-1">{{ $t('admin_apariencia.apariencia_2') }}</p>
     </div>
 
     <!-- Tabs Header -->
@@ -14,7 +14,7 @@
         class="pb-2 text-sm font-bold transition-all relative whitespace-nowrap"
         :class="activeTab === 'theme' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
       >
-        🎨 Tema y Diseño
+        {{ $t('admin_apariencia.apariencia_3') }}
         <div v-if="activeTab === 'theme'" class="absolute -bottom-[9px] left-0 right-0 h-[3px] bg-primary rounded-t-full"></div>
       </button>
       <button 
@@ -22,7 +22,7 @@
         class="pb-2 text-sm font-bold transition-all relative whitespace-nowrap"
         :class="activeTab === 'sections' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
       >
-        🧱 Estructura de Secciones
+        {{ $t('admin_apariencia.apariencia_4') }}
         <div v-if="activeTab === 'sections'" class="absolute -bottom-[9px] left-0 right-0 h-[3px] bg-primary rounded-t-full"></div>
       </button>
       <button 
@@ -30,7 +30,7 @@
         class="pb-2 text-sm font-bold transition-all relative whitespace-nowrap"
         :class="activeTab === 'frases' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
       >
-        💬 Textos y Frases
+        {{ $t('admin_apariencia.apariencia_5') }}
         <div v-if="activeTab === 'frases'" class="absolute -bottom-[9px] left-0 right-0 h-[3px] bg-primary rounded-t-full"></div>
       </button>
     </div>
@@ -45,6 +45,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { ref } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import ThemeConfig from './ThemeConfigAdmin.vue'

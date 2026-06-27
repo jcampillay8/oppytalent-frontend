@@ -13,12 +13,12 @@
         @keydown.down.prevent="onArrowDown"
         @keydown.up.prevent="onArrowUp"
         @keydown.enter.prevent="onEnter"
-        placeholder="Buscar talento... (⌘ + K)"
+        :placeholder="$t('search_spot.placeholder')"
         class="block w-full pl-10 pr-12 py-2 border border-border/50 rounded-xl bg-secondary/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all duration-300 backdrop-blur-sm"
       />
       <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
         <kbd class="hidden sm:inline-flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-          <span class="text-xs">⌘</span>K
+          <span class="text-xs">⌘</span>{{ $t('search_spot.search_spot_1') }}
         </kbd>
       </div>
     </div>
@@ -64,6 +64,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { Search, Loader2 } from 'lucide-vue-next'
 

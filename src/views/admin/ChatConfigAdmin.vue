@@ -14,7 +14,7 @@
         <GlassCard>
           <div class="flex items-center gap-3 mb-4 pb-4 border-b border-border/50">
             <MessageSquare :size="20" class="text-primary" />
-            <h3 class="text-lg font-bold text-foreground">Estrategia y Agent Skills de la IA</h3>
+            <h3 class="text-lg font-bold text-foreground">{{ $t('admin_chat_config.chat_config_1') }}</h3>
           </div>
           
           <form @submit.prevent="saveConfig" class="space-y-6">
@@ -24,13 +24,13 @@
                 v-model="form.chat_welcome_message"
                 class="w-full px-4 py-3 bg-secondary border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-y"
                 rows="3"
-                :placeholder="$t('admin.views.chat_config.welcome_placeholder')"
+                ::placeholder="$t('admin_chat_config.chat_config_1')"
               ></textarea>
             </div>
 
             <div class="space-y-4">
               <div class="flex items-center justify-between border-b border-border/50 pb-3">
-                <label class="text-base font-semibold text-foreground">Agent Skills (Directrices para la IA)</label>
+                <label class="text-base font-semibold text-foreground">{{ $t('admin_chat_config.chat_config_2') }}</label>
                 <div class="flex items-center gap-3">
                   <p v-if="successMsg" class="text-xs text-emerald-500 font-medium">{{ successMsg }}</p>
                   <p v-if="errorMsg" class="text-xs text-destructive font-medium">{{ errorMsg }}</p>
@@ -44,28 +44,28 @@
                   </NeonButton>
                 </div>
               </div>
-              <p class="text-xs text-muted-foreground mt-1 mb-3 leading-relaxed">Entrena a tu IA. Dile qué proyecto destacar cuando un reclutador pregunte por una habilidad específica (Máx. {{ maxRules }}).</p>
+              <p class="text-xs text-muted-foreground mt-1 mb-3 leading-relaxed">{{ $t('admin_chat.train_ai_desc', { maxRules }) }}</p>
               
               <div v-if="form.ai_pitch_rules.length === 0" class="text-center p-6 bg-secondary/50 border border-dashed border-border rounded-xl">
-                <p class="text-sm text-muted-foreground">No tienes Agent Skills configurados. La IA usará su criterio predeterminado.</p>
+                <p class="text-sm text-muted-foreground">{{ $t('admin_chat.no_skills') }}</p>
               </div>
 
               <div v-for="(rule, idx) in form.ai_pitch_rules" :key="idx" class="relative p-4 bg-background hover:bg-secondary/20 transition-colors border border-border rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 group" v-motion="{ initial: { opacity: 0, y: 10 }, enter: { opacity: 1, y: 0 } }">
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 mb-1">
-                    <Badge variant="primary" class="shrink-0 text-[10px]">Si preguntan sobre:</Badge>
+                    <Badge variant="primary" class="shrink-0 text-[10px]">{{ $t('admin_chat.if_ask_about') }}</Badge>
                     <span class="font-bold text-foreground truncate">{{ rule.keyword || 'Sin condición' }}</span>
                   </div>
                   <p class="text-sm text-muted-foreground line-clamp-2 mt-2">{{ rule.pitch || 'Sin argumento definido' }}</p>
                   <div v-if="rule.call_to_action && rule.call_to_action !== '#'" class="mt-2 text-xs text-primary flex items-center gap-1">
-                    <LinkIcon :size="12" /> Enlaza a: {{ getLinkName(rule.call_to_action) }}
+                    <LinkIcon :size="12" /> {{ $t('admin_chat.links_to') }} {{ getLinkName(rule.call_to_action) }}
                   </div>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                  <button type="button" @click="editPitchRule(idx)" class="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/50 hover:bg-secondary rounded-lg" title="Editar Skill">
+                  <button type="button" @click="editPitchRule(idx)" class="p-2 text-muted-foreground hover:text-primary transition-colors bg-secondary/50 hover:bg-secondary rounded-lg" :title="$t('admin_chat.edit_skill')">
                     <Edit2 :size="16" />
                   </button>
-                  <button type="button" @click="removePitchRule(idx)" class="p-2 text-muted-foreground hover:text-destructive transition-colors bg-secondary/50 hover:bg-secondary rounded-lg" title="Eliminar Skill">
+                  <button type="button" @click="removePitchRule(idx)" class="p-2 text-muted-foreground hover:text-destructive transition-colors bg-secondary/50 hover:bg-secondary rounded-lg" :title="$t('admin_chat.delete_skill')">
                     <Trash2 :size="16" />
                   </button>
                 </div>
@@ -75,7 +75,7 @@
             <div class="pt-4 border-t border-border/50 flex flex-col items-center gap-2">
               <NeonButton type="button" @click="addPitchRule" :disabled="form.ai_pitch_rules.length >= maxRules" variant="outline" className="w-full sm:w-auto">
                 <template #icon-left><Plus :size="16" /></template>
-                Agregar Skill
+                {{ $t('admin_chat.add_skill') }}
               </NeonButton>
             </div>
           </form>
@@ -85,15 +85,15 @@
         <GlassCard>
           <div class="flex items-center gap-3 mb-4 pb-4 border-b border-border/50">
             <Globe :size="20" class="text-primary" />
-            <h3 class="text-lg font-bold text-foreground">Visibilidad B2B (Meta-Reclutador)</h3>
+            <h3 class="text-lg font-bold text-foreground">{{ $t('admin_chat.b2b_visibility') }}</h3>
             <Badge variant="primary" class="ml-auto">Premium</Badge>
           </div>
           
           <div class="flex items-start gap-4">
             <div class="flex-1">
-              <h4 class="text-md font-semibold text-foreground">Permitir que las empresas me encuentren</h4>
+              <h4 class="text-md font-semibold text-foreground">{{ $t('admin_chat.b2b_allow') }}</h4>
               <p class="text-sm text-muted-foreground mt-1 leading-relaxed">
-                Al activar esto, tu perfil ("Clon Digital") será indexado en el Meta-Buscador privado de empresas de OppyTalent. Los Headhunters podrán encontrarte automáticamente según tus habilidades y experiencia, e invitar a tu IA al "Tribunal de IAs" para pre-evaluación.
+                {{ $t('admin_chat.b2b_desc') }}
               </p>
             </div>
             <div class="flex items-center">
@@ -105,7 +105,7 @@
           </div>
           <div v-if="b2bSaving" class="text-xs text-primary mt-2 flex items-center gap-2">
             <div class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-            Guardando preferencia...
+            {{ $t('admin_chat.saving_pref') }}
           </div>
         </GlassCard>
 
@@ -123,47 +123,47 @@
             <button type="button" @click="closeSkillModal" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
               <X :size="20" />
             </button>
-            <h2 class="text-xl font-bold mb-1">{{ editingSkillIndex >= 0 ? 'Editar Agent Skill' : 'Nuevo Agent Skill' }}</h2>
-            <p class="text-sm text-muted-foreground mb-6">Instruye a tu IA con formato Markdown para destacar tus mejores atributos.</p>
+            <h2 class="text-xl font-bold mb-1">{{ editingSkillIndex >= 0 ? $t('admin_chat_config.edit_skill', 'Editar Agent Skill') : $t('admin_chat_config.new_skill', 'Nuevo Agent Skill') }}</h2>
+            <p class="text-sm text-muted-foreground mb-6">{{ $t('admin_chat.modal_desc') }}</p>
             
             <div class="space-y-5">
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Condición (Si preguntan sobre...)</label>
-                <input type="text" v-model="editingSkill.keyword" placeholder="Ej: IoT, Monitoreo, Liderazgo" class="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50" />
+                <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{{ $t('admin_chat.condition_label') }}</label>
+                <input type="text" v-model="editingSkill.keyword" :placeholder="$t('admin_chat.condition_placeholder')" class="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50" />
               </div>
               
               <div class="space-y-1">
-                <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Enlace (Invitar a ver...)</label>
+                <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{{ $t('admin_chat.link_label') }}</label>
                 <select v-model="editingSkill.call_to_action" class="w-full px-4 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50">
-                  <option value="#" class="bg-background text-foreground">-- Sin enlace --</option>
-                  <optgroup label="Proyectos" class="bg-background text-muted-foreground font-semibold">
+                  <option value="#" class="bg-background text-foreground">{{ $t('admin_chat.no_link') }}</option>
+                  <optgroup :label="$t('admin_chat.projects')" class="bg-background text-muted-foreground font-semibold">
                     <option v-for="p in proyectosStore.items" :key="'p'+p.id" :value="`/proyecto/${p.id}`" class="bg-background text-foreground">{{ p.titulo }}</option>
                   </optgroup>
-                  <optgroup label="Experiencias" class="bg-background text-muted-foreground font-semibold">
+                  <optgroup :label="$t('admin_chat.experiences')" class="bg-background text-muted-foreground font-semibold">
                     <option v-for="e in experienciasStore.items" :key="'e'+e.id" :value="`/experiencia/${e.id}`" class="bg-background text-foreground">{{ e.empresa }}</option>
                   </optgroup>
-                  <optgroup label="Estudios & Certificaciones" class="bg-background text-muted-foreground font-semibold">
+                  <optgroup :label="$t('admin_chat.studies')" class="bg-background text-muted-foreground font-semibold">
                     <option v-for="s in estudiosStore.items" :key="'s'+s.id" :value="`/estudios/${s.id}`" class="bg-background text-foreground">{{ s.institucion }} - {{ s.titulo }}</option>
                   </optgroup>
-                  <optgroup label="Reconocimientos" class="bg-background text-muted-foreground font-semibold">
+                  <optgroup :label="$t('admin_chat.recognitions')" class="bg-background text-muted-foreground font-semibold">
                     <option v-for="r in reconocimientosStore.items" :key="'r'+r.id" :value="`/portafolio`" class="bg-background text-foreground">{{ r.titulo }}</option>
                   </optgroup>
-                  <optgroup label="Habilitaciones" class="bg-background text-muted-foreground font-semibold">
+                  <optgroup :label="$t('admin_chat.certifications')" class="bg-background text-muted-foreground font-semibold">
                     <option v-for="h in habilitacionesStore.items" :key="'h'+h.id" :value="`/portafolio`" class="bg-background text-foreground">{{ h.titulo }}</option>
                   </optgroup>
-                  <optgroup label="Sobre Mí" class="bg-background text-muted-foreground font-semibold">
-                    <option value="/sobre-mi" class="bg-background text-foreground">Ver perfil / Sobre mí</option>
+                  <optgroup :label="$t('admin_chat.about_me')" class="bg-background text-muted-foreground font-semibold">
+                    <option value="/sobre-mi" class="bg-background text-foreground">{{ $t('admin_chat.view_profile') }}</option>
                   </optgroup>
                 </select>
               </div>
 
               <div class="space-y-1">
                 <div class="flex items-center justify-between">
-                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Acción (La IA argumentará que...)</label>
-                  <Badge variant="secondary" class="text-[10px]">Markdown mejora la precisión</Badge>
+                  <label class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{{ $t('admin_chat.action_label') }}</label>
+                  <Badge variant="secondary" class="text-[10px]">{{ $t('admin_chat.markdown_improves') }}</Badge>
                 </div>
-                <textarea v-model="editingSkill.pitch" rows="6" placeholder="Ej: **Destaca que tengo experiencia con ESP32** y que el proyecto *FastAlert* es el mejor ejemplo..." class="w-full px-4 py-3 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 resize-y font-mono"></textarea>
-                <p class="text-[10px] text-muted-foreground mt-1">Usa asteriscos para **negritas** o *cursivas*, y guiones para viñetas.</p>
+                <textarea v-model="editingSkill.pitch" rows="6" :placeholder="$t('admin_chat.action_placeholder')" class="w-full px-4 py-3 bg-secondary border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 resize-y font-mono"></textarea>
+                <p class="text-[10px] text-muted-foreground mt-1">{{ $t('admin_chat.markdown_help') }}</p>
               </div>
             </div>
 
@@ -172,7 +172,7 @@
                 Cancelar
               </NeonButton>
               <NeonButton type="button" glow @click="saveSkillModal">
-                Guardar Skill
+                {{ $t('admin_chat.save_skill') }}
               </NeonButton>
             </div>
           </GlassCard>

@@ -4,10 +4,10 @@
       <h3 class="text-lg font-semibold text-foreground">{{ proyecto ? $t('admin.titles.edit_project') : $t('admin.titles.new_project') }}</h3>
       <div class="flex gap-2">
         <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'es' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="currentTab = 'es'">
-          🇪🇸 Español (Principal)
+          {{ $t('admin_proyecto_form.proyecto_form_1') }}
         </button>
         <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'en' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('en')">
-          🇺🇸 Inglés (Traducción)
+          {{ $t('admin_proyecto_form.proyecto_form_2') }}
         </button>
       </div>
     </div>
@@ -16,16 +16,16 @@
       
       <!-- ENGLISH AI TRANSLATE ACTION -->
       <div v-if="currentTab === 'en'" class="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex justify-between items-center">
-        <p class="text-sm text-muted-foreground m-0">Ingresa la traducción manualmente o deja que la IA lo haga por ti basado en el contenido en Español.</p>
+        <p class="text-sm text-muted-foreground m-0">{{ $t('admin_proyecto_form.proyecto_form_3') }}</p>
         <button type="button" class="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5" @click="translateWithAI" :disabled="isTranslating">
           <span v-if="isTranslating" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          {{ isTranslating ? 'Traduciendo...' : '✨ Traducir con IA' }}
+          {{ isTranslating ? $t('admin_perfil_form.translating', 'Traduciendo...') : $t('admin_perfil_form.translate_ai', '✨ Traducir con IA') }}
         </button>
       </div>
 
       <!-- COMMON FIELDS -->
       <div v-show="currentTab === 'es'" class="space-y-4">
-        <h4 class="text-base font-semibold text-foreground mb-4">Datos Generales</h4>
+        <h4 class="text-base font-semibold text-foreground mb-4">{{ $t('admin_proyecto_form.proyecto_form_4') }}</h4>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 space-y-1.5">
             <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.date') }}</label>
@@ -38,20 +38,20 @@
         </div>
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Link GitHub</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('admin_proyecto_form.proyecto_form_5') }}</label>
             <input v-model="form.link_github" type="url" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" />
           </div>
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Link Demo</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('admin_proyecto_form.proyecto_form_6') }}</label>
             <input v-model="form.link_demo" type="url" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" />
           </div>
           <div class="flex-1 space-y-1.5">
-            <label class="block text-sm font-medium text-muted-foreground">Video Demo (YouTube)</label>
+            <label class="block text-sm font-medium text-muted-foreground">{{ $t('admin_proyecto_form.proyecto_form_7') }}</label>
             <input v-model="form.youtube_url" type="url" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" />
           </div>
         </div>
         <hr class="border-t border-dashed border-border/50 my-6" />
-        <h4 class="text-base font-semibold text-foreground mb-4">Contenido (Español)</h4>
+        <h4 class="text-base font-semibold text-foreground mb-4">{{ $t('admin_proyecto_form.proyecto_form_8') }}</h4>
       </div>
 
       <!-- TRANSLATABLE FIELDS -->
@@ -70,31 +70,31 @@
         </div>
         <div class="space-y-1.5">
           <label class="block text-sm font-medium text-muted-foreground">{{ $t('forms.technologies') }} (separado por comas)</label>
-          <input v-model="activeStackInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Python, FastAPI, PostgreSQL" @blur="parseStack" />
+          <input v-model="activeStackInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" :placeholder="$t('admin_proyecto_form.proyecto_form_9')" @blur="parseStack" />
         </div>
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-muted-foreground">Tags (separado por comas)</label>
-          <input v-model="activeTagsInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" placeholder="Minería, IA, Data" @blur="parseTags" />
+          <label class="block text-sm font-medium text-muted-foreground">{{ $t('admin_proyecto_form.proyecto_form_10') }}</label>
+          <input v-model="activeTagsInput" type="text" class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50" :placeholder="$t('admin_proyecto_form.proyecto_form_11')" @blur="parseTags" />
         </div>
         <div class="space-y-3">
-          <label class="block text-sm font-medium text-foreground">Ficha Técnica (KPIs / Datos Clave)</label>
+          <label class="block text-sm font-medium text-foreground">{{ $t('admin_proyecto_form.proyecto_form_12') }}</label>
           <div class="bg-background border border-border/50 rounded-xl p-4 space-y-3">
             <div v-for="(kpi, index) in activeKpisList" :key="'kpi'+index" class="flex gap-2 items-start">
-              <input v-model="kpi.key" type="text" class="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" placeholder="Ej: Inversión, Cliente, Superficie..." />
-              <input v-model="kpi.value" type="text" class="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" placeholder="Ej: $1.5M, Juan Pérez, 120m2..." />
+              <input v-model="kpi.key" type="text" class="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" :placeholder="$t('admin_proyecto_form.proyecto_form_13')" />
+              <input v-model="kpi.value" type="text" class="flex-1 px-3 py-2 bg-secondary/50 border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" :placeholder="$t('admin_proyecto_form.proyecto_form_14')" />
               <button type="button" class="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors shrink-0" @click="removeKpi(index)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
               </button>
             </div>
             <button type="button" class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1" @click="addKpi">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              Agregar Fila a la Ficha Técnica
+              {{ $t('admin_proyecto_form.proyecto_form_15') }}
             </button>
           </div>
         </div>
 
         <div class="space-y-3">
-          <label class="block text-sm font-medium text-foreground">Galería de Imágenes (Álbum del Proyecto)</label>
+          <label class="block text-sm font-medium text-foreground">{{ $t('admin_proyecto_form.proyecto_form_16') }}</label>
           <div class="bg-background border border-border/50 rounded-xl p-4 space-y-4">
             <div v-for="(img, index) in activeGaleriaList" :key="'img'+index" class="p-4 bg-secondary/30 border border-border/50 rounded-lg relative">
               <button type="button" class="absolute top-2 right-2 p-1.5 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-md transition-colors" @click="removeGaleriaItem(index)">
@@ -102,18 +102,18 @@
               </button>
               <div class="space-y-3 pr-8">
                 <div class="space-y-1.5">
-                  <label class="block text-xs font-medium text-muted-foreground">URL de la Imagen</label>
+                  <label class="block text-xs font-medium text-muted-foreground">{{ $t('admin_proyecto_form.proyecto_form_17') }}</label>
                   <ImageUploader v-model="img.url" />
                 </div>
                 <div class="space-y-1.5">
-                  <label class="block text-xs font-medium text-muted-foreground">Breve Reseña / Descripción</label>
-                  <input v-model="img.caption" type="text" class="w-full px-3 py-2 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" placeholder="Ej: Plano arquitectónico del primer piso..." />
+                  <label class="block text-xs font-medium text-muted-foreground">{{ $t('admin_proyecto_form.proyecto_form_18') }}</label>
+                  <input v-model="img.caption" type="text" class="w-full px-3 py-2 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary" :placeholder="$t('admin_proyecto_form.proyecto_form_19')" />
                 </div>
               </div>
             </div>
             <button type="button" class="text-sm font-medium text-primary hover:text-primary/80 flex items-center gap-1" @click="addGaleriaItem">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              Agregar Foto a la Galería
+              {{ $t('admin_proyecto_form.proyecto_form_20') }}
             </button>
           </div>
         </div>
@@ -136,6 +136,8 @@ import { parseImageUrl } from '../../services/utils.js'
 import { api } from '../../services/api.js'
 import { toast } from 'vue3-toastify'
 import ImageUploader from './ImageUploader.vue'
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 
 const props = defineProps({
   proyecto: { type: Object, default: null },

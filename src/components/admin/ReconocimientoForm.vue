@@ -1,110 +1,151 @@
 <template>
-  <form @submit.prevent="submit" class="space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="bg-secondary/30 backdrop-blur-md border border-border/50 rounded-xl p-6 mb-8">
+    <div class="flex justify-between items-center mb-6 pb-4 border-b border-border/50">
+      <h3 class="text-lg font-semibold text-foreground">{{ reconocimiento ? $t('admin.titles.edit_recognition') : $t('admin.titles.new_recognition') }}</h3>
+      <div class="flex gap-2">
+        <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'es' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('es')">
+          {{ $t('admin_reconocimiento_form.reconocimiento_form_1') }}
+        </button>
+        <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'en' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('en')">
+          {{ $t('admin_reconocimiento_form.reconocimiento_form_2') }}
+        </button>
+      </div>
+    </div>
+
+    <form @submit.prevent="handleSubmit" class="space-y-6">
       
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.type') }}</label>
-        <select 
-          v-model="form.tipo"
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-          required
-        >
-          <option value="PREMIO">Premio / Galardón</option>
-          <option value="PUBLICACION">Publicación / Artículo</option>
-          <option value="MEDIO">Aparición en Medios</option>
-          <option value="BECA">Beca / Fondo</option>
-        </select>
+      <!-- ENGLISH AI TRANSLATE ACTION -->
+      <div v-if="currentTab === 'en'" class="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex justify-between items-center">
+        <p class="text-sm text-muted-foreground m-0">{{ $t('admin_reconocimiento_form.reconocimiento_form_3') }}</p>
+        <button type="button" class="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5" @click="translateWithAI" :disabled="isTranslating">
+          <span v-if="isTranslating" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          {{ isTranslating ? $t('admin_perfil_form.translating', 'Traduciendo...') : $t('admin_perfil_form.translate_ai', '✨ Traducir con IA') }}
+        </button>
       </div>
 
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.title') }}</label>
-        <input 
-          v-model="form.titulo" 
-          type="text" 
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
-          placeholder="Ej: Premio Nacional de Innovación" 
-          required 
-        />
+      <!-- COMMON FIELDS -->
+      <div v-show="currentTab === 'es'" class="space-y-4">
+        <h4 class="text-base font-semibold text-foreground mb-4">{{ $t('admin_reconocimiento_form.reconocimiento_form_4') }}</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_5') }}</label>
+            <select 
+              v-model="form.tipo"
+              class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              required
+            >
+              <option value="PREMIO">{{ $t('admin_reconocimiento_form.reconocimiento_form_6') }}</option>
+              <option value="PUBLICACION">{{ $t('admin_reconocimiento_form.reconocimiento_form_7') }}</option>
+              <option value="MEDIO">{{ $t('admin_reconocimiento_form.reconocimiento_form_8') }}</option>
+              <option value="BECA">{{ $t('admin_reconocimiento_form.reconocimiento_form_9') }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_10') }}</label>
+            <input 
+              v-model="form.fecha" 
+              type="text" 
+              class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+              :placeholder="$t('admin_reconocimiento_form.reconocimiento_form_11')" 
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_12') }}</label>
+            <input 
+              v-model="form.enlace" 
+              type="url" 
+              class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+              :placeholder="$t('admin_reconocimiento_form.reconocimiento_form_13')" 
+            />
+          </div>
+
+          <div class="space-y-2 md:col-span-2">
+            <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_14') }}</label>
+            <ImageUploader v-model="form.image_url" />
+          </div>
+        </div>
+
+        <hr class="border-t border-dashed border-border/50 my-6" />
+        <h4 class="text-base font-semibold text-foreground mb-4">{{ $t('admin_reconocimiento_form.reconocimiento_form_15') }}</h4>
       </div>
 
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.institution') }}</label>
-        <input 
-          v-model="form.institucion" 
-          type="text" 
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
-          placeholder="Ej: Universidad de Chile, IEEE, Diario Financiero" 
-          required 
-        />
+      <!-- TRANSLATABLE FIELDS -->
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_16') }}</label>
+          <input 
+            v-model="activeModel.titulo" 
+            type="text" 
+            class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+            :placeholder="$t('admin_reconocimiento_form.reconocimiento_form_17')" 
+            required 
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_18') }}</label>
+          <input 
+            v-model="activeModel.institucion" 
+            type="text" 
+            class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+            :placeholder="$t('admin_reconocimiento_form.reconocimiento_form_19')" 
+            required 
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_20') }}</label>
+          <textarea 
+            v-model="activeModel.descripcion" 
+            class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground min-h-[100px]"
+            :placeholder="$t('admin_reconocimiento_form.reconocimiento_form_21')" 
+            required
+          ></textarea>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-foreground">{{ $t('admin_reconocimiento_form.reconocimiento_form_22') }}</label>
+          <input 
+            v-model="activeModel.referencia" 
+            type="text" 
+            class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
+            :placeholder="$t('admin_reconocimiento_form.reconocimiento_form_23')" 
+          />
+        </div>
       </div>
 
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.date') }}</label>
-        <input 
-          v-model="form.fecha" 
-          type="text" 
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
-          placeholder="Ej: 2023, Diciembre 2023" 
-        />
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-border/50">
+        <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-medium transition-colors" :disabled="isSubmitting">
+          <span v-if="isSubmitting" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          {{ isSubmitting ? '...' : $t('common.save') }}
+        </button>
+        <button type="button" class="px-4 py-2 bg-transparent border border-border/50 text-muted-foreground hover:bg-secondary rounded-lg text-sm font-medium transition-colors" @click="$emit('cancel')" :disabled="isSubmitting">{{ $t('admin_reconocimiento_form.reconocimiento_form_24') }}</button>
       </div>
-
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.description') }}</label>
-        <textarea 
-          v-model="form.descripcion" 
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground min-h-[100px]"
-          placeholder="Detalles sobre el mérito, resumen del paper o rol en la entrevista..." 
-          required
-        ></textarea>
-      </div>
-
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.link') }}</label>
-        <input 
-          v-model="form.enlace" 
-          type="url" 
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
-          placeholder="Ej: https://..." 
-        />
-      </div>
-
-      <div class="space-y-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.reference') }} ({{ $t('common.optional') }})</label>
-        <input 
-          v-model="form.referencia" 
-          type="text" 
-          class="w-full bg-secondary/50 border border-border rounded-lg px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground"
-          placeholder="Ej: DOI, ISBN, Coautores..." 
-        />
-      </div>
-
-      <div class="space-y-2 md:col-span-2">
-        <label class="text-sm font-semibold text-foreground">{{ $t('forms.image_url') }} ({{ $t('common.optional') }})</label>
-        <ImageUploader v-model="form.image_url" />
-      </div>
-
-    </div>
-
-    <div class="flex items-center justify-end gap-3 pt-4 border-t border-border/50">
-      <NeonButton type="button" variant="ghost" @click="$emit('cancel')">{{ $t('common.cancel') }}</NeonButton>
-      <NeonButton type="submit" glow>{{ $t('common.save') }}</NeonButton>
-    </div>
-  </form>
+    </form>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import NeonButton from '../../components/ui/NeonButton.vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { parseImageUrl } from '../../services/utils.js'
+import { api } from '../../services/api.js'
+import { toast } from 'vue3-toastify'
 import ImageUploader from './ImageUploader.vue'
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 
 const props = defineProps({
-  reconocimiento: {
-    type: Object,
-    default: null
-  }
+  reconocimiento: { type: Object, default: null }
 })
 
 const emit = defineEmits(['save', 'cancel'])
+
+const isSubmitting = ref(false)
+const isTranslating = ref(false)
+const currentTab = ref('es')
 
 const form = ref({
   tipo: 'PREMIO',
@@ -114,30 +155,90 @@ const form = ref({
   descripcion: '',
   enlace: '',
   referencia: '',
-  image_url: ''
+  image_url: '',
+  traducciones: []
 })
 
-function initForm() {
-  if (props.reconocimiento) {
-    form.value = { ...props.reconocimiento }
-  } else {
-    form.value = {
-      tipo: 'PREMIO',
+const activeModel = computed(() => {
+  if (currentTab.value === 'es') return form.value
+  
+  let enTranslation = form.value.traducciones.find(t => t.idioma === 'en')
+  if (!enTranslation) {
+    enTranslation = {
+      idioma: 'en',
       titulo: '',
       institucion: '',
-      fecha: '',
       descripcion: '',
-      enlace: '',
-      referencia: '',
-      image_url: ''
+      referencia: ''
     }
+    form.value.traducciones.push(enTranslation)
+  }
+  return enTranslation
+})
+
+function setTab(tab) {
+  currentTab.value = tab
+}
+
+function parseImageUrlHandler() {
+  form.value.image_url = parseImageUrl(form.value.image_url)
+}
+
+async function translateWithAI() {
+  if (!form.value.titulo || !form.value.descripcion) {
+    toast.error("Primero debes llenar los campos en Español para poder traducir.")
+    return
+  }
+  
+  isTranslating.value = true
+  try {
+    const contentToTranslate = {
+      titulo: form.value.titulo,
+      institucion: form.value.institucion,
+      descripcion: form.value.descripcion,
+      referencia: form.value.referencia || ''
+    }
+
+    const response = await api.translateWithAI(contentToTranslate, 'en')
+    const t = response.translated_content
+    
+    const enModel = activeModel.value
+    enModel.titulo = t.titulo || ''
+    enModel.institucion = t.institucion || ''
+    enModel.descripcion = t.descripcion || ''
+    enModel.referencia = t.referencia || ''
+    
+  } catch (error) {
+    console.error("Error al traducir:", error)
+    if (error.detail && error.detail.includes('Cuota agotada')) {
+      toast.warning("¡Magia agotada! 🪄 Has usado todos tus créditos gratuitos de IA. Para seguir usando las funciones inteligentes, ve a 'Personaliza tu IA' e ingresa tu propia API Key de Gemini gratis.", { autoClose: 6000 })
+    } else {
+      toast.error("Ocurrió un error al intentar traducir con la IA.")
+    }
+  } finally {
+    isTranslating.value = false
   }
 }
 
-watch(() => props.reconocimiento, initForm, { deep: true })
-onMounted(initForm)
-
-function submit() {
-  emit('save', { ...form.value })
+async function handleSubmit() {
+  isSubmitting.value = true
+  
+  parseImageUrlHandler()
+  
+  try {
+    const dataToSend = { ...form.value }
+    dataToSend.traducciones = dataToSend.traducciones.filter(t => t.titulo.trim() !== '' || t.descripcion.trim() !== '')
+    
+    emit('save', dataToSend)
+  } finally {
+    setTimeout(() => { isSubmitting.value = false }, 1000)
+  }
 }
+
+onMounted(() => {
+  if (props.reconocimiento) {
+    form.value = JSON.parse(JSON.stringify(props.reconocimiento))
+    if (!form.value.traducciones) form.value.traducciones = []
+  }
+})
 </script>

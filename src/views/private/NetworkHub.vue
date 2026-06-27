@@ -6,9 +6,9 @@
       <div class="mb-10">
         <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
           <Network class="text-primary" :size="36" />
-          Mi Red Profesional
+          {{ $t('network_hub.network_hub_1') }}
         </h1>
-        <p class="text-muted-foreground mt-2">Gestiona tus contactos y expande tus oportunidades.</p>
+        <p class="text-muted-foreground mt-2">{{ $t('network_hub.network_hub_2') }}</p>
       </div>
 
       <!-- Tabs -->
@@ -38,8 +38,8 @@
         <div v-if="activeTab === 'contacts'" class="flex flex-col gap-4">
           <div v-if="contacts.length === 0" class="col-span-full text-center py-12 bg-secondary/30 rounded-2xl border border-dashed border-border/50">
             <Users :size="48" class="mx-auto text-muted-foreground/50 mb-4" />
-            <h3 class="text-lg font-bold text-foreground">Aún no tienes contactos</h3>
-            <p class="text-sm text-muted-foreground mt-1">Busca talentos o interactúa con otros para expandir tu red.</p>
+            <h3 class="text-lg font-bold text-foreground">{{ $t('network_hub.network_hub_3') }}</h3>
+            <p class="text-sm text-muted-foreground mt-1">{{ $t('network_hub.network_hub_4') }}</p>
           </div>
           
           <div v-for="conn in contacts" :key="conn.connection_id" class="bg-card border border-border/50 rounded-2xl p-5 hover:border-primary/50 transition-colors shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -62,7 +62,7 @@
               <span class="text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar :size="12" /> Desde {{ new Date(conn.connected_since).toLocaleDateString() }}
               </span>
-              <button class="text-sm text-red-500 hover:text-red-400 font-medium px-3 py-1.5 rounded-lg hover:bg-red-500/10 transition-colors">Eliminar</button>
+              <button class="text-sm text-red-500 hover:text-red-400 font-medium px-3 py-1.5 rounded-lg hover:bg-red-500/10 transition-colors">{{ $t('network_hub.network_hub_5') }}</button>
             </div>
           </div>
         </div>
@@ -71,8 +71,8 @@
         <div v-if="activeTab === 'pending'" class="space-y-6">
           <div v-if="pendingRequests.length === 0" class="bg-card border border-border/50 rounded-2xl p-10 text-center shadow-sm">
             <UserPlus :size="48" class="mx-auto text-muted-foreground/50 mb-4" />
-            <h3 class="text-lg font-bold text-foreground">Sin solicitudes pendientes</h3>
-            <p class="text-sm text-muted-foreground mt-1">No tienes solicitudes de conexión por el momento.</p>
+            <h3 class="text-lg font-bold text-foreground">{{ $t('network_hub.network_hub_6') }}</h3>
+            <p class="text-sm text-muted-foreground mt-1">{{ $t('network_hub.network_hub_7') }}</p>
           </div>
 
           <div v-else class="flex flex-col gap-4">
@@ -94,10 +94,10 @@
               
               <div class="flex gap-2 sm:shrink-0">
                 <button @click="acceptRequest(req.connection_id)" class="px-6 bg-primary text-primary-foreground py-2 rounded-lg text-sm font-bold shadow-sm hover:shadow-primary/20 transition-all flex items-center justify-center gap-2">
-                  <UserCheck size="16" /> Aceptar
+                  <UserCheck size="16" /> {{ $t('network_hub.network_hub_8') }}
                 </button>
                 <button @click="rejectRequest(req.connection_id)" class="px-4 bg-secondary text-foreground hover:bg-secondary/80 py-2 rounded-lg text-sm font-bold transition-all border border-border">
-                  Ignorar
+                  {{ $t('network_hub.network_hub_9') }}
                 </button>
               </div>
             </div>
@@ -118,17 +118,17 @@
               <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-6">
                 <Sparkles :size="40" class="text-primary" />
               </div>
-              <h2 class="text-3xl font-black mb-4">Desbloquea el Matchmaker IA 🧠</h2>
+              <h2 class="text-3xl font-black mb-4">{{ $t('network_hub.network_hub_10') }}</h2>
               <p class="text-muted-foreground max-w-lg mb-8 text-sm md:text-base">
-                Deja que OppyTalent analice los portafolios de toda tu red de 2do y 3er grado para encontrar colaboradores o empleadores perfectos para ti.
+                {{ $t('network_hub.network_hub_11') }}
               </p>
               
               <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
                 <button @click="goToAdminStorage" class="px-6 py-3 bg-secondary hover:bg-secondary/80 text-foreground font-bold rounded-xl transition-all border border-border shadow-sm text-sm">
-                  🔑 Ingresar mi API Key
+                  {{ $t('network_hub.network_hub_12') }}
                 </button>
                 <button @click="goToAdminStorage" class="px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-all shadow-md hover:shadow-primary/20 flex items-center justify-center gap-2 text-sm">
-                  <Zap :size="18" /> Usar Créditos
+                  <Zap :size="18" /> {{ $t('network_hub.network_hub_13') }}
                 </button>
               </div>
             </div>
@@ -142,8 +142,8 @@
           <!-- Unlocked / Loaded State -->
           <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div v-if="suggestions.length === 0" class="col-span-full bg-card border border-border rounded-2xl p-10 text-center">
-              <h3 class="text-lg font-bold">Tu red es muy pequeña</h3>
-              <p class="text-muted-foreground mt-2">Para que la IA pueda sugerirte conexiones de 2do y 3er grado, primero debes conectar con algunas personas directamente.</p>
+              <h3 class="text-lg font-bold">{{ $t('network_hub.network_hub_14') }}</h3>
+              <p class="text-muted-foreground mt-2">{{ $t('network_hub.network_hub_15') }}</p>
             </div>
             
             <div v-for="sug in suggestions" :key="sug.suggested_user_id" class="bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group">
@@ -185,6 +185,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { ref, onMounted, watch } from 'vue'
 import { Network, Users, UserPlus, Sparkles, Loader2, Calendar, Zap, UserCheck } from 'lucide-vue-next'
 import { api } from '../../services/api'

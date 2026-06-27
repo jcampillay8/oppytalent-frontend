@@ -4,10 +4,10 @@
       <h3 class="text-lg font-semibold text-foreground">{{ frase ? $t('admin.titles.edit_quote') : $t('admin.titles.new_quote') }}</h3>
       <div class="flex gap-2">
         <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'es' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('es')">
-          🇪🇸 Español (Principal)
+          {{ $t('admin_frase_form.frase_form_1') }}
         </button>
         <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors border" :class="currentTab === 'en' ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-secondary border-border/50 text-muted-foreground hover:bg-secondary/80'" @click="setTab('en')">
-          🇺🇸 Inglés (Traducción)
+          {{ $t('admin_frase_form.frase_form_2') }}
         </button>
       </div>
     </div>
@@ -16,10 +16,10 @@
       
       <!-- ENGLISH AI TRANSLATE ACTION -->
       <div v-if="currentTab === 'en'" class="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-purple-500/20 rounded-xl p-4 flex justify-between items-center">
-        <p class="text-sm text-muted-foreground m-0">Ingresa la traducción manualmente o deja que la IA lo haga por ti basado en el contenido en Español.</p>
+        <p class="text-sm text-muted-foreground m-0">{{ $t('admin_frase_form.frase_form_3') }}</p>
         <button type="button" class="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5" @click="translateWithAI" :disabled="isTranslating">
           <span v-if="isTranslating" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-          {{ isTranslating ? 'Traduciendo...' : '✨ Traducir con IA' }}
+          {{ isTranslating ? $t('admin_perfil_form.translating', 'Traduciendo...') : $t('admin_perfil_form.translate_ai', '✨ Traducir con IA') }}
         </button>
       </div>
 
@@ -32,7 +32,7 @@
             required
             rows="4"
             class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 min-h-[100px] resize-y"
-            placeholder="Escribe la frase..."
+            :placeholder="$t('admin_frase_form.frase_form_4')"
           ></textarea>
         </div>
 
@@ -43,7 +43,7 @@
             type="text"
             required
             class="w-full px-4 py-2.5 bg-background border border-border/50 rounded-lg text-sm text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50"
-            placeholder="Ej: Seneca"
+            :placeholder="$t('admin_frase_form.frase_form_5')"
           />
         </div>
       </div>
@@ -65,6 +65,8 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { api } from '../../services/api.js'
 import { toast } from 'vue3-toastify'
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 
 const props = defineProps({
   frase: { type: Object, default: null },

@@ -2,9 +2,9 @@
   <AdminLayout>
     <div class="mb-8">
       <h1 class="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-        <Activity :size="32" class="text-primary" /> Plan y Consumo
+        <Activity :size="32" class="text-primary" /> {{ $t('admin_storage.storage_1') }}
       </h1>
-      <p class="text-muted-foreground mt-1">Supervisa tus recursos de almacenamiento y magia de IA (Peticiones) en tiempo real.</p>
+      <p class="text-muted-foreground mt-1">{{ $t('admin_storage.storage_2') }}</p>
     </div>
 
     <!-- BENTO GRID -->
@@ -14,7 +14,7 @@
       <GlassCard class="p-6 md:p-8 flex flex-col justify-between">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-border/50">
           <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
-            <HardDrive :size="24" class="text-primary" /> Almacenamiento
+            <HardDrive :size="24" class="text-primary" /> {{ $t('admin_storage.storage_3') }}
           </h2>
           <Badge :variant="user.is_premium ? 'primary' : 'secondary'">
             {{ user.is_premium ? 'Premium' : 'Gratuito' }}
@@ -42,7 +42,7 @@
           </div>
           
           <p class="text-xs text-muted-foreground mt-2">
-            Espacio utilizado por fotos de perfil y archivos de proyectos.
+            {{ $t('admin_storage.storage_4') }}
           </p>
         </div>
       </GlassCard>
@@ -51,9 +51,9 @@
       <GlassCard class="p-6 md:p-8 flex flex-col justify-between">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-border/50">
           <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
-            <Sparkles :size="24" class="text-primary" /> Magia de IA
+            <Sparkles :size="24" class="text-primary" /> {{ $t('admin_storage.storage_5') }}
           </h2>
-          <Badge v-if="user.has_gemini_key" variant="primary" class="bg-emerald-500 text-white">Iluminado</Badge>
+          <Badge v-if="user.has_gemini_key" variant="primary" class="bg-emerald-500 text-white">{{ $t('admin_storage.storage_6') }}</Badge>
           <Badge v-else :variant="user.ai_credits > 0 ? 'secondary' : 'destructive'">
             {{ user.ai_credits > 0 ? 'Disponible' : 'Agotado' }}
           </Badge>
@@ -62,14 +62,14 @@
         <div class="space-y-4">
           <div v-if="user.has_gemini_key" class="flex flex-col items-center justify-center py-4">
             <CheckCircle2 :size="48" class="text-emerald-500 mb-2" />
-            <span class="text-xl font-bold text-foreground">Ilimitado</span>
-            <p class="text-sm text-muted-foreground mt-1 text-center">Tu llave de Gemini está conectada.</p>
+            <span class="text-xl font-bold text-foreground">{{ $t('admin_storage.storage_7') }}</span>
+            <p class="text-sm text-muted-foreground mt-1 text-center">{{ $t('admin_storage.storage_8') }}</p>
           </div>
           <div v-else>
             <div class="flex justify-between items-end">
               <div>
                 <span class="text-3xl font-extrabold" :class="user.ai_credits === 0 ? 'text-destructive' : 'text-foreground'">{{ aiCreditsUsed }}</span>
-                <span class="text-muted-foreground ml-2 text-sm">de 10 peticiones</span>
+                <span class="text-muted-foreground ml-2 text-sm">{{ $t('admin_storage.storage_9') }}</span>
               </div>
               <span class="text-sm font-bold" :class="aiPercentageColor">{{ aiUsagePercentage }}%</span>
             </div>
@@ -86,20 +86,20 @@
             </div>
             
             <p class="text-xs text-muted-foreground mt-2">
-              Se descuenta al usar el chat y traducir CVs.
+              {{ $t('admin_storage.storage_10') }}
             </p>
           </div>
           
           <div class="pt-4 mt-2 border-t border-border/50">
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-foreground">Cerebro Vectorial (RAG)</span>
+              <span class="text-sm font-medium text-foreground">{{ $t('admin_storage.storage_11') }}</span>
               <div class="flex items-center gap-2">
                 <NeonButton @click="syncRag" :disabled="syncingRag" variant="outline" size="sm" class="h-8 text-xs">
                   <span v-if="syncingRag" class="flex items-center gap-2">
                     <div class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
                   </span>
                   <span v-else class="flex items-center gap-1">
-                    <RefreshCw :size="12" /> Re-indexar
+                    <RefreshCw :size="12" /> {{ $t('admin_storage.storage_12') }}
                   </span>
                 </NeonButton>
                 <button @click="showRagInfo = true" class="text-muted-foreground hover:text-primary transition-colors p-1 rounded-full hover:bg-secondary">
@@ -121,15 +121,15 @@
       <GlassCard class="p-6 md:p-8">
         <div class="flex items-center justify-between mb-4 pb-4 border-b border-border/50">
           <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
-            <KeyRound :size="24" class="text-primary" /> Personaliza tu Llave
+            <KeyRound :size="24" class="text-primary" /> {{ $t('admin_storage.storage_13') }}
           </h2>
         </div>
         <p class="text-sm text-muted-foreground mb-6 leading-relaxed">
-          ¿Te quedaste sin magia? No te preocupes. Puedes usar tu propia llave (API Key) gratuita de Google Gemini para obtener interacciones de IA <strong class="text-foreground">ilimitadas</strong> sin necesidad de pagar el plan Premium.
+          {{ $t('admin_storage.storage_14') }} <strong class="text-foreground">{{ $t('admin_storage.storage_15') }}</strong> {{ $t('admin_storage.storage_16') }}
         </p>
         
         <div class="space-y-2">
-          <label class="text-sm font-medium text-foreground">API Key de Gemini</label>
+          <label class="text-sm font-medium text-foreground">{{ $t('admin_storage.storage_17') }}</label>
           <div class="flex gap-2">
             <input
               type="password"
@@ -141,14 +141,14 @@
               <span v-if="savingKey" class="flex items-center gap-2">
                 <div class="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
               </span>
-              <span v-else>Validar y Guardar</span>
+              <span v-else>{{ $t('admin_storage.storage_18') }}</span>
             </NeonButton>
           </div>
           <p v-if="keySuccessMsg" class="text-xs text-emerald-500 mt-2 flex items-center gap-1"><CheckCircle2 :size="12" /> {{ keySuccessMsg }}</p>
           <p v-if="keyErrorMsg" class="text-xs text-destructive mt-2 flex items-center gap-1"><AlertCircle :size="12" /> {{ keyErrorMsg }}</p>
         </div>
         <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-xs text-primary hover:underline mt-4 inline-flex items-center gap-1">
-          Obtener mi llave de Gemini Gratis <ExternalLink :size="12"/>
+          {{ $t('admin_storage.storage_19') }} <ExternalLink :size="12"/>
         </a>
       </GlassCard>
 
@@ -161,15 +161,14 @@
             <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-4 text-primary">
               <Zap :size="24" />
             </div>
-            <h3 class="text-2xl font-extrabold text-foreground mb-2">Desbloquea el Potencial</h3>
+            <h3 class="text-2xl font-extrabold text-foreground mb-2">{{ $t('admin_storage.storage_20') }}</h3>
             <p class="text-sm text-muted-foreground leading-relaxed">
-              Consigue <strong class="text-foreground">1 GB</strong> de almacenamiento y <strong class="text-foreground">Peticiones de IA Ilimitadas</strong>. 
-              Muestra al mundo de lo que eres capaz sin restricciones.
+              {{ $t('admin_storage.storage_21') }} <strong class="text-foreground">{{ $t('admin_storage.storage_22') }}</strong> {{ $t('admin_storage.storage_23') }} <strong class="text-foreground">{{ $t('admin_storage.storage_24') }}</strong>{{ $t('admin_storage.storage_25') }}
             </p>
           </div>
           
           <NeonButton glow variant="primary" class="w-full text-lg py-3">
-            Mejorar a Premium
+            {{ $t('admin_storage.storage_26') }}
           </NeonButton>
         </GlassCard>
       </div>
@@ -184,41 +183,41 @@
         </button>
         <div class="p-6 md:p-8">
           <h2 class="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-            <Brain :size="28" class="text-primary" /> ¿Qué hace este "Re-indexar"?
+            <Brain :size="28" class="text-primary" /> {{ $t('admin_storage.storage_27') }}
           </h2>
           
           <div class="space-y-4 text-sm text-muted-foreground leading-relaxed">
-            <p>El botón "Re-indexar" (o "Re-indexar Cerebro IA") es la herramienta que le permite a tu asistente de IA "memorizar" tus datos usando la nueva arquitectura matemática (vectores).</p>
+            <p>{{ $t('admin_storage.storage_28') }}</p>
             
-            <p>Cuando haces clic en él, ocurre lo siguiente en el backend:</p>
+            <p>{{ $t('admin_storage.storage_29') }}</p>
             
-            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">1. Extracción de tu Información</h3>
-            <p>El sistema toma toda la información que tienes en OppyTalent: tu Perfil, tus Proyectos, tus Experiencias, Estudios, etc., y borra la memoria matemática anterior para que no haya datos duplicados o viejos.</p>
+            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">{{ $t('admin_storage.storage_30') }}</h3>
+            <p>{{ $t('admin_storage.storage_31') }}</p>
 
-            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">2. Conversión a "Vectores" (Embeddings)</h3>
-            <p>Envía cada pedacito de información (por ejemplo, un solo proyecto) a Google Gemini. Gemini lee el texto y lo convierte en una larga lista de 768 números decimales. A esta lista de números se le llama "Vector". Estos vectores capturan el "significado" o "semántica" del texto. Es decir, la IA deja de ver letras y empieza a ver conceptos matemáticos.</p>
+            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">{{ $t('admin_storage.storage_32') }}</h3>
+            <p>{{ $t('admin_storage.storage_33') }}</p>
 
-            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">3. Guardado en la Base de Datos (pgvector)</h3>
-            <p>Guarda todos esos vectores en tu base de datos de PostgreSQL (en la nueva tabla PortfolioDocument).</p>
+            <h3 class="text-base font-semibold text-foreground mt-6 mb-2">{{ $t('admin_storage.storage_34') }}</h3>
+            <p>{{ $t('admin_storage.storage_35') }}</p>
 
-            <h3 class="text-base font-semibold text-foreground mt-8 mb-2 border-t border-border/50 pt-6">¿En qué te beneficia en el día a día?</h3>
-            <p>Gracias a que tu información ahora está "Vectorizada" (indexada), logras <strong>Búsqueda Semántica</strong>. Cuando un reclutador va a tu portafolio y le pregunta al Chatbot: "¿Ha trabajado con Python en la nube?", sucede la magia:</p>
+            <h3 class="text-base font-semibold text-foreground mt-8 mb-2 border-t border-border/50 pt-6">{{ $t('admin_storage.storage_36') }}</h3>
+            <p>{{ $t('admin_storage.storage_37') }} <strong>{{ $t('admin_storage.storage_38') }}</strong>{{ $t('admin_storage.storage_39') }}</p>
 
             <ul class="list-disc pl-5 space-y-1">
-              <li>El chat convierte esa pregunta a vector.</li>
-              <li>Compara matemáticamente la pregunta con todos tus vectores en milisegundos.</li>
-              <li>Encuentra exactamente los 3 o 4 proyectos/experiencias que más coinciden con Python y Cloud.</li>
-              <li>Le pasa únicamente esos 4 proyectos a Gemini para que genere la respuesta.</li>
+              <li>{{ $t('admin_storage.storage_40') }}</li>
+              <li>{{ $t('admin_storage.storage_41') }}</li>
+              <li>{{ $t('admin_storage.storage_42') }}</li>
+              <li>{{ $t('admin_storage.storage_43') }}</li>
             </ul>
 
             <p class="mt-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-foreground font-medium">
-              <strong>En conclusión:</strong> Apretar el botón "Re-indexar" es decirle a tu IA: "Acabo de subir nuevos proyectos y cambiar mis datos. Por favor, vuelve a estudiar mi currículum y conviértelo a matemáticas para que seas ultra rápido respondiendo y no gastemos todos mis créditos de peticiones."
+              <strong>{{ $t('admin_storage.storage_44') }}</strong> {{ $t('admin_storage.storage_45') }}
             </p>
           </div>
           
           <div class="mt-8 flex justify-end">
             <NeonButton @click="showRagInfo = false" variant="primary">
-              Entendido
+              {{ $t('admin_storage.storage_46') }}
             </NeonButton>
           </div>
         </div>
@@ -229,6 +228,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '../../components/admin/AdminLayout.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'

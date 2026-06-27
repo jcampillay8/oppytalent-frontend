@@ -22,7 +22,7 @@
       
       <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mt-4 flex items-center justify-center gap-3 mb-4">
         <AppWindow :size="40" class="text-primary hidden sm:block" />
-        Portafolio Web
+        {{ $t('admin_portfolio_view.portfolio_view_1') }}
       </h2>
     </section>
 
@@ -46,6 +46,8 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 import { computed, onMounted } from 'vue'
 import { Loader2, AppWindow } from 'lucide-vue-next'
 import PortfolioTabsLayout from '../../components/public/PortfolioTabsLayout.vue'

@@ -12,7 +12,7 @@
         <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
         <Info class="text-primary shrink-0 mt-0.5" :size="22" />
         <div class="text-sm text-foreground/90 leading-relaxed">
-          <strong class="text-primary block mb-1">¿Para qué sirve esta sección?</strong>
+          <strong class="text-primary block mb-1">{{ $t('admin_frases.why_title') }}</strong>
           Aquí puedes agregar frases célebres, poemas, citas inspiradoras o pensamientos que reflejen tu filosofía profesional. 
           Estas citas <strong>se mostrarán aleatoriamente en la ventana del Asistente IA</strong> de tu portafolio público, 
           permitiendo que los visitantes conecten de forma más personal contigo.

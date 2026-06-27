@@ -18,16 +18,16 @@
         <section class="relative w-full max-w-7xl mx-auto px-6 md:px-16 py-16 lg:py-20 flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
           <div class="flex-1 text-center lg:text-left z-10" v-motion :initial="{ opacity: 0, x: -30 }" :enter="{ opacity: 1, x: 0, transition: { delay: 100 } }">
             <Badge variant="outline" class="mb-6 border-primary/30 text-primary/90 bg-primary/10 uppercase tracking-wider backdrop-blur-sm px-3 py-1 text-xs font-semibold">
-              Tu Portafolio Inteligente
+              El Futuro del Reclutamiento Tech
             </Badge>
             <!-- SEO H1: Keyword + Valor -->
             <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-white drop-shadow-sm">
-              Crea tu <span class="bg-gradient-to-r from-blue-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">Gemelo Digital</span><br class="hidden md:block" />
-              Profesional con IA
+              Tu currículum habla por ti...<br class="hidden md:block" />
+              Tu <span class="bg-gradient-to-r from-blue-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">Clon Digital</span> responde por ti.
             </h1>
             <!-- SEO H2 Subtítulo -->
             <h2 class="text-lg md:text-xl text-zinc-400 leading-relaxed mb-10 max-w-xl mx-auto lg:mx-0 font-light">
-              Más que un currículum estático o un perfil de LinkedIn. Transforma tu carrera en un portafolio interactivo donde reclutadores conversan con tu Inteligencia Artificial 24/7.
+              Dile adiós al PDF estático. Transforma tu experiencia en un <strong>portafolio profesional interactivo</strong> con un asistente de IA que atiende a los reclutadores 24/7.
             </h2>
             
             <!-- CTA Visible -->
@@ -86,19 +86,19 @@
         <!-- ============================================== -->
         <section class="w-full bg-zinc-950/60 border-y border-white/5 py-20 backdrop-blur-sm z-10 relative">
           <div class="max-w-4xl mx-auto px-6 text-center" v-motion-slide-visible-once-bottom>
-            <h2 class="text-3xl md:text-4xl font-bold mb-8">Por qué tu CV y LinkedIn ya no son suficientes</h2>
+            <h2 class="text-3xl md:text-4xl font-bold mb-8">Por qué tu CV en PDF y LinkedIn ya no son suficientes</h2>
             <p class="text-lg md:text-xl text-zinc-400 leading-relaxed mb-12">
-              LinkedIn fue diseñado para mapear tu historial, no para iniciar conversaciones de valor. Te dice <span class="text-zinc-200">dónde</span> estuviste, pero no <span class="text-zinc-200">cómo</span> piensas. Los reclutadores dedican 6 segundos a leer un PDF plano. El talento excepcional necesita más que un papel aburrido para destacar.
+              LinkedIn mapea tu historial, pero no inicia conversaciones de valor. Los reclutadores tardan solo <span class="text-zinc-200 font-semibold">6 segundos</span> en descartar un PDF plano. El talento excepcional necesita una plataforma que demuestre sus verdaderas capacidades de forma interactiva.
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="p-8 rounded-2xl bg-red-950/20 border border-red-900/30">
                 <div class="text-red-400 font-bold mb-4 flex items-center justify-center gap-2">
-                  <XCircle :size="20" /> Lo Obsoleto
+                  <XCircle :size="20" /> El Pasado (Obsoleto)
                 </div>
                 <ul class="text-zinc-400 space-y-3 text-left list-disc list-inside">
-                  <li>CV en PDF estático que nadie lee completo.</li>
-                  <li>Lista monótona de cargos en LinkedIn.</li>
-                  <li>Un enlace más perdido en el correo del reclutador.</li>
+                  <li>Un CV en PDF estático que nadie lee completo y se pierde en la bandeja de entrada.</li>
+                  <li>Una lista monótona de cargos en LinkedIn sin contexto.</li>
+                  <li>Esperar semanas para una primera entrevista de validación técnica.</li>
                 </ul>
               </div>
               <div class="p-8 rounded-2xl bg-primary/10 border border-primary/30 shadow-[0_0_30px_rgba(59,130,246,0.1)]">
@@ -106,9 +106,9 @@
                   <CheckCircle2 :size="20" /> El Futuro (OppyTalent)
                 </div>
                 <ul class="text-zinc-300 space-y-3 text-left list-disc list-inside">
-                  <li>Tu propio asistente de IA entrenado con tu perfil.</li>
-                  <li>Diseños inmersivos (Bento Box, Glassmorphism).</li>
-                  <li>Analíticas de lo que preguntan las empresas.</li>
+                  <li>Un Asistente IA que vende tu perfil y responde dudas técnicas al instante.</li>
+                  <li>Diseños premium (Bento Grid) que capturan la atención inmediatamente.</li>
+                  <li>Búsqueda semántica B2B: las empresas te encuentran por tus habilidades reales.</li>
                 </ul>
               </div>
             </div>
@@ -120,8 +120,8 @@
         <!-- ============================================== -->
         <section class="w-full max-w-7xl mx-auto px-6 py-24 z-10">
           <div class="text-center mb-16" v-motion-slide-visible-once-bottom>
-            <h2 class="text-3xl md:text-5xl font-bold mb-6">Eleva tu Marca Personal Tech al Siguiente Nivel</h2>
-            <p class="text-zinc-400 text-lg max-w-2xl mx-auto">Herramientas de clase mundial diseñadas para que los desarrolladores, creativos y líderes muestren su impacto real.</p>
+            <h2 class="text-3xl md:text-5xl font-bold mb-6">Eleva tu Empleabilidad al Siguiente Nivel</h2>
+            <p class="text-zinc-400 text-lg max-w-2xl mx-auto">Herramientas de clase mundial diseñadas para que los profesionales muestren su impacto real y las empresas optimicen su reclutamiento.</p>
           </div>
           
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -131,43 +131,43 @@
                 <Bot :size="24" />
               </div>
               <h3 class="text-xl font-bold text-white mb-3">Entrevistas Automatizadas 24/7</h3>
-              <p class="text-zinc-400 leading-relaxed">Tu Gemelo Digital responde preguntas técnicas o de comportamiento basándose estrictamente en tus experiencias. Es la entrevista antes de la entrevista.</p>
+              <p class="text-zinc-400 leading-relaxed">Tu Clon Digital responde preguntas de reclutadores utilizando estrictamente tu experiencia (RAG). Trabaja para ti mientras duermes, logrando la entrevista antes de la entrevista.</p>
             </div>
             
             <!-- Feature 2 -->
             <div class="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-indigo-500/50 transition-colors group" v-motion-slide-visible-once-bottom>
               <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <LayoutTemplate :size="24" />
+                <FileText :size="24" />
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Arquitectura Bento Box & Tabs</h3>
-              <p class="text-zinc-400 leading-relaxed">Olvídate del CSS y las plantillas genéricas. Usa sistemas de diseño premium, dinámicos y "mobile-first" que impresionan a primera vista.</p>
+              <h3 class="text-xl font-bold text-white mb-3">CV Wizard Inteligente</h3>
+              <p class="text-zinc-400 leading-relaxed">No pierdas tiempo configurando. Sube tu viejo PDF y nuestro asistente extraerá y construirá toda tu base de datos profesional en segundos usando IA generativa.</p>
             </div>
 
             <!-- Feature 3 -->
             <div class="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-purple-500/50 transition-colors group" v-motion-slide-visible-once-bottom>
               <div class="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <LineChart :size="24" />
+                <LayoutTemplate :size="24" />
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Analíticas de Reclutamiento</h3>
-              <p class="text-zinc-400 leading-relaxed">Un panel de control donde puedes leer el registro de chats. Descubre exactamente qué tecnologías o habilidades buscan los reclutadores en tu perfil.</p>
+              <h3 class="text-xl font-bold text-white mb-3">Diseño Premium y Personalizable</h3>
+              <p class="text-zinc-400 leading-relaxed">Destaca al instante. Elige entre 5 temas visuales de vanguardia (como Cyber Neon o Dark Glass) y arquitecturas dinámicas (Bento Grid) que demuestran alta calidad profesional.</p>
             </div>
             
             <!-- Feature 4 -->
             <div class="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-emerald-500/50 transition-colors group" v-motion-slide-visible-once-bottom>
               <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <ShieldCheck :size="24" />
+                <Network :size="24" />
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Privacidad BYOK (Bring Your Own Key)</h3>
-              <p class="text-zinc-400 leading-relaxed">Conecta tu propia llave de Google Gemini con encriptación militar AES-256. Control total sobre tus datos y uso de inteligencia artificial.</p>
+              <h3 class="text-xl font-bold text-white mb-3">Tribunal de IA y Búsqueda B2B</h3>
+              <p class="text-zinc-400 leading-relaxed">Entra en el radar de los Hunters. Las empresas utilizan nuestra búsqueda semántica y nuestro Tribunal de IA para evaluar simultáneamente a múltiples candidatos, conectándote directo con ofertas reales.</p>
             </div>
             
             <!-- Feature 5 -->
             <div class="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 hover:border-orange-500/50 transition-colors group lg:col-span-2" v-motion-slide-visible-once-bottom>
               <div class="w-12 h-12 rounded-2xl bg-orange-500/20 text-orange-400 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <FileText :size="24" />
+                <LineChart :size="24" />
               </div>
-              <h3 class="text-xl font-bold text-white mb-3">Extracción Inteligente de CV</h3>
-              <p class="text-zinc-400 leading-relaxed">Sube tu antiguo PDF y nuestro *CV Wizard* extraerá, estructurará y construirá toda tu base de datos profesional en segundos usando IA generativa.</p>
+              <h3 class="text-xl font-bold text-white mb-3">Analíticas de Chat y Mensajería P2P</h3>
+              <p class="text-zinc-400 leading-relaxed">Descubre exactamente qué preguntan las empresas leyendo los registros de tu Chat IA. Cuando hay interés mutuo, conecta de inmediato a través de nuestra red profesional y mensajería en tiempo real integrada.</p>
             </div>
           </div>
         </section>
@@ -177,18 +177,18 @@
         <!-- ============================================== -->
         <section class="w-full bg-gradient-to-b from-transparent to-zinc-950/80 py-24 z-10 relative">
           <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Lo que dicen los reclutadores sobre OppyTalent</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Lo que dicen los expertos sobre OppyTalent</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div class="p-6 rounded-2xl bg-white/5 border border-white/5" v-for="i in 3" :key="i">
                 <div class="flex items-center gap-2 text-amber-400 mb-4">
                   <Star fill="currentColor" :size="16" v-for="s in 5" :key="s" />
                 </div>
-                <p class="text-zinc-300 mb-6 italic">"Revisar un portafolio en OppyTalent me ahorró 30 minutos de entrevista técnica inicial. Le pregunté al Gemelo Digital del candidato sobre su stack en React y me dio detalles precisos de sus proyectos. Increíble plataforma."</p>
+                <p class="text-zinc-300 mb-6 italic">"Revisar un portafolio en OppyTalent me ahorró 30 minutos de entrevista técnica inicial. Le pregunté al Clon Digital del candidato sobre su rol como Lead y me dio detalles precisos que un PDF jamás me habría contado. Increíble plataforma."</p>
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-full bg-zinc-800"></div>
                   <div>
                     <div class="font-bold text-sm">Elena R.</div>
-                    <div class="text-xs text-zinc-500">Tech Recruiter Sr.</div>
+                    <div class="text-xs text-zinc-500">Talent Acquisition Manager</div>
                   </div>
                 </div>
               </div>
@@ -209,33 +209,33 @@
             <!-- FAQ 1 -->
             <details class="group bg-white/5 border border-white/10 rounded-2xl open:bg-white/10 transition-colors">
               <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-lg">
-                <span>¿Cómo funciona el clon de IA en mi portafolio web?</span>
+                <span>¿Cómo funciona el Clon Digital de IA en mi portafolio?</span>
                 <span class="transition group-open:rotate-180"><ChevronDown :size="20" /></span>
               </summary>
               <div class="text-zinc-400 px-6 pb-6 leading-relaxed">
-                El asistente de IA utiliza Google Gemini y es alimentado ("RAG") únicamente con los datos que tú apruebas en tu perfil (experiencia, proyectos, estudios). El sistema inyecta este contexto para que la IA responda a los visitantes como si fueras tú, manteniendo un tono profesional y rechazando temas ajenos a tu carrera.
+                El asistente interactivo utiliza un sistema RAG (Generación Aumentada por Recuperación). Se alimenta exclusivamente de la experiencia y proyectos que tú apruebas en tu perfil. Cuando un reclutador pregunta, la IA inyecta ese contexto para responder con tus propias habilidades, garantizando que "venda" tu talento sin alucinar respuestas.
               </div>
             </details>
             
             <!-- FAQ 2 -->
             <details class="group bg-white/5 border border-white/10 rounded-2xl open:bg-white/10 transition-colors">
               <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-lg">
-                <span>¿OppyTalent es mejor que un perfil de LinkedIn para buscar trabajo remoto?</span>
+                <span>¿Por qué elegir OppyTalent en lugar de mi perfil en LinkedIn?</span>
                 <span class="transition group-open:rotate-180"><ChevronDown :size="20" /></span>
               </summary>
               <div class="text-zinc-400 px-6 pb-6 leading-relaxed">
-                Ambos se complementan, pero OppyTalent tiene una clara ventaja en la fase de "evaluación". LinkedIn te ayuda a ser encontrado, pero OppyTalent convence al reclutador mostrándoles tus habilidades de manera conversacional, interactiva y con un diseño estético que demuestra alta calidad profesional.
+                LinkedIn es esencial para ser descubierto, pero OppyTalent está diseñado para <strong>convencer y evaluar</strong>. Mientras LinkedIn es una lista estática, OppyTalent permite que el reclutador tenga una pre-entrevista técnica con tu Clon Digital. Además, nuestro diseño arquitectónico premium (Bento Grid, Glassmorphism) eleva drásticamente la percepción de tu calidad profesional.
               </div>
             </details>
             
             <!-- FAQ 3 -->
             <details class="group bg-white/5 border border-white/10 rounded-2xl open:bg-white/10 transition-colors">
               <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-lg">
-                <span>¿Mis datos profesionales están seguros con la llave de Google Gemini?</span>
+                <span>¿Mis datos están seguros si usan Inteligencia Artificial?</span>
                 <span class="transition group-open:rotate-180"><ChevronDown :size="20" /></span>
               </summary>
               <div class="text-zinc-400 px-6 pb-6 leading-relaxed">
-                Absolutamente. Utilizamos un modelo Enterprise llamado BYOK (Bring Your Own Key). Tu llave de API de Gemini se cifra en la base de datos con un algoritmo criptográfico de grado militar (AES-256). Solo tú puedes usarla y el sistema gestiona los límites automáticamente.
+                Absolutamente. Utilizamos un modelo Enterprise con soporte BYOK (Bring Your Own Key). Esto significa que puedes conectar tu propia API Key de Inteligencia Artificial encriptada en nuestra base de datos con AES-256. Tendrás control absoluto de tu información.
               </div>
             </details>
           </div>
@@ -259,7 +259,7 @@ import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
 import { 
   ArrowRight, Sparkles, XCircle, CheckCircle2, 
-  Bot, LayoutTemplate, LineChart, ShieldCheck, FileText,
+  Bot, LayoutTemplate, LineChart, ShieldCheck, FileText, Network,
   Star, ChevronDown
 } from 'lucide-vue-next'
 

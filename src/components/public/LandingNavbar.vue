@@ -14,7 +14,7 @@
         <router-link to="/talent-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Para Talentos</router-link>
         <router-link to="/b2b-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Para Empresas</router-link>
         <router-link to="/pricing" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Precios</router-link>
-        <router-link to="/about" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Nosotros</router-link>
+        <router-link to="/about" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="text-primary font-bold">Sobre OppyTalent</router-link>
       </nav>
     </div>
 
@@ -107,7 +107,7 @@
         <router-link @click="isMobileMenuOpen = false" to="/talent-info" class="text-zinc-300 hover:text-white transition-colors">Para Talentos</router-link>
         <router-link @click="isMobileMenuOpen = false" to="/b2b-info" class="text-zinc-300 hover:text-white transition-colors">Para Empresas</router-link>
         <router-link @click="isMobileMenuOpen = false" to="/pricing" class="text-zinc-300 hover:text-white transition-colors">Precios</router-link>
-        <router-link @click="isMobileMenuOpen = false" to="/about" class="text-zinc-300 hover:text-white transition-colors">Nosotros</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/about" class="text-zinc-300 hover:text-white transition-colors">Sobre OppyTalent</router-link>
       </nav>
       
       <div class="h-px bg-white/10 w-full"></div>

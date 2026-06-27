@@ -15,7 +15,9 @@ export const useChatP2PStore = defineStore('chatP2P', {
       this.loading = true
       try {
         const data = await api.getChatConversations()
-        this.conversations = data || []
+        let convs = data || []
+        convs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+        this.conversations = convs
         
         // Calcular unreadCount basándonos en la suma
         let totalUnread = 0

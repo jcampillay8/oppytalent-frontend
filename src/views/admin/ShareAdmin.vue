@@ -62,13 +62,14 @@
           
           <div class="border border-border rounded-xl overflow-hidden mb-4 bg-background">
             <div ref="signatureRef" class="p-5 flex items-center gap-4" style="font-family: Arial, sans-serif; color: #333; background: #fff;">
-              <img v-if="authStore.user?.user_image" :src="authStore.user.user_image" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
+              <img v-if="userAvatar" :src="userAvatar" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" />
               <div v-else style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #666;">
-                {{ authStore.user?.first_name ? authStore.user.first_name[0] : (authStore.user?.username ? authStore.user.username[0].toUpperCase() : 'U') }}
+                {{ userFullName ? userFullName[0].toUpperCase() : 'U' }}
               </div>
               <div>
-                <p style="margin: 0; font-size: 14px; font-weight: bold; color: #111;">{{ authStore.user?.first_name || authStore.user?.username?.split('@')[0] }} {{ authStore.user?.last_name || '' }}</p>
-                <p style="margin: 2px 0 6px 0; font-size: 12px; color: #666;">{{ occupation }}</p>
+                <p style="margin: 0; font-size: 14px; font-weight: bold; color: #111;">{{ userFullName }}</p>
+                <p style="margin: 2px 0 2px 0; font-size: 12px; color: #666;">{{ occupation }}</p>
+                <p v-if="userPhone" style="margin: 0 0 6px 0; font-size: 12px; color: #666;">{{ userPhone }}</p>
                 <a :href="profileUrl" style="display: inline-block; text-decoration: none; background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold;">
                   🗣️ Habla con mi Asistente IA
                 </a>
@@ -153,6 +154,9 @@ const signatureCopied = ref(false)
 const signatureRef = ref(null)
 const customSlug = ref(authStore.user?.custom_slug || '')
 const occupation = ref('Profesional')
+const userFullName = ref(authStore.user?.first_name ? `${authStore.user.first_name} ${authStore.user.last_name || ''}` : (authStore.user?.username?.split('@')[0] || ''))
+const userAvatar = ref(authStore.user?.user_image || '')
+const userPhone = ref('')
 const slugError = ref('')
 const savingSlugSuccess = ref(false)
 
@@ -164,9 +168,12 @@ const isPremium = computed(() => {
 onMounted(async () => {
   if (authStore.user?.username) {
     try {
-      const perfs = await api.getProfile(`?username=${authStore.user.username.split('@')[0]}`)
+      const perfs = await api.getPerfil()
       if (perfs && perfs.length > 0) {
-        occupation.value = perfs[0].ocupacion || 'Profesional'
+        if (perfs[0].ocupacion) occupation.value = perfs[0].ocupacion
+        if (perfs[0].nombre_completo) userFullName.value = perfs[0].nombre_completo
+        if (perfs[0].avatar_url) userAvatar.value = perfs[0].avatar_url
+        if (perfs[0].telefono) userPhone.value = perfs[0].telefono
       }
     } catch (e) {}
   }

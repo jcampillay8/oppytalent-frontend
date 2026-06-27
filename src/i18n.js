@@ -4,8 +4,7 @@ import en from './locales/en.json'
 
 // Obtener idioma preferido del localStorage o navegador, por defecto 'es'
 const savedLanguage = localStorage.getItem('user-language')
-const browserLanguage = navigator.language.split('-')[0]
-const defaultLanguage = savedLanguage || (['es', 'en'].includes(browserLanguage) ? browserLanguage : 'es')
+const defaultLanguage = savedLanguage || 'es'
 
 export const i18n = createI18n({
   legacy: false, // Requerido para usar Composition API

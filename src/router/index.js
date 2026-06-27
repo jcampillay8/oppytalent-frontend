@@ -43,6 +43,12 @@ const routes = [
     component: () => import('../views/public/Home.vue'),
   },
   {
+    path: '/showcase',
+    name: 'Showcase',
+    component: () => import('../views/public/Showcase.vue'),
+    meta: { guestOnly: true }
+  },
+  {
     path: '/login',
     name: 'LoginUser',
     component: () => import('../views/auth/Login.vue'),

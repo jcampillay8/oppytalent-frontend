@@ -38,7 +38,7 @@
                   <ArrowRight :size="20" class="inline ml-2" />
                 </NeonButton>
               </router-link>
-              <router-link to="/portfolio/jcampillayworks" class="w-full sm:w-auto">
+              <router-link to="/showcase" class="w-full sm:w-auto">
                 <NeonButton variant="outline" class="w-full px-8 py-4 text-lg border-white/10 hover:border-white/30 text-zinc-300 hover:text-white hover:bg-white/5 transition-all">
                   <Sparkles :size="20" class="inline mr-2 text-indigo-400" /> {{ $t('public_landing.landing_10') }}
                 </NeonButton>

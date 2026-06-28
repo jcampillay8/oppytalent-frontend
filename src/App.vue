@@ -119,7 +119,7 @@
             <!-- Separator -->
             <div class="hidden sm:block h-5 w-px bg-border/60 mx-1"></div>
 
-            <button @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'" class="hidden sm:block h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
+            <button @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'" class="h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
               {{ currentLang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN' }}
             </button>
 
@@ -194,7 +194,7 @@
               </router-link>
             </template>
 
-            <button class="md:hidden p-2 text-foreground hover:text-primary transition-colors" @click="isMenuOpen = !isMenuOpen">
+            <button class="md:hidden p-2 text-foreground hover:text-primary transition-colors" @click.stop="isMenuOpen = !isMenuOpen">
               <Menu :size="24" />
             </button>
           </div>
@@ -210,7 +210,7 @@
               :results="searchResults"
               :is-loading="isSearching"
               @focus="showResults = true"
-              @close="showResults = false; isMenuOpen = false"
+              @close="showResults = false"
               @update:modelValue="onSearch"
             />
           </div>

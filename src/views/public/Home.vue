@@ -291,7 +291,7 @@ async function send() {
   }
 }
 
-watch(messages, async () => {
+watch([messages, loading], async () => {
   await nextTick()
   if (chatBody.value) {
     chatBody.value.scrollTop = chatBody.value.scrollHeight

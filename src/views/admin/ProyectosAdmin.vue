@@ -10,10 +10,18 @@
               <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.projects.title') }}</h1>
               <p class="text-muted-foreground mt-1">{{ $t('admin.views.projects.description') }}</p>
             </div>
-            <NeonButton @click="openForm(null)" glow>
-              <template #icon-left><Plus :size="18" /></template>
-              {{ $t('admin.titles.new_project') }}
-            </NeonButton>
+            <template v-if="store.items.length < currentLimit">
+              <NeonButton @click="openForm(null)" glow>
+                <template #icon-left><Plus :size="18" /></template>
+                {{ $t('admin.titles.new_project') }}
+              </NeonButton>
+            </template>
+            <template v-else>
+              <NeonButton @click="showUpgradeModal = true" glow variant="outline" class="border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10">
+                <template #icon-left><Lock :size="18" /></template>
+                {{ $t('admin.titles.new_project') }} (¡Gratis!)
+              </NeonButton>
+            </template>
           </div>
 
           <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
@@ -43,7 +51,7 @@
               move-class="transition-transform duration-300"
             >
               <GlassCard 
-                v-for="p in store.items" 
+                v-for="(p, index) in store.items" 
                 :key="p.id" 
                 hoverEffect 
               >
@@ -77,10 +85,18 @@
                   </div>
 
                   <div class="flex items-center gap-2 shrink-0 sm:mt-0 w-full sm:w-auto justify-end">
-                    <NeonButton variant="outline" @click="openForm(p)">
-                      <template #icon-left><Edit2 :size="14" /></template>
-                      <span class="hidden sm:inline">Editar</span>
-                    </NeonButton>
+                    <template v-if="index < currentLimit">
+                      <NeonButton variant="outline" @click="openForm(p)">
+                        <template #icon-left><Edit2 :size="14" /></template>
+                        <span class="hidden sm:inline">Editar</span>
+                      </NeonButton>
+                    </template>
+                    <template v-else>
+                      <NeonButton variant="outline" @click="showUpgradeModal = true" class="border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10">
+                        <template #icon-left><Lock :size="14" /></template>
+                        <span class="hidden sm:inline font-bold">¡Desbloquear Gratis!</span>
+                      </NeonButton>
+                    </template>
                     <NeonButton variant="destructive" @click="handleDelete(p.id)">
                       <template #icon-left><Trash2 :size="14" /></template>
                     </NeonButton>
@@ -92,6 +108,7 @@
             </TransitionGroup>
           </div>
         </div>
+
 
         <!-- VISTA DE FORMULARIO -->
         <div v-else key="formulario">
@@ -120,6 +137,8 @@
         </div>
 
       </transition>
+      
+      <UpgradeModal v-model="showUpgradeModal" />
     </AdminLayout>
   
 </template>
@@ -131,7 +150,8 @@ import ProyectoForm from '../../components/admin/ProyectoForm.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { Plus, X, Loader2, FolderKanban, Calendar, Edit2, Trash2, Briefcase, ArrowLeft } from 'lucide-vue-next'
+import UpgradeModal from '../../components/admin/UpgradeModal.vue'
+import { Plus, X, Loader2, FolderKanban, Calendar, Edit2, Trash2, Briefcase, ArrowLeft, Lock } from 'lucide-vue-next'
 import { useProyectosStore } from '../../stores/proyectos'
 import { useI18n } from 'vue-i18n'
 
@@ -139,6 +159,22 @@ const store = useProyectosStore()
 const { t } = useI18n()
 const showForm = ref(false)
 const editingProyecto = ref(null)
+const showUpgradeModal = ref(false)
+
+import { useAuthStore } from '../../stores/auth'
+import { computed } from 'vue'
+const authStore = useAuthStore()
+
+const limits = {
+  BASIC: 3,
+  PRO: 4,
+  PREMIUM: 6,
+  AMBASSADOR: 10
+}
+const currentLimit = computed(() => {
+  const tier = (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC')
+  return limits[tier.toUpperCase()] || 3
+})
 
 function formatDate(d) {
   if (!d) return 'Actualidad'

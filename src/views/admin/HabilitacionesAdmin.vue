@@ -9,10 +9,18 @@
             <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.certifications.title') }}</h1>
             <p class="text-muted-foreground mt-1">{{ $t('admin.views.certifications.description') }}</p>
           </div>
-          <NeonButton @click="openForm(null)" glow>
-            <template #icon-left><Plus :size="18" /></template>
-            {{ $t('admin.titles.new_certification') }}
-          </NeonButton>
+          <template v-if="store.items.length < currentLimit">
+            <NeonButton @click="openForm(null)" glow>
+              <template #icon-left><Plus :size="18" /></template>
+              {{ $t('admin.titles.new_certification') }}
+            </NeonButton>
+          </template>
+          <template v-else>
+            <NeonButton @click="showUpgradeModal = true" glow variant="outline" class="border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10">
+              <template #icon-left><Lock :size="18" /></template>
+              {{ $t('admin.titles.new_certification') }} (¡Gratis!)
+            </NeonButton>
+          </template>
         </div>
 
         <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
@@ -42,7 +50,7 @@
             move-class="transition-transform duration-300"
           >
             <GlassCard 
-              v-for="h in store.items" 
+              v-for="(h, index) in store.items" 
               :key="h.id" 
               hoverEffect 
             >
@@ -71,10 +79,18 @@
                 </div>
 
                 <div class="flex items-center gap-2 shrink-0 sm:mt-0 w-full sm:w-auto justify-end">
-                  <NeonButton variant="outline" @click="openForm(h)">
-                    <template #icon-left><Edit2 :size="14" /></template>
-                    <span class="hidden sm:inline">Editar</span>
-                  </NeonButton>
+                  <template v-if="index < currentLimit">
+                    <NeonButton variant="outline" @click="openForm(h)">
+                      <template #icon-left><Edit2 :size="14" /></template>
+                      <span class="hidden sm:inline">Editar</span>
+                    </NeonButton>
+                  </template>
+                  <template v-else>
+                    <NeonButton variant="outline" @click="showUpgradeModal = true" class="border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10">
+                      <template #icon-left><Lock :size="14" /></template>
+                      <span class="hidden sm:inline font-bold">¡Desbloquear Gratis!</span>
+                    </NeonButton>
+                  </template>
                   <NeonButton variant="destructive" @click="handleDelete(h.id)">
                     <template #icon-left><Trash2 :size="14" /></template>
                   </NeonButton>
@@ -114,6 +130,7 @@
       </div>
 
     </transition>
+    <UpgradeModal v-model="showUpgradeModal" />
   </AdminLayout>
 </template>
 
@@ -123,7 +140,8 @@ import AdminLayout from '../../components/admin/AdminLayout.vue'
 import HabilitacionForm from '../../components/admin/HabilitacionForm.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
-import { Plus, X, Loader2, ShieldCheck, Edit2, Trash2, ArrowLeft } from 'lucide-vue-next'
+import UpgradeModal from '../../components/admin/UpgradeModal.vue'
+import { Plus, X, Loader2, ShieldCheck, Edit2, Trash2, ArrowLeft, Lock } from 'lucide-vue-next'
 import { useHabilitacionesStore } from '../../stores/habilitaciones'
 import { useI18n } from 'vue-i18n'
 
@@ -131,6 +149,22 @@ const store = useHabilitacionesStore()
 const { t } = useI18n()
 const showForm = ref(false)
 const editingHabilitacion = ref(null)
+const showUpgradeModal = ref(false)
+
+import { useAuthStore } from '../../stores/auth'
+import { computed } from 'vue'
+const authStore = useAuthStore()
+
+const limits = {
+  BASIC: 3,
+  PRO: 4,
+  PREMIUM: 6,
+  AMBASSADOR: 10
+}
+const currentLimit = computed(() => {
+  const tier = (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC')
+  return limits[tier.toUpperCase()] || 3
+})
 
 function openForm(item) {
   editingHabilitacion.value = item ? { ...item } : null

@@ -16,8 +16,8 @@
           <h2 class="text-xl font-bold text-foreground flex items-center gap-2">
             <HardDrive :size="24" class="text-primary" /> {{ $t('admin_storage.storage_3') }}
           </h2>
-          <Badge :variant="user.is_premium ? 'primary' : 'secondary'">
-            {{ user.is_premium ? 'Premium' : 'Gratuito' }}
+          <Badge :variant="(user.freemiumTier || user.freemium_tier || 'BASIC') === 'BASIC' ? 'secondary' : 'primary'">
+            {{ planName }}
           </Badge>
         </div>
 
@@ -54,8 +54,8 @@
             <Sparkles :size="24" class="text-primary" /> {{ $t('admin_storage.storage_5') }}
           </h2>
           <Badge v-if="user.has_gemini_key" variant="primary" class="bg-emerald-500 text-white">{{ $t('admin_storage.storage_6') }}</Badge>
-          <Badge v-else :variant="user.ai_credits > 0 ? 'secondary' : 'destructive'">
-            {{ user.ai_credits > 0 ? 'Disponible' : 'Agotado' }}
+          <Badge v-else :variant="aiCreditsAvailable > 0 ? 'secondary' : 'destructive'">
+            {{ aiCreditsAvailable > 0 ? 'Disponible' : 'Agotado' }}
           </Badge>
         </div>
 
@@ -68,8 +68,8 @@
           <div v-else>
             <div class="flex justify-between items-end">
               <div>
-                <span class="text-3xl font-extrabold" :class="user.ai_credits === 0 ? 'text-destructive' : 'text-foreground'">{{ aiCreditsUsed }}</span>
-                <span class="text-muted-foreground ml-2 text-sm">{{ $t('admin_storage.storage_9') }}</span>
+                <span class="text-3xl font-extrabold" :class="aiCreditsAvailable === 0 ? 'text-destructive' : 'text-foreground'">{{ aiCreditsUsed }}</span>
+                <span class="text-muted-foreground ml-2 text-sm">de {{ AI_MAX }} peticiones</span>
               </div>
               <span class="text-sm font-bold" :class="aiPercentageColor">{{ aiUsagePercentage }}%</span>
             </div>
@@ -153,7 +153,7 @@
       </GlassCard>
 
       <!-- CARD 4: UPGRADE CTA -->
-      <div v-if="!user.is_premium" class="h-full">
+      <div v-if="(user.freemiumTier || user.freemium_tier || 'BASIC') === 'BASIC'" class="h-full">
         <GlassCard class="p-6 md:p-8 h-full flex flex-col justify-center border-primary/20 bg-primary/5 relative overflow-hidden group">
           <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-all duration-500"></div>
           
@@ -250,7 +250,18 @@ onMounted(async () => {
   }
 })
 
-const user = computed(() => authStore.user || { is_premium: false, ai_credits: 10, has_gemini_key: false })
+const user = computed(() => authStore.user || { is_premium: false, base_credits_balance: 25, bonus_credits_balance: 0, has_gemini_key: false, freemium_tier: 'BASIC' })
+
+const planName = computed(() => {
+  const tier = (user.value.freemiumTier || user.value.freemium_tier || 'BASIC').toUpperCase();
+  const names = {
+    BASIC: 'Básico',
+    PRO: 'Pro',
+    PREMIUM: 'Premium',
+    AMBASSADOR: 'Embajador'
+  };
+  return `Plan Freemium ${names[tier] || 'Básico'}`;
+});
 
 // ALMACENAMIENTO LÓGICA
 const storageUsed = computed(() => user.value.storage_used || 0)
@@ -289,11 +300,23 @@ function formatBytes(bytes) {
 }
 
 // IA CRÉDITOS LÓGICA
-const AI_MAX = 10
-const aiCreditsUsed = computed(() => AI_MAX - user.value.ai_credits)
+const AI_MAX = computed(() => {
+  const tier = (user.value.freemiumTier || user.value.freemium_tier || 'BASIC').toUpperCase();
+  const limits = { BASIC: 25, PRO: 35, PREMIUM: 50, AMBASSADOR: 50 };
+  const bonus = user.value.bonusCreditsBalance ?? user.value.bonus_credits_balance ?? 0;
+  return (limits[tier] || 25) + bonus;
+});
+const aiCreditsAvailable = computed(() => {
+  const base = user.value.baseCreditsBalance ?? user.value.base_credits_balance ?? 0;
+  const bonus = user.value.bonusCreditsBalance ?? user.value.bonus_credits_balance ?? 0;
+  return base + bonus;
+});
+const aiCreditsUsed = computed(() => Math.max(0, AI_MAX.value - aiCreditsAvailable.value));
+
 const aiUsagePercentage = computed(() => {
-  const pct = (aiCreditsUsed.value / AI_MAX) * 100
-  return Math.min(100, Math.max(0, Number(pct.toFixed(1))))
+  if (AI_MAX.value === 0) return 0;
+  const pct = (aiCreditsUsed.value / AI_MAX.value) * 100;
+  return Math.min(100, Math.max(0, Number(pct.toFixed(1))));
 })
 
 const isAiVeryNearLimit = computed(() => aiUsagePercentage.value >= 95)

@@ -10,10 +10,18 @@
               <h1 class="text-3xl font-extrabold tracking-tight text-foreground">{{ $t('admin.views.studies.title') }}</h1>
               <p class="text-muted-foreground mt-1">{{ $t('admin.views.studies.description') }}</p>
             </div>
-            <NeonButton @click="openForm(null)" glow variant="primary">
-              <template #icon-left><Plus :size="18" /></template>
-              {{ $t('admin.titles.new_study') }}
-            </NeonButton>
+            <template v-if="store.items.length < currentLimit">
+              <NeonButton @click="openForm(null)" glow variant="primary">
+                <template #icon-left><Plus :size="18" /></template>
+                {{ $t('admin.titles.new_study') }}
+              </NeonButton>
+            </template>
+            <template v-else>
+              <NeonButton @click="showUpgradeModal = true" glow variant="outline" class="border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10">
+                <template #icon-left><Lock :size="18" /></template>
+                {{ $t('admin.titles.new_study') }} (¡Gratis!)
+              </NeonButton>
+            </template>
           </div>
 
           <div v-if="store.loading" class="flex flex-col items-center justify-center py-20 text-primary">
@@ -43,7 +51,7 @@
               move-class="transition-transform duration-300"
             >
               <GlassCard 
-                v-for="e in store.items" 
+                v-for="(e, index) in store.items" 
                 :key="e.id" 
                 hoverEffect 
               >
@@ -71,10 +79,18 @@
                   </div>
 
                   <div class="flex items-center gap-2 shrink-0 sm:mt-0 w-full sm:w-auto justify-end">
-                    <NeonButton variant="outline" @click="openForm(e)">
-                      <template #icon-left><Edit2 :size="14" /></template>
-                      <span class="hidden sm:inline">Editar</span>
-                    </NeonButton>
+                    <template v-if="index < currentLimit">
+                      <NeonButton variant="outline" @click="openForm(e)">
+                        <template #icon-left><Edit2 :size="14" /></template>
+                        <span class="hidden sm:inline">Editar</span>
+                      </NeonButton>
+                    </template>
+                    <template v-else>
+                      <NeonButton variant="outline" @click="showUpgradeModal = true" class="border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10">
+                        <template #icon-left><Lock :size="14" /></template>
+                        <span class="hidden sm:inline font-bold">¡Desbloquear Gratis!</span>
+                      </NeonButton>
+                    </template>
                     <NeonButton variant="destructive" @click="handleDelete(e.id)">
                       <template #icon-left><Trash2 :size="14" /></template>
                     </NeonButton>
@@ -114,6 +130,7 @@
         </div>
 
       </transition>
+      <UpgradeModal v-model="showUpgradeModal" />
     </AdminLayout>
   
 </template>
@@ -124,7 +141,8 @@ import AdminLayout from '../../components/admin/AdminLayout.vue'
 import EstudioForm from '../../components/admin/EstudioForm.vue'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
-import { Plus, X, Loader2, GraduationCap, Edit2, Trash2, Building2, Award, BookOpen, ArrowLeft } from 'lucide-vue-next'
+import UpgradeModal from '../../components/admin/UpgradeModal.vue'
+import { Plus, X, Loader2, GraduationCap, Edit2, Trash2, Building2, Award, BookOpen, ArrowLeft, Lock } from 'lucide-vue-next'
 import { useEstudiosStore } from '../../stores/estudios'
 import { useI18n } from 'vue-i18n'
 
@@ -132,6 +150,22 @@ const store = useEstudiosStore()
 const { t } = useI18n()
 const showForm = ref(false)
 const editingEstudio = ref(null)
+const showUpgradeModal = ref(false)
+
+import { useAuthStore } from '../../stores/auth'
+import { computed } from 'vue'
+const authStore = useAuthStore()
+
+const limits = {
+  BASIC: 3,
+  PRO: 4,
+  PREMIUM: 6,
+  AMBASSADOR: 10
+}
+const currentLimit = computed(() => {
+  const tier = (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC')
+  return limits[tier.toUpperCase()] || 3
+})
 
 function openForm(estudio) {
   editingEstudio.value = estudio ? { ...estudio } : null

@@ -38,6 +38,12 @@ const routes = [
     meta: { guestOnly: true }
   },
   {
+    path: '/referencias',
+    name: 'Referencias',
+    component: () => import('../views/public/Referencias.vue'),
+    meta: { guestOnly: true }
+  },
+  {
     path: '/assistant',
     name: 'AI Assistant',
     component: () => import('../views/public/Home.vue'),

@@ -398,5 +398,12 @@ export const api = {
   getConnectionStatus: (targetUserId) => request(`/network/status/${targetUserId}`),
   getConnectionDegree: (targetUserId) => request(`/network/degrees/${targetUserId}`),
   getNetworkFeed: () => request('/network/feed'),
-  getNetworkSuggestions: () => request('/network/suggestions')
+  getNetworkSuggestions: () => request('/network/suggestions'),
+
+  // --- Freemium & Social ---
+  getFreemiumStats: () => request('/freemium/stats'),
+  getFreemiumReviews: () => request('/freemium/reviews'),
+  createFreemiumReview: (data) => request('/freemium/reviews', { method: 'POST', body: JSON.stringify(data) }),
+  toggleFreemiumReviewLike: (reviewId) => request(`/freemium/reviews/${reviewId}/like`, { method: 'POST' }),
+  supportUsUpgrade: () => request('/freemium/support-us', { method: 'POST' })
 }

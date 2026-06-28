@@ -100,7 +100,7 @@
                 class="hidden sm:flex"
               />
 
-              <router-link :to="`/${authStore.user?.username?.split('@')[0] || 'admin'}/inbox`" class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Mensajes">
+              <router-link :to="`/${authStore.user?.username?.split('@')[0] || 'admin'}/inbox`" class="hidden sm:flex relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Mensajes">
                 <MessageSquare :size="18" />
                 <span 
                   v-if="chatStore.unreadCount > 0"
@@ -110,7 +110,7 @@
                 </span>
               </router-link>
 
-              <button class="relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Notificaciones">
+              <button class="hidden sm:flex relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Notificaciones">
                 <Bell :size="18" />
               </button>
 
@@ -119,7 +119,7 @@
             <!-- Separator -->
             <div class="hidden sm:block h-5 w-px bg-border/60 mx-1"></div>
 
-            <button @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'" class="h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
+            <button @click="toggleLanguage" :title="currentLang === 'es' ? 'Cambiar a Inglés' : 'Switch to Spanish'" class="hidden sm:block h-9 px-2 rounded-md hover:bg-secondary text-sm font-medium transition-colors border border-transparent hover:border-border">
               {{ currentLang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN' }}
             </button>
 

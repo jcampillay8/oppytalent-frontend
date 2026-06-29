@@ -158,10 +158,12 @@ import { computed } from 'vue'
 const authStore = useAuthStore()
 
 const limits = {
-  BASIC: 3,
+  BASIC: 2,
   PRO: 4,
   PREMIUM: 6,
-  AMBASSADOR: 10
+  AMBASSADOR: 8,
+  PROFESSIONAL: 9999,
+  BYOK: 9999
 }
 const currentLimit = computed(() => {
   const tier = (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC')

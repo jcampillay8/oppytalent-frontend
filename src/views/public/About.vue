@@ -27,10 +27,13 @@
         </div>
         
         <div class="w-full md:w-2/3">
-          <header class="mb-8 text-center md:text-left">
+          <header class="mb-8 text-center md:text-left relative group/edit">
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mb-2 flex items-center justify-center md:justify-start gap-3">
               <UserCircle2 :size="40" class="text-primary hidden sm:block" />
               {{ locale === 'en' ? 'About Me' : 'Sobre Mí' }}
+              <button v-if="isOwner" @click="handleEdit" class="ml-4 p-2 bg-primary text-white rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110">
+                <Edit2 :size="20" />
+              </button>
             </h1>
             <p class="text-xl font-medium text-primary">{{ profile.nombre_completo || 'Usuario de OppyTalent' }}</p>
           </header>
@@ -75,22 +78,54 @@
         </div>
       </div>
     </article>
+
+    <PortfolioEditModal 
+      :activeForm="activeForm"
+      :editingItem="editingItem"
+      @close="closeEdit"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { usePerfilStore } from '../../stores/perfil'
+import { useAuthStore } from '../../stores/auth'
 import { useTranslatedData } from '../../composables/useTranslatedData'
 import { useI18n } from 'vue-i18n'
 import GlassCard from '../../components/ui/GlassCard.vue'
 import NeonButton from '../../components/ui/NeonButton.vue'
 import Badge from '../../components/ui/Badge.vue'
-import { ArrowLeft, UserCircle2, Youtube, Award, Languages } from 'lucide-vue-next'
+import { ArrowLeft, UserCircle2, Youtube, Award, Languages, Edit2 } from 'lucide-vue-next'
+import PortfolioEditModal from '../../components/public/PortfolioEditModal.vue'
 
 const store = usePerfilStore()
+const authStore = useAuthStore()
 const { locale } = useI18n()
 const { getTranslated } = useTranslatedData()
+
+const isOwner = computed(() => {
+  if (!authStore.user) return false
+  const myUser = authStore.user?.username?.split('@')[0]
+  const rawViewUser = window.location.pathname.match(/\/portfolio\/([^/]+)/)?.[1] || localStorage.getItem('currentPortfolioUser') || 'jcampillayworks'
+  const viewUser = rawViewUser.split('@')[0]
+  return myUser === viewUser
+})
+
+const activeForm = ref(null)
+const editingItem = ref(null)
+
+const handleEdit = () => {
+  activeForm.value = 'profile'
+  editingItem.value = profile.value
+  document.body.style.overflow = 'hidden'
+}
+
+const closeEdit = () => {
+  activeForm.value = null
+  editingItem.value = null
+  document.body.style.overflow = ''
+}
 
 const profile = computed(() => store.items[0] || {})
 const tData = computed(() => getTranslated(profile.value, locale.value))

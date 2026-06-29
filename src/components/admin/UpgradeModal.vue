@@ -116,13 +116,19 @@
 
               <!-- Mission 2: Review -->
               <div class="border border-border rounded-xl p-4 flex gap-4 transition-colors relative overflow-hidden group"
-                   :class="isPremiumOrHigher ? 'bg-secondary/10 opacity-70' : 'hover:border-primary/50 bg-secondary/30'">
+                   :class="isPremiumOrHigher ? 'bg-secondary/10 opacity-70' : (!isProOrHigher ? 'opacity-50 grayscale' : 'hover:border-primary/50 bg-secondary/30')">
                 
                 <!-- If already unlocked overlay -->
                 <div v-if="isPremiumOrHigher" class="absolute inset-0 bg-background/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-4">
                   <CheckCircle class="w-12 h-12 text-amber-500 mb-2 drop-shadow-sm" />
                   <span class="font-black text-lg text-foreground">{{ $t('admin_upgrade_modal.upgrade_26') }}</span>
                   <span class="text-sm font-medium text-amber-500 mt-1">{{ $t('admin_upgrade_modal.upgrade_27') }}</span>
+                </div>
+
+                <!-- If locked overlay -->
+                <div v-else-if="!isProOrHigher" class="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center text-center p-4">
+                  <Lock class="w-8 h-8 text-muted-foreground mb-2" />
+                  <span class="text-sm font-bold text-muted-foreground">Desbloquea el Plan Pro primero</span>
                 </div>
 
                 <div class="shrink-0 w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500 border border-amber-500/20">
@@ -137,11 +143,26 @@
                     <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_32') }}</Badge>
                   </div>
                 </div>
-                <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing || isPremiumOrHigher" @click="viewMode = 'writeReview'"></button>
+                <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing || !isProOrHigher || isPremiumOrHigher" @click="viewMode = 'writeReview'"></button>
               </div>
 
               <!-- Mission 3: Share (Embajador) -->
-              <div class="border border-border rounded-xl p-4 flex gap-4 hover:border-primary/50 transition-colors bg-secondary/30 relative overflow-hidden group">
+              <div class="border border-border rounded-xl p-4 flex gap-4 transition-colors relative overflow-hidden group"
+                   :class="isAmbassador ? 'bg-secondary/10 opacity-70' : (!isPremiumOrHigher ? 'opacity-50 grayscale' : 'hover:border-primary/50 bg-secondary/30')">
+                
+                <!-- If already unlocked overlay -->
+                <div v-if="isAmbassador" class="absolute inset-0 bg-background/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-4">
+                  <CheckCircle class="w-12 h-12 text-purple-500 mb-2 drop-shadow-sm" />
+                  <span class="font-black text-lg text-foreground">¡Plan Embajador Activo!</span>
+                  <span class="text-sm font-medium text-purple-500 mt-1">Disfruta de límites extendidos</span>
+                </div>
+
+                <!-- If locked overlay -->
+                <div v-else-if="!isPremiumOrHigher" class="absolute inset-0 bg-background/60 backdrop-blur-[2px] z-20 flex flex-col items-center justify-center text-center p-4">
+                  <Lock class="w-8 h-8 text-muted-foreground mb-2" />
+                  <span class="text-sm font-bold text-muted-foreground">Desbloquea el Plan Premium primero</span>
+                </div>
+
                 <div class="shrink-0 w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center text-purple-500 border border-purple-500/20">
                   <Share2 class="w-6 h-6" />
                 </div>
@@ -154,7 +175,7 @@
                     <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_37') }}</Badge>
                   </div>
                 </div>
-                <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing" @click="viewMode = 'ambassador'"></button>
+                <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing || !isPremiumOrHigher || isAmbassador" @click="viewMode = 'ambassador'"></button>
               </div>
             </div>
 
@@ -207,7 +228,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Sparkles, Heart, Star, Share2, CheckCircle, Loader2, Copy, Check } from 'lucide-vue-next'
+import { Sparkles, Heart, Star, Share2, CheckCircle, Loader2, Copy, Check, Lock } from 'lucide-vue-next'
 import Badge from '../ui/Badge.vue'
 import NeonButton from '../ui/NeonButton.vue'
 import { useRouter } from 'vue-router'
@@ -239,6 +260,7 @@ const userName = computed(() => {
 const currentTier = computed(() => (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC').toUpperCase())
 const isProOrHigher = computed(() => ['PRO', 'PREMIUM', 'AMBASSADOR'].includes(currentTier.value))
 const isPremiumOrHigher = computed(() => ['PREMIUM', 'AMBASSADOR'].includes(currentTier.value))
+const isAmbassador = computed(() => currentTier.value === 'AMBASSADOR')
 
 const isReviewValid = computed(() => reviewRating.value > 0 && reviewContent.value.trim().length > 10)
 

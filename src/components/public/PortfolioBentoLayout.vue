@@ -111,28 +111,108 @@
             </div>
 
             <!-- Proyectos -->
-            <div v-if="activeModal === 'proyectos'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ProyectoCard v-for="p in proyectos" :key="p.id" :proyecto="p" />
+            <div v-if="activeModal === 'proyectos'" class="relative">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-for="(p, index) in proyectos" :key="p.id" class="relative group/edit">
+                  <ProyectoCard :proyecto="p" />
+                  <button v-if="isOwner && index < userLimit" @click="$emit('edit', 'project', p)" class="absolute top-3 right-3 p-2 bg-background/90 text-foreground rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-border">
+                    <Edit2 :size="16" />
+                  </button>
+                  <button v-else-if="isOwner && index >= userLimit" @click="$emit('upgrade')" class="absolute top-3 right-3 p-2 bg-background/90 text-amber-500 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-amber-500/50">
+                    <Lock :size="16" />
+                  </button>
+                </div>
+              </div>
+              <div v-if="isOwner" class="mt-6 flex justify-center">
+                <NeonButton variant="outline" class="border-dashed" @click="$emit('new', 'project')">
+                  <template #icon-left><Plus :size="16" /></template>
+                  Añadir Proyecto
+                </NeonButton>
+              </div>
             </div>
 
             <!-- Experiencia -->
-            <div v-else-if="activeModal === 'experiencia'" class="grid grid-cols-1 gap-6 relative">
-              <ExperienciaCard v-for="e in experiencias" :key="e.id" :experiencia="e" />
+            <div v-else-if="activeModal === 'experiencia'" class="relative">
+              <div class="grid grid-cols-1 gap-6">
+                <div v-for="(e, index) in experiencias" :key="e.id" class="relative group/edit">
+                  <ExperienciaCard :experiencia="e" />
+                  <button v-if="isOwner && index < userLimit" @click="$emit('edit', 'experience', e)" class="absolute top-3 right-3 p-2 bg-background/90 text-foreground rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-border">
+                    <Edit2 :size="16" />
+                  </button>
+                  <button v-else-if="isOwner && index >= userLimit" @click="$emit('upgrade')" class="absolute top-3 right-3 p-2 bg-background/90 text-amber-500 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-amber-500/50">
+                    <Lock :size="16" />
+                  </button>
+                </div>
+              </div>
+              <div v-if="isOwner" class="mt-6 flex justify-center">
+                <NeonButton variant="outline" class="border-dashed" @click="$emit('new', 'experience')">
+                  <template #icon-left><Plus :size="16" /></template>
+                  Añadir Experiencia
+                </NeonButton>
+              </div>
             </div>
 
             <!-- Estudios -->
-            <div v-else-if="activeModal === 'estudios'" class="grid grid-cols-1 gap-6 relative">
-              <EstudioCard v-for="e in estudios" :key="e.id" :estudio="e" />
+            <div v-else-if="activeModal === 'estudios'" class="relative">
+              <div class="grid grid-cols-1 gap-6">
+                <div v-for="(e, index) in estudios" :key="e.id" class="relative group/edit">
+                  <EstudioCard :estudio="e" />
+                  <button v-if="isOwner && index < userLimit" @click="$emit('edit', 'education', e)" class="absolute top-3 right-3 p-2 bg-background/90 text-foreground rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-border">
+                    <Edit2 :size="16" />
+                  </button>
+                  <button v-else-if="isOwner && index >= userLimit" @click="$emit('upgrade')" class="absolute top-3 right-3 p-2 bg-background/90 text-amber-500 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-amber-500/50">
+                    <Lock :size="16" />
+                  </button>
+                </div>
+              </div>
+              <div v-if="isOwner" class="mt-6 flex justify-center">
+                <NeonButton variant="outline" class="border-dashed" @click="$emit('new', 'education')">
+                  <template #icon-left><Plus :size="16" /></template>
+                  Añadir Estudio
+                </NeonButton>
+              </div>
             </div>
 
             <!-- Reconocimientos -->
-            <div v-else-if="activeModal === 'reconocimientos'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ReconocimientoCard v-for="r in reconocimientos" :key="r.id" :reconocimiento="r" />
+            <div v-else-if="activeModal === 'reconocimientos'" class="relative">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-for="(r, index) in reconocimientos" :key="r.id" class="relative group/edit">
+                  <ReconocimientoCard :reconocimiento="r" />
+                  <button v-if="isOwner && index < userLimit" @click="$emit('edit', 'recognition', r)" class="absolute top-3 right-3 p-2 bg-background/90 text-foreground rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-border">
+                    <Edit2 :size="16" />
+                  </button>
+                  <button v-else-if="isOwner && index >= userLimit" @click="$emit('upgrade')" class="absolute top-3 right-3 p-2 bg-background/90 text-amber-500 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-amber-500/50">
+                    <Lock :size="16" />
+                  </button>
+                </div>
+              </div>
+              <div v-if="isOwner" class="mt-6 flex justify-center">
+                <NeonButton variant="outline" class="border-dashed" @click="$emit('new', 'recognition')">
+                  <template #icon-left><Plus :size="16" /></template>
+                  Añadir Reconocimiento
+                </NeonButton>
+              </div>
             </div>
 
             <!-- Habilitaciones -->
-            <div v-else-if="activeModal === 'habilitaciones'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <HabilitacionCard v-for="h in habilitaciones" :key="h.id" :habilitacion="h" />
+            <div v-else-if="activeModal === 'habilitaciones'" class="relative">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div v-for="(h, index) in habilitaciones" :key="h.id" class="relative group/edit">
+                  <HabilitacionCard :habilitacion="h" />
+                  <button v-if="isOwner && index < userLimit" @click="$emit('edit', 'skill', h)" class="absolute top-3 right-3 p-2 bg-background/90 text-foreground rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-border">
+                    <Edit2 :size="16" />
+                  </button>
+                  <button v-else-if="isOwner && index >= userLimit" @click="$emit('upgrade')" class="absolute top-3 right-3 p-2 bg-background/90 text-amber-500 rounded-full opacity-0 group-hover/edit:opacity-100 transition-opacity z-10 shadow-lg hover:scale-110 border border-amber-500/50">
+                    <Lock :size="16" />
+                  </button>
+                </div>
+              </div>
+              <div v-if="isOwner" class="mt-6 flex justify-center">
+                <NeonButton variant="outline" class="border-dashed" @click="$emit('new', 'skill')">
+                  <template #icon-left><Plus :size="16" /></template>
+                  Añadir Habilidad
+                </NeonButton>
+              </div>
             </div>
 
           </div>
@@ -144,8 +224,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { FolderKanban, Briefcase, GraduationCap, Award, ShieldCheck, X } from 'lucide-vue-next'
+import { FolderKanban, Briefcase, GraduationCap, Award, ShieldCheck, X, Edit2, Plus, Lock } from 'lucide-vue-next'
 import Badge from '../ui/Badge.vue'
+import NeonButton from '../ui/NeonButton.vue'
 import ProyectoCard from './ProyectoCard.vue'
 import ExperienciaCard from './ExperienciaCard.vue'
 import EstudioCard from './EstudioCard.vue'
@@ -159,8 +240,12 @@ const props = defineProps({
   estudios: { type: Array, default: () => [] },
   reconocimientos: { type: Array, default: () => [] },
   habilitaciones: { type: Array, default: () => [] },
-  config: { type: Object, required: true }
+  config: { type: Object, required: true },
+  isOwner: { type: Boolean, default: false },
+  userLimit: { type: Number, default: 999 }
 })
+
+defineEmits(['edit', 'new', 'upgrade'])
 
 const { t } = useI18n()
 const activeModal = ref(null)

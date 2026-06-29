@@ -14,7 +14,7 @@
         <router-link to="/talent-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.talent') }}</router-link>
         <router-link to="/b2b-info" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.b2b') }}</router-link>
         <router-link to="/pricing" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.pricing') }}</router-link>
-        <router-link to="/referencias" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">Referencias</router-link>
+        <router-link to="/referencias" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.references') }}</router-link>
         <router-link to="/about" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.about') }}</router-link>
       </nav>
     </div>
@@ -106,7 +106,7 @@
         <router-link @click="isMobileMenuOpen = false" to="/talent-info" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.talent') }}</router-link>
         <router-link @click="isMobileMenuOpen = false" to="/b2b-info" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.b2b') }}</router-link>
         <router-link @click="isMobileMenuOpen = false" to="/pricing" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.pricing') }}</router-link>
-        <router-link @click="isMobileMenuOpen = false" to="/referencias" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">Referencias</router-link>
+        <router-link @click="isMobileMenuOpen = false" to="/referencias" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.references') }}</router-link>
         <router-link @click="isMobileMenuOpen = false" to="/about" class="text-zinc-300 hover:text-white transition-colors" active-class="!text-primary font-bold">{{ $t('public_nav.about') }}</router-link>
       </nav>
       

@@ -40,8 +40,22 @@
         :reconocimientos="reconocimientosStore.items"
         :habilitaciones="habilitacionesStore.items"
         :config="defaults"
+        :isOwner="isOwner"
+        :userLimit="userLimit"
+        @edit="handleEdit"
+        @new="handleNew"
+        @upgrade="showUpgradeModal = true"
       />
     </div>
+
+    <!-- Inline Edit Modal -->
+    <PortfolioEditModal 
+      :activeForm="activeForm"
+      :editingItem="editingItem"
+      @close="closeEdit"
+    />
+
+    <UpgradeModal v-model="showUpgradeModal" />
   </div>
 </template>
 
@@ -52,6 +66,8 @@ import { computed, onMounted } from 'vue'
 import { Loader2, AppWindow } from 'lucide-vue-next'
 import PortfolioTabsLayout from '../../components/public/PortfolioTabsLayout.vue'
 import PortfolioBentoLayout from '../../components/public/PortfolioBentoLayout.vue'
+import PortfolioEditModal from '../../components/public/PortfolioEditModal.vue'
+import UpgradeModal from '../../components/admin/UpgradeModal.vue'
 import DegreeBadge from '../../components/ui/DegreeBadge.vue'
 import ConnectionButton from '../../components/ui/ConnectionButton.vue'
 import { api } from '../../services/api'
@@ -82,6 +98,66 @@ const connectionDegree = ref(null)
 const { defaults, fetchConfigs } = useSectionConfig()
 
 const perfil = computed(() => perfilStore.items[0] || null)
+
+const isOwner = computed(() => {
+  if (!authStore.user) return false
+  const myUser = authStore.user?.username?.split('@')[0]
+  const rawViewUser = window.location.pathname.match(/\/portfolio\/([^/]+)/)?.[1] || localStorage.getItem('currentPortfolioUser') || 'jcampillayworks'
+  const viewUser = rawViewUser.split('@')[0]
+  return myUser === viewUser
+})
+
+const userTier = computed(() => {
+  if (!isOwner.value) return 'AMBASSADOR' // Default safe limit if not owner
+  return (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC').toUpperCase()
+})
+const userLimit = computed(() => limits[userTier.value] || 2)
+
+const activeForm = ref(null)
+const editingItem = ref(null)
+const showUpgradeModal = ref(false)
+
+const limits = {
+  BASIC: 2,
+  PRO: 4,
+  PREMIUM: 6,
+  AMBASSADOR: 8,
+  PROFESSIONAL: 9999,
+  BYOK: 9999
+}
+
+const handleEdit = (type, item) => {
+  activeForm.value = type
+  editingItem.value = item
+  document.body.style.overflow = 'hidden'
+}
+
+const handleNew = (type) => {
+  const tier = (authStore.user?.freemium_tier || authStore.user?.freemiumTier || 'BASIC').toUpperCase()
+  const limit = limits[tier] || 3
+  
+  let storeItems = []
+  if (type === 'project') storeItems = proyectosStore.items
+  else if (type === 'experience') storeItems = experienciasStore.items
+  else if (type === 'education') storeItems = estudiosStore.items
+  else if (type === 'recognition') storeItems = reconocimientosStore.items
+  else if (type === 'skill') storeItems = habilitacionesStore.items
+
+  if (storeItems.length >= limit) {
+    showUpgradeModal.value = true
+    return
+  }
+
+  activeForm.value = type
+  editingItem.value = null
+  document.body.style.overflow = 'hidden'
+}
+
+const closeEdit = () => {
+  activeForm.value = null
+  editingItem.value = null
+  document.body.style.overflow = ''
+}
 
 const isLoading = computed(() => {
   return proyectosStore.loading || 

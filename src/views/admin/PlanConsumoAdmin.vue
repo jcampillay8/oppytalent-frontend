@@ -258,7 +258,9 @@ const planName = computed(() => {
     BASIC: 'Básico',
     PRO: 'Pro',
     PREMIUM: 'Premium',
-    AMBASSADOR: 'Embajador'
+    AMBASSADOR: 'Embajador',
+    PROFESSIONAL: 'Profesional',
+    BYOK: 'BYOK'
   };
   return `Plan Freemium ${names[tier] || 'Básico'}`;
 });
@@ -302,7 +304,7 @@ function formatBytes(bytes) {
 // IA CRÉDITOS LÓGICA
 const AI_MAX = computed(() => {
   const tier = (user.value.freemiumTier || user.value.freemium_tier || 'BASIC').toUpperCase();
-  const limits = { BASIC: 25, PRO: 35, PREMIUM: 50, AMBASSADOR: 50 };
+  const limits = { BASIC: 25, PRO: 35, PREMIUM: 50, AMBASSADOR: 50, PROFESSIONAL: 1000, BYOK: 1000 };
   const bonus = user.value.bonusCreditsBalance ?? user.value.bonus_credits_balance ?? 0;
   return (limits[tier] || 25) + bonus;
 });

@@ -156,7 +156,7 @@
             </NeonButton>
           </form>
           
-          <p class="text-center text-xs text-muted-foreground mt-4">
+          <p class="text-center text-xs text-muted-foreground mt-4 hidden md:block">
             {{ $t('home.disclaimer_1') }}<router-link to="/portafolio" class="text-primary hover:underline font-medium mx-1">{{ $t('home.disclaimer_link') }}</router-link>{{ $t('home.disclaimer_2') }}
           </p>
         </footer>

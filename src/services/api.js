@@ -405,5 +405,7 @@ export const api = {
   getFreemiumReviews: () => request('/freemium/reviews'),
   createFreemiumReview: (data) => request('/freemium/reviews', { method: 'POST', body: JSON.stringify(data) }),
   toggleFreemiumReviewLike: (reviewId) => request(`/freemium/reviews/${reviewId}/like`, { method: 'POST' }),
-  supportUsUpgrade: () => request('/freemium/support-us', { method: 'POST' })
+  supportUsUpgrade: () => request('/freemium/support-us', { method: 'POST' }),
+  checkReferrals: () => request('/freemium/check-referrals'),
+  clearReferrals: () => request('/freemium/clear-referrals', { method: 'POST' })
 }

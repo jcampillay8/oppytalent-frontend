@@ -79,12 +79,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { toast } from 'vue3-toastify'
 import NeonButton from '../../components/ui/NeonButton.vue'
 
 const router = useRouter()
+const route = useRoute()
 const loading = ref(false)
 const form = ref({
   first_name: '',
@@ -92,7 +93,14 @@ const form = ref({
   username: '',
   email: '',
   password: '',
-  terms_accepted: false
+  terms_accepted: false,
+  referral_code: ''
+})
+
+onMounted(() => {
+  if (route.query.ref) {
+    form.value.referral_code = route.query.ref
+  }
 })
 
 function handleGoogleAuth() {
@@ -109,6 +117,9 @@ async function handleRegister() {
     formData.append('email', form.value.email)
     formData.append('password', form.value.password)
     formData.append('terms_accepted', form.value.terms_accepted)
+    if (form.value.referral_code) {
+      formData.append('referral_code', form.value.referral_code)
+    }
 
     const response = await fetch('/api/v1/auth/register', {
       method: 'POST',

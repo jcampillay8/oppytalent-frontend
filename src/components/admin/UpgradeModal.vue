@@ -73,7 +73,7 @@
         </div>
 
         <!-- Normal Content (Missions) -->
-        <template v-else>
+        <template v-else-if="viewMode === 'missions'">
           <!-- Header Image / Banner -->
           <div class="h-32 bg-gradient-to-br from-primary/80 to-purple-600/80 relative flex items-center justify-center overflow-hidden">
             <div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20"></div>
@@ -154,7 +154,7 @@
                     <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🚀 +50 Créditos (Acumulables)</Badge>
                   </div>
                 </div>
-                <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing" @click="handleRedirect('/admin/compartir')"></button>
+                <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing" @click="viewMode = 'ambassador'"></button>
               </div>
             </div>
 
@@ -170,6 +170,36 @@
           </div>
         </template>
         
+        <template v-else-if="viewMode === 'ambassador'">
+          <div class="p-8 text-center animate-in fade-in zoom-in duration-300">
+            <div class="w-16 h-16 bg-purple-500/20 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="text-3xl">🚀</span>
+            </div>
+            <h2 class="text-2xl font-black text-foreground mb-3">Nivel Embajador</h2>
+            <p class="text-sm text-muted-foreground mb-6">
+              Invita a tus colegas a OppyTalent. Cuando se registren usando tu enlace único, <strong>¡ganarás 50 Créditos IA adicionales!</strong> Puedes acumular hasta 250 créditos extra.
+            </p>
+
+            <div class="flex items-center gap-2 mb-6">
+              <div class="bg-secondary flex-1 px-4 py-3 rounded-xl border border-primary/20 text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap text-primary">
+                {{ referralUrl }}
+              </div>
+              <button @click="copyReferral" class="bg-primary text-primary-foreground px-4 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 min-w-[50px]">
+                <Copy v-if="!referralCopied" :size="18" />
+                <Check v-else :size="18" />
+              </button>
+            </div>
+
+            <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-xs text-amber-500/90 leading-relaxed text-left mb-8">
+              <strong>⚠️ Nota Importante sobre Abusos:</strong> Por favor, usa este enlace de buena fe. El uso de bots, correos temporales o la creación de cuentas falsas para obtener créditos está estrictamente prohibido y resultará en la suspensión permanente de tu cuenta.
+            </div>
+
+            <button @click="viewMode = 'missions'" class="text-sm text-muted-foreground hover:text-foreground underline transition-colors">
+              Volver a Misiones
+            </button>
+          </div>
+        </template>
+
       </div>
     </div>
   </Transition>
@@ -177,7 +207,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Sparkles, Heart, Star, Share2, CheckCircle, Loader2 } from 'lucide-vue-next'
+import { Sparkles, Heart, Star, Share2, CheckCircle, Loader2, Copy, Check } from 'lucide-vue-next'
 import Badge from '../ui/Badge.vue'
 import NeonButton from '../ui/NeonButton.vue'
 import { useRouter } from 'vue-router'
@@ -208,6 +238,20 @@ const isProOrHigher = computed(() => ['PRO', 'PREMIUM', 'AMBASSADOR'].includes(c
 const isPremiumOrHigher = computed(() => ['PREMIUM', 'AMBASSADOR'].includes(currentTier.value))
 
 const isReviewValid = computed(() => reviewRating.value > 0 && reviewContent.value.trim().length > 10)
+
+const referralUrl = computed(() => {
+  const host = window.location.origin
+  const username = authStore.user?.username || ''
+  return `${host}/register?ref=${username}`
+})
+
+const referralCopied = ref(false)
+
+function copyReferral() {
+  navigator.clipboard.writeText(referralUrl.value)
+  referralCopied.value = true
+  setTimeout(() => { referralCopied.value = false }, 2000)
+}
 
 function triggerConfetti() {
   const duration = 3000;

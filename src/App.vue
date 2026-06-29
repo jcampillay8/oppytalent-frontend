@@ -110,9 +110,37 @@
                 </span>
               </router-link>
 
-              <button class="hidden sm:flex relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Notificaciones">
-                <Bell :size="18" />
-              </button>
+              <!-- Notifications Dropdown -->
+              <AnimatedDropdown v-if="authStore.token" align="right">
+                <template #trigger>
+                  <button class="hidden sm:flex relative p-1.5 text-muted-foreground hover:text-foreground transition-colors mr-1" title="Notificaciones">
+                    <Bell :size="18" />
+                    <span 
+                      v-if="referralsUnreadCount > 0"
+                      class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-amber-500 text-[10px] font-bold text-white rounded-full shadow-md animate-pulse"
+                    >
+                      {{ referralsUnreadCount }}
+                    </span>
+                  </button>
+                </template>
+                <template #content="{ close }">
+                  <div class="w-72 p-2">
+                    <h3 class="text-sm font-bold text-foreground mb-2 px-2">Notificaciones</h3>
+                    <div v-if="referralsUnreadCount > 0" @click="handleReferralNotification(); close()" class="cursor-pointer p-3 rounded-xl hover:bg-secondary border border-primary/20 bg-primary/5 flex gap-3 transition-colors">
+                      <div class="shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xl">
+                        🚀
+                      </div>
+                      <div class="flex-1 min-w-0 text-left flex flex-col justify-center">
+                        <p class="text-sm font-bold text-foreground truncate">¡Nuevos referidos!</p>
+                        <p class="text-xs text-muted-foreground">Reclama tus +{{ referralsUnreadCount * 50 }} créditos.</p>
+                      </div>
+                    </div>
+                    <div v-else class="text-center py-6 text-sm text-muted-foreground">
+                      No tienes notificaciones
+                    </div>
+                  </div>
+                </template>
+              </AnimatedDropdown>
 
             </template>
 
@@ -256,10 +284,11 @@
             </router-link>
 
             <!-- Notifications Link for Mobile -->
-            <button v-if="authStore.token" class="flex items-center justify-between px-2 py-2 text-muted-foreground w-full text-left" @click="closeMenu">
+            <button v-if="authStore.token" class="flex items-center justify-between px-2 py-2 text-muted-foreground w-full text-left" @click="referralsUnreadCount > 0 ? handleReferralNotification() : null; closeMenu()">
               <div class="flex items-center gap-3">
                 <Bell :size="20" /> Notificaciones
               </div>
+              <span v-if="referralsUnreadCount > 0" class="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">{{ referralsUnreadCount }}</span>
             </button>
 
             <!-- Network Link for Mobile -->
@@ -290,12 +319,35 @@
     <main :class="['main', { 'no-padding': isAppLayout || isAdminRoute || isFullHeightRoute }]">
       <router-view />
     </main>
-    <footer class="footer" v-if="!isAppLayout">
+    <footer :class="['footer', { 'hidden md:block': isFullHeightRoute }]" v-if="!isAppLayout">
       <div class="container">
         <p>&copy; {{ new Date().getFullYear() }} OppyTalent - jcampillay.com</p>
       </div>
     </footer>
     <ChatWidget v-if="!isAppLayout && !isAdminRoute && !isFullHeightRoute" />
+
+    <!-- Ambassador Reward Modal -->
+    <Transition name="fade">
+      <div v-if="showAmbassadorReward" class="fixed inset-0 z-[300] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="showAmbassadorReward = false"></div>
+        <div class="relative bg-card border border-primary/30 rounded-2xl w-full max-w-md shadow-[0_0_50px_rgba(139,92,246,0.15)] overflow-hidden p-8 text-center" style="z-index: 301;">
+          <div class="w-20 h-20 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto mb-6 border border-primary/30">
+            <span class="text-4xl">🚀</span>
+          </div>
+          <h2 class="text-2xl font-black text-foreground mb-4">¡Felicitaciones!</h2>
+          <p v-if="ambassadorRewardData.tier === 'AMBASSADOR'" class="text-muted-foreground mb-8">
+            Has sumado <strong class="text-primary">+{{ ambassadorRewardData.credits }} Créditos IA</strong> porque <strong class="text-foreground">{{ ambassadorRewardData.names?.length ? ambassadorRewardData.names.join(', ') : (ambassadorRewardData.count + ' usuario(s)') }}</strong> se acaba(n) de crear una cuenta con tu invitación. ¡Muchas Gracias!
+          </p>
+          <p v-else class="text-muted-foreground mb-8">
+            ¡Has subido a nivel <strong class="text-primary">EMBAJADOR</strong>! Has sumado <strong class="text-primary">+{{ ambassadorRewardData.credits }} Créditos IA</strong> y desbloqueado todas las mejoras porque <strong class="text-foreground">{{ ambassadorRewardData.names?.length ? ambassadorRewardData.names.join(', ') : (ambassadorRewardData.count + ' usuario(s)') }}</strong> usó tu invitación.
+          </p>
+          <button @click="showAmbassadorReward = false" class="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors w-full">
+            ¡Increíble!
+          </button>
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -313,6 +365,7 @@ import AnimatedDropdown from './components/ui/AnimatedDropdown.vue'
 import SearchSpotlight from './components/ui/SearchSpotlight.vue'
 import { useChatP2PStore } from './stores/chat_p2p'
 import { api } from './services/api'
+import confetti from 'canvas-confetti'
 import { Zap, MessageSquare, Briefcase, Mail, User, LayoutDashboard, Bot, LogOut, Menu, ArrowLeft, AlertTriangle, VenetianMask, Search, Users, Scale, Activity, Building2, CreditCard, Bell, Network, Share2 } from 'lucide-vue-next'
 
 const { locale } = useI18n()
@@ -363,16 +416,73 @@ onMounted(async () => {
     } catch(e) {}
   }
   
-  watch(() => authStore.token, (newToken) => {
+  watch(() => authStore.token, async (newToken) => {
     if (newToken) {
       chatStore.startPolling()
       networkStore.startPolling()
+      await fetchReferralsUnread()
     } else {
       chatStore.stopPolling()
       networkStore.stopPolling()
     }
   }, { immediate: true })
 })
+
+const referralsUnreadCount = ref(0)
+const ambassadorRewardData = ref({ credits: 0, count: 0, tier: '' })
+const showAmbassadorReward = ref(false)
+
+async function fetchReferralsUnread() {
+  try {
+    const res = await api.checkReferrals()
+    if (res && res.has_unread) {
+      referralsUnreadCount.value = res.unread_count
+      ambassadorRewardData.value = { 
+        credits: res.unread_count * 50, 
+        count: res.unread_count, 
+        tier: res.freemium_tier,
+        names: res.recent_names || []
+      }
+    }
+  } catch(e) {
+    console.error('Error fetching referrals', e)
+  }
+}
+
+async function handleReferralNotification() {
+  try {
+    const res = await api.clearReferrals()
+    if (res && res.status === 'success') {
+      referralsUnreadCount.value = 0
+      showAmbassadorReward.value = true
+      await authStore.fetchUser()
+      setTimeout(triggerConfetti, 100)
+    }
+  } catch(e) {
+    console.error('Error clearing referrals', e)
+  }
+}
+
+function triggerConfetti() {
+  const duration = 3000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 8,
+      angle: 270,
+      spread: 70,
+      origin: { x: Math.random(), y: -0.2 },
+      startVelocity: 15,
+      colors: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6'],
+      zIndex: 3500
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  }());
+}
 
 const portfolioUserObj = ref(null)
 

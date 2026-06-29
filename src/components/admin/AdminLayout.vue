@@ -225,6 +225,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
 import { useChatP2PStore } from '../../stores/chat_p2p'
+import { api } from '../../services/api'
 
 const { t } = useI18n()
 
@@ -232,7 +233,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const chatStore = useChatP2PStore()
 
-onMounted(() => {
+onMounted(async () => {
   chatStore.startPolling()
 })
 

@@ -19,12 +19,12 @@
           <div class="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-6 border border-emerald-500/30">
             <Heart class="w-10 h-10 fill-current" />
           </div>
-          <h2 class="text-3xl font-black text-foreground mb-4">¡Muchas Gracias, {{ userName }}!</h2>
+          <h2 class="text-3xl font-black text-foreground mb-4">{{ $t('admin_upgrade_modal.upgrade_1') }}, {{ userName }}!</h2>
           <p class="text-lg text-muted-foreground mb-8">
-            Tu apoyo significa el mundo para nosotros. Hemos desbloqueado tu <strong class="text-emerald-500">Nivel PRO</strong> para siempre.
+            {{ $t('admin_upgrade_modal.upgrade_2') }} <strong class="text-emerald-500">{{ $t('admin_upgrade_modal.upgrade_3') }}</strong> {{ $t('admin_upgrade_modal.upgrade_4') }}
           </p>
           <NeonButton glow variant="primary" @click="closeModal" class="px-8">
-            Continuar
+            {{ $t('admin_upgrade_modal.upgrade_5') }}
           </NeonButton>
         </div>
 
@@ -33,19 +33,19 @@
           <div class="w-20 h-20 bg-amber-500/20 text-amber-500 rounded-full flex items-center justify-center mb-6 border border-amber-500/30">
             <Star class="w-10 h-10 fill-current" />
           </div>
-          <h2 class="text-3xl font-black text-foreground mb-4">¡Muchas Gracias por la Reseña!</h2>
+          <h2 class="text-3xl font-black text-foreground mb-4">{{ $t('admin_upgrade_modal.upgrade_6') }}</h2>
           <p class="text-lg text-muted-foreground mb-8">
-            Tu opinión es oro para nosotros. Ya eres <strong class="text-amber-500">Nivel PREMIUM</strong>.
+            {{ $t('admin_upgrade_modal.upgrade_7') }} <strong class="text-amber-500">{{ $t('admin_upgrade_modal.upgrade_8') }}</strong>.
           </p>
           <NeonButton glow variant="primary" @click="closeModal" class="px-8">
-            Continuar
+            {{ $t('admin_upgrade_modal.upgrade_5') }}
           </NeonButton>
         </div>
 
         <!-- Write Review Screen -->
         <div v-else-if="viewMode === 'writeReview'" class="p-8 flex flex-col min-h-[400px]">
-          <h2 class="text-2xl font-black text-foreground mb-2 text-center">Escribe tu Reseña</h2>
-          <p class="text-sm text-muted-foreground mb-8 text-center">Tu opinión nos ayuda a crecer y destaca tu perfil en el Muro de la Fama.</p>
+          <h2 class="text-2xl font-black text-foreground mb-2 text-center">{{ $t('admin_upgrade_modal.upgrade_9') }}</h2>
+          <p class="text-sm text-muted-foreground mb-8 text-center">{{ $t('admin_upgrade_modal.upgrade_10') }}</p>
           
           <div class="mb-8 flex justify-center gap-4">
              <Star v-for="i in 5" :key="i" 
@@ -56,18 +56,18 @@
 
           <textarea v-model="reviewContent" rows="4" 
                     class="w-full bg-background border border-border rounded-xl p-4 text-foreground focus:outline-none focus:border-amber-500/50 resize-none mb-8"
-                    placeholder="Cuéntanos cómo OppyTalent te ha ayudado a crear tu portafolio..."></textarea>
+                    :placeholder="$t('admin_upgrade_modal.upgrade_11')"></textarea>
 
           <div class="flex gap-4 mt-auto">
             <button class="flex-1 px-4 py-3 rounded-xl border border-border text-foreground hover:bg-secondary/50 font-medium transition-colors" 
                     @click="viewMode = 'missions'" :disabled="isProcessing">
-              Cancelar
+              {{ $t('admin_upgrade_modal.upgrade_12') }}
             </button>
             <NeonButton glow variant="primary" class="flex-1" :disabled="!isReviewValid || isProcessing" @click="submitReview">
               <span v-if="isProcessing" class="flex items-center justify-center gap-2">
-                <Loader2 class="w-5 h-5 animate-spin" /> Publicando...
+                <Loader2 class="w-5 h-5 animate-spin" /> {{ $t('admin_upgrade_modal.upgrade_13') }}
               </span>
-              <span v-else>Publicar Reseña</span>
+              <span v-else>{{ $t('admin_upgrade_modal.upgrade_14') }}</span>
             </NeonButton>
           </div>
         </div>
@@ -82,9 +82,9 @@
 
           <!-- Content -->
           <div class="p-6 sm:p-8 flex-1 flex flex-col">
-            <h2 class="text-2xl font-black text-foreground text-center mb-2">Desbloquea tu Portafolio</h2>
+            <h2 class="text-2xl font-black text-foreground text-center mb-2">{{ $t('admin_upgrade_modal.upgrade_15') }}</h2>
             <p class="text-muted-foreground text-center text-sm mb-6 leading-relaxed">
-              Tu plan actual no te permite editar más elementos. Puedes desbloquear esta función y potenciar tu Inteligencia Artificial para siempre <strong class="text-emerald-500 uppercase tracking-widest text-base font-black bg-emerald-500/10 px-2 py-0.5 rounded-md mx-1 border border-emerald-500/20">¡totalmente gratis!</strong> Solo escoge una misión:
+              {{ $t('admin_upgrade_modal.upgrade_16') }} <strong class="text-emerald-500 uppercase tracking-widest text-base font-black bg-emerald-500/10 px-2 py-0.5 rounded-md mx-1 border border-emerald-500/20">{{ $t('admin_upgrade_modal.upgrade_17') }}</strong> {{ $t('admin_upgrade_modal.upgrade_18') }}
             </p>
 
             <div class="space-y-4">
@@ -95,20 +95,20 @@
                 <!-- If already unlocked overlay -->
                 <div v-if="isProOrHigher" class="absolute inset-0 bg-background/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-4">
                   <CheckCircle class="w-12 h-12 text-emerald-500 mb-2 drop-shadow-sm" />
-                  <span class="font-black text-lg text-foreground">¡Gracias por tu Like!</span>
-                  <span class="text-sm font-medium text-emerald-500 mt-1">Ya tienes el Nivel PRO</span>
+                  <span class="font-black text-lg text-foreground">{{ $t('admin_upgrade_modal.upgrade_19') }}</span>
+                  <span class="text-sm font-medium text-emerald-500 mt-1">{{ $t('admin_upgrade_modal.upgrade_20') }}</span>
                 </div>
 
                 <div class="shrink-0 w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-500 border border-blue-500/20">
                   <Heart class="w-6 h-6" />
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-bold text-foreground text-sm text-blue-400">Nivel PRO (Dar Like)</h3>
-                  <p class="text-xs text-muted-foreground mt-1">Muestra tu apoyo al proyecto OppyTalent con un solo clic. ¡Sin registros ni redes sociales!</p>
+                  <h3 class="font-bold text-foreground text-sm text-blue-400">{{ $t('admin_upgrade_modal.upgrade_21') }}</h3>
+                  <p class="text-xs text-muted-foreground mt-1">{{ $t('admin_upgrade_modal.upgrade_22') }}</p>
                   <div class="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🔓 4x Categoría</Badge>
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🧠 2 Skills IA</Badge>
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🤖 35 Respuestas</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_23') }}</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_24') }}</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_25') }}</Badge>
                   </div>
                 </div>
                 <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing || isProOrHigher" @click="handleProUpgrade"></button>
@@ -121,20 +121,20 @@
                 <!-- If already unlocked overlay -->
                 <div v-if="isPremiumOrHigher" class="absolute inset-0 bg-background/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-4">
                   <CheckCircle class="w-12 h-12 text-amber-500 mb-2 drop-shadow-sm" />
-                  <span class="font-black text-lg text-foreground">¡Gracias por tu Reseña!</span>
-                  <span class="text-sm font-medium text-amber-500 mt-1">Ya tienes el Nivel PREMIUM</span>
+                  <span class="font-black text-lg text-foreground">{{ $t('admin_upgrade_modal.upgrade_26') }}</span>
+                  <span class="text-sm font-medium text-amber-500 mt-1">{{ $t('admin_upgrade_modal.upgrade_27') }}</span>
                 </div>
 
                 <div class="shrink-0 w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500 border border-amber-500/20">
                   <Star class="w-6 h-6" />
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-bold text-foreground text-sm text-amber-500">Nivel PREMIUM (Escribir Reseña)</h3>
-                  <p class="text-xs text-muted-foreground mt-1">Escribe tu propia reseña pública en nuestro Muro de la Fama.</p>
+                  <h3 class="font-bold text-foreground text-sm text-amber-500">{{ $t('admin_upgrade_modal.upgrade_28') }}</h3>
+                  <p class="text-xs text-muted-foreground mt-1">{{ $t('admin_upgrade_modal.upgrade_29') }}</p>
                   <div class="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🔓 6x Categoría</Badge>
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🧠 3 Skills IA</Badge>
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🤖 50 Respuestas</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_30') }}</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_31') }}</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_32') }}</Badge>
                   </div>
                 </div>
                 <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing || isPremiumOrHigher" @click="viewMode = 'writeReview'"></button>
@@ -146,12 +146,12 @@
                   <Share2 class="w-6 h-6" />
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-bold text-foreground text-sm text-purple-400">Nivel EMBAJADOR (Referir a alguien)</h3>
-                  <p class="text-xs text-muted-foreground mt-1">Refiere a un amigo usando tu enlace único y consigue que se registre.</p>
+                  <h3 class="font-bold text-foreground text-sm text-purple-400">{{ $t('admin_upgrade_modal.upgrade_33') }}</h3>
+                  <p class="text-xs text-muted-foreground mt-1">{{ $t('admin_upgrade_modal.upgrade_34') }}</p>
                   <div class="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🔓 10x Categoría</Badge>
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🧠 5 Skills IA</Badge>
-                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">🚀 +50 Créditos (Acumulables)</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_35') }}</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_36') }}</Badge>
+                    <Badge variant="secondary" class="bg-primary/10 text-primary text-[10px]">{{ $t('admin_upgrade_modal.upgrade_37') }}</Badge>
                   </div>
                 </div>
                 <button class="absolute inset-0 z-10 disabled:cursor-not-allowed" :disabled="isProcessing" @click="viewMode = 'ambassador'"></button>
@@ -164,7 +164,7 @@
                 :disabled="isProcessing"
                 class="text-xs text-muted-foreground hover:text-foreground underline transition-colors disabled:opacity-50"
               >
-                Quizás más tarde
+                {{ $t('admin_upgrade_modal.upgrade_38') }}
               </button>
             </div>
           </div>
@@ -175,9 +175,9 @@
             <div class="w-16 h-16 bg-purple-500/20 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <span class="text-3xl">🚀</span>
             </div>
-            <h2 class="text-2xl font-black text-foreground mb-3">Nivel Embajador</h2>
+            <h2 class="text-2xl font-black text-foreground mb-3">{{ $t('admin_upgrade_modal.upgrade_39') }}</h2>
             <p class="text-sm text-muted-foreground mb-6">
-              Invita a tus colegas a OppyTalent. Cuando se registren usando tu enlace único, <strong>¡ganarás 50 Créditos IA adicionales!</strong> Puedes acumular hasta 250 créditos extra.
+              {{ $t('admin_upgrade_modal.upgrade_40') }} <strong>{{ $t('admin_upgrade_modal.upgrade_41') }}</strong> {{ $t('admin_upgrade_modal.upgrade_42') }}
             </p>
 
             <div class="flex items-center gap-2 mb-6">
@@ -191,11 +191,11 @@
             </div>
 
             <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-xs text-amber-500/90 leading-relaxed text-left mb-8">
-              <strong>⚠️ Nota Importante sobre Abusos:</strong> Por favor, usa este enlace de buena fe. El uso de bots, correos temporales o la creación de cuentas falsas para obtener créditos está estrictamente prohibido y resultará en la suspensión permanente de tu cuenta.
+              <strong>{{ $t('admin_upgrade_modal.upgrade_43') }}</strong> {{ $t('admin_upgrade_modal.upgrade_44') }}
             </div>
 
             <button @click="viewMode = 'missions'" class="text-sm text-muted-foreground hover:text-foreground underline transition-colors">
-              Volver a Misiones
+              {{ $t('admin_upgrade_modal.upgrade_45') }}
             </button>
           </div>
         </template>
@@ -211,9 +211,12 @@ import { Sparkles, Heart, Star, Share2, CheckCircle, Loader2, Copy, Check } from
 import Badge from '../ui/Badge.vue'
 import NeonButton from '../ui/NeonButton.vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../../stores/auth'
 import { api } from '../../services/api'
 import confetti from 'canvas-confetti'
+
+const { t } = useI18n()
 
 const props = defineProps({
   modelValue: Boolean
@@ -282,7 +285,7 @@ async function handleProUpgrade() {
     triggerConfetti();
   } catch (error) {
     console.error(error);
-    alert("Ocurrió un error. Inténtalo de nuevo.");
+    alert(t('admin_upgrade_modal.error_1'));
   } finally {
     isProcessing.value = false;
   }
@@ -300,7 +303,7 @@ async function submitReview() {
     triggerConfetti();
   } catch (error) {
     console.error(error);
-    alert("No se pudo publicar la reseña o ya escribiste una.");
+    alert(t('admin_upgrade_modal.error_2'));
   } finally {
     isProcessing.value = false;
   }

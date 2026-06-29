@@ -9,22 +9,21 @@
         <!-- ============================================== -->
         <section class="w-full max-w-7xl mx-auto px-6 md:px-16 pt-12 pb-16 z-10 text-center">
           <Badge variant="outline" class="mb-6 border-primary/30 text-primary/90 bg-primary/10 uppercase tracking-wider backdrop-blur-sm px-4 py-1.5 text-sm font-bold">
-            Muro de la Fama
+            {{ $t('public_references.ref_1') }}
           </Badge>
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight mb-6 text-white drop-shadow-sm">
-            Lo que dicen <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent">nuestros talentos</span>
+            {{ $t('public_references.ref_2') }} <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent">{{ $t('public_references.ref_3') }}</span>
           </h1>
           <p class="text-lg md:text-xl text-zinc-400 leading-relaxed mb-8 max-w-2xl mx-auto">
-            El éxito de OppyTalent se mide en las oportunidades creadas y en la comunidad que lo respalda. 
-            ¡Apoya el proyecto y obtén recompensas exclusivas!
+            {{ $t('public_references.ref_4') }}
           </p>
 
           <div class="flex justify-center mb-12">
             <NeonButton glow variant="primary" class="px-8 py-3 font-bold" @click="openReviewModal" v-if="authStore.isAuthenticated">
-              Escribir una Reseña
+              {{ $t('public_references.ref_5') }}
             </NeonButton>
             <NeonButton variant="outline" class="px-8 py-3" v-else @click="router.push('/login')">
-              Inicia sesión para interactuar
+              {{ $t('public_references.ref_6') }}
             </NeonButton>
           </div>
 
@@ -35,7 +34,7 @@
               <div class="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <Users class="text-blue-400 mb-3" :size="32" />
               <div class="text-4xl font-black text-white mb-1">{{ stats.total_talents }}</div>
-              <div class="text-sm text-zinc-400 font-medium">Talentos Activos</div>
+              <div class="text-sm text-zinc-400 font-medium">{{ $t('public_references.ref_7') }}</div>
             </div>
             
             <!-- Metric 2 -->
@@ -43,7 +42,7 @@
               <div class="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <ThumbsUp class="text-emerald-400 mb-3" :size="32" />
               <div class="text-4xl font-black text-white mb-1">{{ stats.total_likes }}</div>
-              <div class="text-sm text-zinc-400 font-medium">Likes Entregados</div>
+              <div class="text-sm text-zinc-400 font-medium">{{ $t('public_references.ref_8') }}</div>
             </div>
 
             <!-- Metric 3 -->
@@ -51,7 +50,7 @@
               <div class="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <MessageSquareQuote class="text-amber-400 mb-3" :size="32" />
               <div class="text-4xl font-black text-white mb-1">{{ stats.total_reviews }}</div>
-              <div class="text-sm text-zinc-400 font-medium">Reseñas Publicadas</div>
+              <div class="text-sm text-zinc-400 font-medium">{{ $t('public_references.ref_9') }}</div>
             </div>
 
             <!-- Metric 4 -->
@@ -59,7 +58,7 @@
               <div class="absolute inset-0 bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <Briefcase class="text-purple-400 mb-3" :size="32" />
               <div class="text-4xl font-black text-white mb-1">{{ stats.total_hunters }}</div>
-              <div class="text-sm text-zinc-400 font-medium">Hunters Registrados</div>
+              <div class="text-sm text-zinc-400 font-medium">{{ $t('public_references.ref_10') }}</div>
             </div>
           </div>
         </section>
@@ -116,13 +115,13 @@
           </div>
           
           <div v-if="!loading && reviewsData.length === 0" class="text-center py-20 text-zinc-500">
-            Aún no hay reseñas publicadas. ¡Sé el primero!
+            {{ $t('public_references.ref_11') }}
           </div>
         </section>
 
         <!-- Footer -->
         <footer class="w-full border-t border-white/10 py-12 text-center text-zinc-500 z-10 relative bg-[#050505]">
-          <p>© {{ new Date().getFullYear() }} OppyTalent. Construyendo el futuro del talento digital.</p>
+          <p>© {{ new Date().getFullYear() }} {{ $t('public_references.ref_12') }}</p>
         </footer>
 
       </main>
@@ -133,11 +132,11 @@
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="showModal = false"></div>
         <div class="relative bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl p-6 sm:p-8">
-          <h2 class="text-2xl font-black mb-2">Déjanos tu reseña</h2>
-          <p class="text-sm text-muted-foreground mb-6">Al publicar tu reseña desbloquearás permanentemente el <strong class="text-amber-500">Nivel PREMIUM</strong>.</p>
+          <h2 class="text-2xl font-black mb-2">{{ $t('public_references.ref_13') }}</h2>
+          <p class="text-sm text-muted-foreground mb-6">{{ $t('public_references.ref_14') }} <strong class="text-amber-500">{{ $t('public_references.ref_15') }}</strong>.</p>
           
           <div class="mb-6">
-            <label class="block text-sm font-medium mb-2">Calificación</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('public_references.ref_16') }}</label>
             <div class="flex gap-2">
               <Star 
                 v-for="i in 5" 
@@ -151,19 +150,19 @@
           </div>
 
           <div class="mb-6">
-            <label class="block text-sm font-medium mb-2">Tu experiencia</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('public_references.ref_17') }}</label>
             <textarea 
               v-model="newReview.content" 
               rows="4" 
-              placeholder="¿Qué es lo que más te gusta de OppyTalent?"
+              :placeholder="$t('public_references.ref_18')"
               class="w-full rounded-xl bg-secondary/50 border border-border focus:border-primary focus:ring-1 focus:ring-primary p-3 outline-none transition-all text-sm resize-none"
             ></textarea>
           </div>
 
           <div class="flex justify-end gap-3">
-            <button @click="showModal = false" class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary/50">Cancelar</button>
+            <button @click="showModal = false" class="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-secondary/50">{{ $t('public_references.ref_19') }}</button>
             <NeonButton glow variant="primary" @click="submitReview" :disabled="isSubmitting || !newReview.content.trim()">
-              {{ isSubmitting ? 'Publicando...' : 'Publicar y Desbloquear' }}
+              {{ isSubmitting ? $t('public_references.ref_20') : $t('public_references.ref_21') }}
             </NeonButton>
           </div>
         </div>
@@ -173,6 +172,7 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'

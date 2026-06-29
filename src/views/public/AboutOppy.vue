@@ -71,7 +71,7 @@
                 <p class="text-zinc-500 text-sm">{{ $t('public_about.about_22') }}</p>
               </div>
             </div>
-            <router-link to="/jcampillayworks">
+            <router-link to="/jcampillay">
               <NeonButton variant="outline" class="border-purple-500/30 text-purple-300 hover:bg-purple-500/10 text-sm py-2">
                 {{ $t('public_about.about_23') }}
               </NeonButton>
